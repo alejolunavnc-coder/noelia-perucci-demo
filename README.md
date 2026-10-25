@@ -1,24 +1,29 @@
 # Noelia Perucci — Demo visual V3
 
-Prototipo de muestra para presentar el rediseño de la página móvil de Noelia Perucci.
+Prototipo visual navegable para presentar el diseño a Noelia. No acepta pagos ni envía formularios reales.
 
-- **Inicio:** portada editorial, presentación de Noelia y acceso a los planes.
-- **Entrenamientos:** asesoría integral y plan de entrenamiento.
-- **Contacto:** consulta simulada.
-- **Sin** suplementos ni preparación para competir.
-- **Sin** pagos ni envío real de formularios.
+## Publicar desde la pantalla actual de Cloudflare Workers (Import a repository)
 
-## Publicar en Cloudflare Pages
+Este repositorio ya está preparado con `wrangler.jsonc` para desplegar los archivos HTML como **Workers Static Assets**, sin instalar nada localmente.
 
-1. Entrar a **Cloudflare → Workers & Pages → Create application → Pages → Connect to Git**.
-2. Seleccionar GitHub y el repositorio `alejolunavnc-coder/noelia-perucci-demo`.
-3. Elegir `main` como rama de producción.
-4. En **Framework preset**, elegir **None**.
-5. **Build command:** dejar vacío (o usar `exit 0`).
-6. **Build output directory:** `.` (raíz del repositorio).
-7. Hacer clic en **Save and Deploy**.
-8. Compartir la URL pública `*.pages.dev` que muestre Cloudflare.
+1. En Cloudflare, seleccionar el repositorio `alejolunavnc-coder/noelia-perucci-demo`.
+2. **Project name:** `noelia-perucci-demo` (debe coincidir con `wrangler.jsonc`).
+3. **Build command:** vacío.
+4. **Deploy command:** `npx wrangler deploy` (valor predeterminado).
+5. **Preview command:** dejar el valor predeterminado.
+6. **Path:** `/` (raíz).
+7. **Variables, API token y otros ajustes avanzados:** dejar sin completar.
+8. Presionar **Deploy**. Cloudflare generará un enlace `*.workers.dev`.
 
-**Nota:** `index.html` contiene todo lo necesario (estilos, JavaScript y fotografías embebidas). No requiere Node, npm, variables de entorno ni base de datos.
+Las modificaciones posteriores subidas a `main` dispararán publicaciones automáticas.
 
-**Solo demostración:** no usar para cobrar ni recibir solicitudes reales.
+## Contenido
+
+- Inicio: portada editorial y presentación de Noelia.
+- Entrenamientos: dos planes.
+- Contacto: consulta simulada.
+- No incluye suplementos, carrito ni preparación para competir.
+
+## Publicación alternativa con Cloudflare Pages
+
+Este repositorio también contiene `index.html` en la raíz y puede conectarse mediante Pages Git integration, con framework None, sin build, y directorio de salida `.`.
