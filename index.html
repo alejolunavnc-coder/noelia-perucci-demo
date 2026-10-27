@@ -1,10 +1,9 @@
 <!doctype html>
-<!-- NOELIA_V4_DEPLOY_CHECK_2026_10_27 -->
 <html lang="es-AR">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0b0c"><meta name="description" content="Vista previa de diseño — Noelia Perucci Fitness">
-<title>NOELIA PERUCCI — Vista previa V4</title>
+<title>NOELIA PERUCCI — Vista previa V4.1</title>
 <style>
 :root{--black:#0b0b0c;--black2:#181719;--cream:#f4f2ee;--pink:#cf006d;--soft:#dfdcd5;--muted:#8b898a;--pad:clamp(22px,6vw,40px);--label:'Courier New',ui-monospace,monospace;--head:'Arial Narrow','Roboto Condensed','sans-serif-condensed','Arial Black',Arial,sans-serif}
 *{box-sizing:border-box}[hidden]{display:none!important}html{scroll-behavior:smooth}body{margin:0;background:var(--black);color:var(--cream);font-family:Arial,'Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased}body.menu-open{overflow:hidden}button,input,textarea,select{font:inherit}button,a{-webkit-tap-highlight-color:transparent}button{cursor:pointer}a{color:inherit;text-decoration:none}img{display:block;width:100%;height:100%;object-fit:cover}h1,h2,h3,p{margin:0}h1,h2,h3{font-family:var(--head);font-weight:950;text-transform:uppercase;letter-spacing:-.065em;line-height:1.02}h1{font-size:clamp(40px,11.3vw,65px)}h2{font-size:clamp(33px,9.2vw,51px)}h3{font-size:clamp(28px,7.5vw,39px)}p{font-size:15px;line-height:1.57}.eyebrow{font:10px/1.6 var(--label);color:#9c9799;letter-spacing:.16em;text-transform:uppercase}.eyebrow.pink{color:var(--pink)}.wrap{width:min(100%,1040px);margin:auto}.section{padding:67px var(--pad)}.section.dark{background:var(--black)}.section.white{background:var(--cream);color:#141313}.section.smoke{background:#eae7e2;color:#141313}
@@ -85,6 +84,32 @@
 .choice:focus-visible,.day-choice:focus-visible{outline:3px solid #171616;outline-offset:3px}
 .choice.is-selected{color:#171616}
 .day-choice.is-selected{color:#fff}
+
+/* V4.1: INICIO UN DÍA A LA VEZ + RESULTADOS REALES PENDIENTES DE FOTOS */
+.habit-hero{min-height:min(96svh,875px);padding-bottom:44px}
+.habit-hero .eyebrow{color:#e9a6cb}
+.habit-hero h1{max-width:750px;font-size:clamp(49px,13vw,86px);letter-spacing:-.065em;line-height:.96}
+.habit-hero .habit-period{color:var(--pink)}
+.habit-hero p{max-width:620px;color:#e6e0e1;font-size:clamp(14px,3.8vw,17px);line-height:1.64;margin-top:24px;margin-bottom:26px;text-wrap:pretty}
+.habit-actions{display:grid;gap:10px;max-width:490px}
+.habit-hero .btn.outline{border-color:#aaa5a9;background:#1413169c;color:#fff}
+.habit-hero .hero-end{margin-top:33px}
+.real-results{background:#101011;border-top:1px solid #292729;border-bottom:1px solid #292729;padding-top:62px;padding-bottom:68px}
+.results-heading h2{margin:12px 0 15px;line-height:.95}
+.results-heading p{color:#c6bec3;max-width:600px;font-size:14px;line-height:1.65;margin-bottom:26px}
+.results-future{max-width:620px;border:1px solid #454044;border-radius:5px;overflow:hidden;background:#1b1a1c}
+.results-mock{display:grid;grid-template-columns:1fr 1fr;min-height:225px;aspect-ratio:1.65/1;max-height:390px}
+.result-half{display:flex;align-items:stretch;justify-content:space-between;flex-direction:column;padding:18px;background:linear-gradient(160deg,#363338,#151517);border-right:1px solid #494449}
+.result-half+ .result-half{border:0;background:linear-gradient(160deg,#272528,#100f11)}
+.result-half>span{font:10px/1.4 var(--label);letter-spacing:.14em;color:#c9c5c8}
+.result-half strong{font:950 clamp(65px,21vw,170px)/.8 var(--head);letter-spacing:-.1em;color:#ffffff11;text-align:right}
+.results-caption{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 17px;border-top:1px solid #454044;font:10px/1.5 var(--label);letter-spacing:.08em;color:#e3dfe0}
+.results-arrow{font-size:21px;color:var(--pink)}
+.results-fine{max-width:630px;color:#969094;font-size:11px;margin-top:15px;line-height:1.55}
+.about .about-layout .eyebrow{margin-bottom:16px}
+.about .about-layout h2{overflow-wrap:anywhere;font-size:clamp(34px,8.7vw,62px);line-height:.99}
+@media(min-width:760px){.habit-hero h1{font-size:clamp(72px,7.8vw,125px)}.habit-hero .habit-actions{grid-template-columns:1fr 1fr;max-width:650px}.results-heading{max-width:640px}.real-results{padding-top:87px;padding-bottom:95px}.results-mock{min-height:360px}.real-results>.wrap{display:grid;grid-template-columns:1fr 1.07fr;column-gap:55px;align-items:center}.real-results .section-index{grid-column:1/-1}.results-future{grid-column:2;grid-row:2}.results-heading{grid-column:1;grid-row:2}.results-fine{grid-column:2;grid-row:3}.about .about-layout h2{font-size:clamp(42px,4.6vw,67px)}}
+@media(max-width:360px){.habit-hero h1{font-size:clamp(45px,12.5vw,58px)}}
 </style>
 
 </head>
@@ -92,7 +117,7 @@
 <header id="header" class="header"><a class="brand" href="#inicio" data-route="inicio" aria-label="Noelia Perucci - Inicio">NOELIA<span> PERUCCI</span></a><div class="header-side"><button id="openMenu" class="menu-circle" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"><i></i><i></i></button></div></header>
 <aside class="menu" id="menu" aria-hidden="true" inert><div class="menu-head"><div class="brand">NOELIA<span> PERUCCI</span></div><button id="closeMenu" class="close-menu">CERRAR <b>×</b></button></div><div class="menu-content"><span class="eyebrow">EXPLORAR</span><nav class="menu-links" aria-label="Navegación principal"><a href="#inicio" data-route="inicio"><small>01</small>INICIO</a><a href="#entrenamientos" data-route="entrenamientos"><small>02</small>ENTRENAMIENTOS</a><a href="#contacto" data-route="contacto"><small>03</small>CONTACTO</a></nav></div><div class="menu-bottom"><div>PERSONAL TRAINER · IFBB</div><div>DISEÑO DE MUESTRA · NO ES UNA WEB ACTIVA</div></div></aside>
 <main id="main"></main>
-<div class="demo-stamp">VISTA PREVIA · V4 / SIN PAGOS</div>
+<div class="demo-stamp">VISTA PREVIA · V4.1 / SIN PAGOS</div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script>
 const main=document.getElementById('main'),menu=document.getElementById('menu'),header=document.getElementById('header'),toast=document.getElementById('toast');
@@ -101,7 +126,9 @@ const A='assets/';const ASSET_DATA={"dumbbells.webp":"data:image/webp;base64,Ukl
 const label=(text,pink=false)=>`<div class="eyebrow ${pink?'pink':''}">${text}</div>`;
 const button=(text,action,cls='')=>`<button class="btn ${cls}" type="button" data-action="${action}"><span>${text}</span><span class="arr">↗</span></button>`;
 const footer=()=>`<footer class="footer"><div class="footer-inner"><div><div class="brand">NOELIA<span> PERUCCI</span></div><small>PERSONAL TRAINER · IFBB</small></div><nav class="footer-nav" aria-label="Navegación secundaria"><a href="#inicio" data-route="inicio">Inicio</a><a href="#entrenamientos" data-route="entrenamientos">Entrenamientos</a><a href="#contacto" data-route="contacto">Contacto</a></nav></div></footer>`;
-const home=()=>`<div class="page-enter"><section class="hero" data-theme="dark"><div class="wrap">${label('PERSONAL TRAINER · IFBB INTERNACIONAL')}<h1>ENTRENAMIENTO<br>PERSONALIZADO<br>Y PLAN<br>NUTRICIONAL.</h1><p>Rutinas listas para entrenar por tu cuenta y planes personalizados con acompañamiento individual.</p>${button('CONOCÉ LOS ENTRENAMIENTOS','entrenamientos')}<div class="hero-end"><span>DISCIPLINA · PLANIFICACIÓN · PROGRESO</span><b>↓</b></div></div></section><section class="section dark about" data-theme="dark" id="noelia"><div class="wrap"><div class="section-index"><small>01 / SOBRE NOELIA</small><small>PERSONAL TRAINER</small></div><div class="about-layout"><div class="portrait reveal"><img src="${asset('noelia.webp')}" alt="Noelia en competición wellness"><div class="portrait-overlay"><b>NOELIA PERUCCI</b><span>ATLETA WELLNESS · NPC CÓRDOBA</span></div></div><div class="reveal"><h2>PREPARACIÓN.<br>DISCIPLINA.<br>SEGUIMIENTO.</h2><p class="intro">Mi trabajo comienza por conocer tu punto de partida. Después construimos una planificación de entrenamiento y revisamos tu avance.</p><div class="credential"><code>IFBB</code><span>Personal Trainer IFBB Internacional</span></div><div class="credential"><code>2021</code><span>Bodybuilding & Fitness Trainer · Academia Olympia Internacional</span></div><div class="credential"><code>NPC</code><span>Atleta wellness</span></div></div></div></div></section><section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('02 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="${asset('dumbbells.webp')}" alt="Mancuernas en el gimnasio"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>↗</span></div></div></div></section>${footer()}</div>`;
+const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-theme="dark"><div class="wrap">${label('EMPEZÁ A ENTRENAR HOY')}<h1>UN DÍA<br>A LA VEZ<span class="habit-period">.</span></h1><p>Prepárate para comenzar un cambio de hábito y de salud antes que nada. Las buenas costumbres llevan a concretar niveles que ni sabías que podías lograr.</p><div class="habit-actions">${button('VER CÓMO FUNCIONA','entrenamientos')}${button('ELEGIR MI RUTINA','rutina','outline')}</div><div class="hero-end"><span>CONSTANCIA · HÁBITOS · PROGRESO</span><b>↓</b></div></div></section>
+<section class="section dark real-results" data-theme="dark" id="resultados-reales"><div class="wrap"><div class="section-index"><small>01 / RESULTADOS REALES</small><small>ANTES Y DESPUÉS</small></div><div class="results-heading reveal">${label('TRANSFORMACIONES REALES',true)}<h2>RESULTADOS<br>REALES.</h2><p>Los cambios se construyen un día a la vez. Muy pronto, este espacio mostrará fotografías reales del antes y después de alumnas de Noelia.</p></div><div class="results-future reveal" aria-label="Espacio reservado para fotografías reales de transformaciones"><div class="results-mock"><div class="result-half"><span>ANTES</span><strong>01</strong></div><div class="result-half"><span>DESPUÉS</span><strong>02</strong></div></div><div class="results-caption"><span>FOTOGRAFÍAS REALES POR INCORPORAR</span><span class="results-arrow" aria-hidden="true">↗</span></div></div><p class="results-fine">Las imágenes se incorporarán cuando Noelia seleccione las fotos y confirme las autorizaciones de publicación.</p></div></section>
+<section class="section dark about" data-theme="dark" id="noelia"><div class="wrap"><div class="section-index"><small>02 / QUIÉN ES BARBIEMONSTRUO</small><small>PERSONAL TRAINER</small></div><div class="about-layout"><div class="portrait reveal"><img src="${asset('noelia.webp')}" alt="Noelia Perucci en competición wellness"><div class="portrait-overlay"><b>NOELIA PERUCCI</b><span>ATLETA WELLNESS · NPC CÓRDOBA</span></div></div><div class="reveal">${label('CONOCÉ A NOELIA',true)}<h2>QUIÉN ES<br>BARBIEMONSTRUO.</h2><p class="intro">Conocé el camino de Noelia Perucci, su preparación y su forma de entender el entrenamiento. Rutinas para entrenar a tu ritmo y atención individual para quienes buscan un plan personalizado.</p><div class="credential"><code>IFBB</code><span>Personal Trainer IFBB Internacional</span></div><div class="credential"><code>2021</code><span>Bodybuilding & Fitness Trainer · Academia Olympia Internacional</span></div><div class="credential"><code>NPC</code><span>Atleta wellness</span></div></div></div></div></section><section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="${asset('dumbbells.webp')}" alt="Mancuernas en el gimnasio"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>↗</span></div></div></div></section>${footer()}</div>`;
 const prices={2:50000,3:60000,4:80000,5:80000};
 const price=(n)=>'$'+prices[n].toLocaleString('es-AR');
 const levelNames={principiante:'Principiante',intermedio:'Intermedio',avanzado:'Avanzado'};
