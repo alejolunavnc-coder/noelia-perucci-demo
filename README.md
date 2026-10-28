@@ -1,4 +1,4 @@
-# Noelia Perucci — Demo visual V4.2
+# Noelia Perucci — Demo visual V4.3
 
 Web de muestra publicada como **Cloudflare Workers Static Assets**, desde el repositorio de GitHub `alejolunavnc-coder/noelia-perucci-demo`.
 
@@ -9,6 +9,7 @@ Web de muestra publicada como **Cloudflare Workers Static Assets**, desde el rep
 - **Selector de rutinas:** principiante, intermedio o avanzado; 2, 3, 4 o 5 días por semana.
 - **Precios de las rutinas:** 2 días $50.000 ARS; 3 días $60.000 ARS; 4 o 5 días $80.000 ARS.
 - **Compra y descarga:** DEMOSTRACIÓN. No se procesa dinero real; el PDF es de muestra.
+- **Cambios V4.3:** botón «Conóceme», nueva descripción de Resultados Reales, nueva redacción de Planes Personalizados y del registro mensual.
 - **Control mensual:** opcional **al renovar el plan**. Guía para registro inicial y mensual; formulario que prepara el texto para copiar a un correo; Noelia respondería personalmente.
 - **Privacidad:** esta web no recibe ni almacena fotos de progresos, y el formulario de control no envía ni almacena peso o medidas. Las fotos se adjuntarán desde el correo del alumno cuando el envío real esté habilitado.
 - **Contacto:** prepara mensajes para copiar; envío real por correo o WhatsApp pendiente de configurar.
