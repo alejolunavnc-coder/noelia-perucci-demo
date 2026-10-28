@@ -1,6 +1,8 @@
 README.md
+README.txt
 wrangler.jsonc
 _headers
 .assetsignore
 .gitignore
 .git/
+.wrangler/
