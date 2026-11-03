@@ -397,7 +397,7 @@ document.addEventListener('click',e=>{
   const day=e.target.closest('[data-days]');if(day){chosenDays=Number(day.dataset.days);syncRoutine();return}
   const link=e.target.closest('[data-route]');if(link){e.preventDefault();goto(link.dataset.route);return}
   const b=e.target.closest('[data-action]');if(b){const act=b.dataset.action;
-    if(act==='conoceme'){document.getElementById('noelia')?.scrollIntoView({behavior:'smooth',block:'start'});return;}
+    if(act==='conoceme'){const sectionIndex=document.querySelector('#noelia .section-index');if(sectionIndex){const headerHeight=document.getElementById('header')?.getBoundingClientRect().height||74;const y=window.scrollY+sectionIndex.getBoundingClientRect().top-(headerHeight+34);window.scrollTo({top:Math.max(0,y),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}return;}
     if(act==='personalizado'){interest='personalizado';goto('contacto')}
     else if(['inicio','entrenamientos','contacto','rutina','pago','confirmacion','control'].includes(act))goto(act);
   }
