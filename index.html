@@ -291,6 +291,29 @@ body,body *{font-family:'Roboto Slab','Rockwell','Clarendon',Georgia,serif!impor
 .header .brand{font-size:clamp(18px,5.2vw,27px);white-space:nowrap;letter-spacing:-.055em}
 h1,h2,h3,.offer-title{overflow-wrap:break-word}
 @media(max-width:359px){.header .brand{font-size:18px}}
+
+/* Bio profesional Noelia 2026-11-03 — acordeón nativo y accesible */
+.about .bio-closing{font-size:clamp(14px,1.6vw,17px);line-height:1.7;color:#e7e1e5;margin:16px 0 27px}
+.about .bio-closing strong{color:#f26cae;font-weight:800}
+.about .bio-credentials{width:100%;max-width:660px;margin-top:25px;border-top:1px solid #ffffff32}
+.about .bio-details{border-bottom:1px solid #ffffff32}
+.about .bio-details>summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;list-style:none;padding:21px 2px;color:#fff;transition:color .2s}
+.about .bio-details>summary::-webkit-details-marker{display:none}
+.about .bio-details>summary:hover,.about .bio-details[open]>summary{color:#ff83bf}
+.about .bio-details>summary:focus-visible{outline:2px solid #ff83bf;outline-offset:3px;border-radius:2px}
+.about .bio-details>summary>span:first-child{display:flex;flex-direction:column;gap:5px;min-width:0}
+.about .bio-details>summary small{font-size:10px;letter-spacing:.09em;color:#cf6e9f;font-weight:500}
+.about .bio-details>summary strong{font-size:clamp(12px,2.8vw,15px);font-weight:750;line-height:1.35}
+.about .bio-count{font-size:12px;white-space:nowrap;color:#c8bcc4;display:inline-flex;align-items:center;gap:10px}
+.about .bio-chevron{font-size:24px;line-height:1;transition:transform .25s}
+.about .bio-details[open] .bio-chevron{transform:rotate(45deg)}
+.about .bio-details-panel{padding:0 0 14px}
+.about .bio-details-panel .credential{padding:11px 0;display:grid;grid-template-columns:48px minmax(0,1fr);gap:14px;align-items:start}
+.about .bio-details-panel .credential code{color:#ef71b1;white-space:nowrap}
+.about .bio-details-panel .credential span{line-height:1.5;overflow-wrap:break-word}
+@media(max-width:359px){.about .bio-details>summary{padding-block:18px}.about .bio-details-panel .credential{grid-template-columns:42px minmax(0,1fr);gap:10px}}
+@media(prefers-reduced-motion:reduce){.about .bio-chevron{transition:none!important}}
+
 </style>
 
 </head>
@@ -310,8 +333,25 @@ const button=(text,action,cls='')=>`<button class="btn ${cls}" type="button" dat
 const footer=()=>`<footer class="footer"><div class="footer-inner"><div><div class="brand">NOELIA<span> PERUCCI</span></div><small>PERSONAL TRAINER · IFBB</small></div><nav class="footer-nav" aria-label="Navegación secundaria"><a href="#inicio" data-route="inicio">Inicio</a><a href="#entrenamientos" data-route="entrenamientos">Entrenamientos</a><a href="#control" data-route="control">Control mensual</a><a href="#contacto" data-route="contacto">Contacto</a></nav></div></footer>`;
 const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-theme="dark"><div class="hero-photo" aria-hidden="true"><img src="${asset('dumbbells.webp')}" alt=""></div><div class="wrap">${label('EMPEZÁ EL CAMBIO DE TU VIDA HOY')}<h1>UN DÍA<br>A LA VEZ<span class="habit-period">.</span></h1><p>Prepárate para comenzar un cambio de hábito y de salud antes que nada. Las buenas costumbres llevan a concretar niveles que ni sabías que podías lograr.</p><div class="habit-actions">${button('CONÓCEME','conoceme')}${button('ELEGIR MI RUTINA','rutina','outline')}</div><div class="hero-end"><span>CONSTANCIA · HÁBITOS · PROGRESO</span><b>↓</b></div></div></section>
 <section class="section dark real-results" data-theme="dark" id="resultados-reales"><div class="wrap"><div class="section-index"><small>01 / RESULTADOS REALES</small><small>ANTES Y DESPUÉS</small></div><div class="results-heading reveal">${label('TRANSFORMACIONES REALES',true)}<h2>RESULTADOS<br>REALES.</h2><p>Cuerpos reales. Resultados reales. Los cambios se construyen con disciplina y constancia. Primero en el hábito de la alimentación y luego el entrenamiento. Acá podrás ver estos hermosos cambios.</p></div><div class="results-future reveal" aria-label="Resultados de transformación"><div class="results-mock"><div class="result-half"><span>ANTES</span><strong>01</strong></div><div class="result-half"><span>DESPUÉS</span><strong>02</strong></div></div><div class="results-caption"><span>RESULTADOS REALES</span><span class="results-arrow" aria-hidden="true">↗</span></div></div></div></section>
-<section class="section dark about" data-theme="dark" id="noelia"><div class="wrap"><div class="section-index"><small>02 / QUIÉN ES BARBIEMONSTRUO</small><small>PERSONAL TRAINER</small></div><div class="about-layout"><div class="portrait reveal"><img src="${asset('noelia.webp')}" alt="Noelia Perucci en competición wellness"><div class="portrait-overlay"><b>NOELIA PERUCCI</b><span>ATLETA WELLNESS · NPC CÓRDOBA</span></div></div><div class="reveal">${label('CONOCÉ A NOELIA',true)}<h2>QUIÉN ES<br>BARBIEMONSTRUO.</h2><p class="intro">Soy Noelia Perucci, entrenadora y atleta wellness. Creo en la constancia, los hábitos y el entrenamiento como parte de un cambio sostenible. Podés entrenar por tu cuenta con rutinas digitales o elegirme para trabajar en un plan personalizado, adaptado a tus objetivos.</p><!-- BIOGRAFÍA AMPLIADA: solicitar a Noelia historia, experiencia y datos reales antes de agregar más trayectoria. -->
-<div class="credential"><code>IFBB</code><span>Personal Trainer IFBB Internacional</span></div><div class="credential"><code>2021</code><span>Bodybuilding & Fitness Trainer · Academia Olympia Internacional</span></div><div class="credential"><code>NPC</code><span>Atleta wellness</span></div></div></div></div></section><section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="${asset('dumbbells.webp')}" alt="Mancuernas en el gimnasio"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>↗</span></div></div></div></section>${footer()}</div>`;
+<section class="section dark about" data-theme="dark" id="noelia"><div class="wrap"><div class="section-index"><small>02 / QUIÉN ES BARBIEMONSTRUO</small><small>PERSONAL TRAINER</small></div><div class="about-layout"><div class="portrait reveal"><img src="${asset('noelia.webp')}" alt="Noelia Perucci en competición wellness"><div class="portrait-overlay"><b>NOELIA PERUCCI</b><span>ATLETA WELLNESS · NPC CÓRDOBA</span></div></div><div class="reveal">${label('CONOCÉ A NOELIA',true)}<h2>QUIÉN ES<br>BARBIEMONSTRUO.</h2><p class="intro">Soy Noelia Perucci, coach y atleta wellness. Activa, humana e inconformista, me sigo capacitando para dar siempre más y mejor. Me apasiona aprender y compartir conocimiento, porque creo en la constancia y en superar nuestros propios límites.</p><p class="bio-closing">La palabra «no puedo» no existe en mi vocabulario, y tampoco debería existir en el tuyo. <strong>¿Empezamos?</strong></p>
+<div class="bio-credentials" aria-label="Trayectoria de Noelia Perucci">
+<details class="bio-details"><summary><span><small>FORMACIÓN PROFESIONAL</small><strong>Capacitaciones y certificaciones</strong></span><span class="bio-count">08 <span aria-hidden="true" class="bio-chevron">+</span></span></summary><div class="bio-details-panel">
+<div class="credential"><code>2020</code><span>IFBB Personal Trainer Nacional e Internacional · matriculada</span></div>
+<div class="credential"><code>2021</code><span>Bodybuilding and Fitness Trainer · Certificación Internacional Olympia · matriculada</span></div>
+<div class="credential"><code>2021</code><span>HIIT · IFBB</span></div>
+<div class="credential"><code>2021</code><span>TRX · IFBB</span></div>
+<div class="credential"><code>2022</code><span>Interval Nutrición Deportiva · matriculada</span></div>
+<div class="credential"><code>2022</code><span>HF HIFT · Niveles I y II</span></div>
+<div class="credential"><code>2023</code><span>HF Boxeo Recreativo y Fitboxing</span></div>
+<div class="credential"><code>2024</code><span>HF Master Class de Hipertrofia</span></div>
+</div></details>
+<details class="bio-details"><summary><span><small>TRAYECTORIA DEPORTIVA</small><strong>Mis competencias</strong></span><span class="bio-count">04 <span aria-hidden="true" class="bio-chevron">+</span></span></summary><div class="bio-details-panel">
+<div class="credential"><code>2017</code><span>IFBB · Copa Rosario</span></div>
+<div class="credential"><code>2022</code><span>NPC · Buenos Aires</span></div>
+<div class="credential"><code>2023</code><span>NPC · Buenos Aires</span></div>
+<div class="credential"><code>2024</code><span>Argentino NPC · Córdoba</span></div>
+</div></details>
+</div></div></div></div></section><section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="${asset('dumbbells.webp')}" alt="Mancuernas en el gimnasio"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>↗</span></div></div></div></section>${footer()}</div>`;
 const prices={2:50000,3:60000,4:80000,5:80000};
 const price=(n)=>'$'+prices[n].toLocaleString('es-AR');
 const levelNames={principiante:'Principiante',intermedio:'Intermedio',avanzado:'Avanzado'};
