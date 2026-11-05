@@ -656,6 +656,25 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  .noelia-video-rule{margin-bottom:9px}
  .noelia-video-viewport{padding-top:15px}
 }
+
+/* NOELIA_VIDEO_BORDES_SUAVES_20261105 — integrado a la biografía, sin divisor.
+   Solo difumina los extremos del carrusel; no filtra ni distorsiona los videos. */
+.noelia-video-section{padding-top:0}
+.noelia-video-viewport{
+  border-radius:24px / 38px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.5) 2.5%,#000 7%,#000 93%,rgba(0,0,0,.5) 97.5%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.5) 2.5%,#000 7%,#000 93%,rgba(0,0,0,.5) 97.5%,transparent 100%);
+  padding-top:12px;
+}
+@media(max-width:759px){
+ .noelia-video-viewport{
+  border-radius:15px / 25px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.65) 3%,#000 9%,#000 91%,rgba(0,0,0,.65) 97%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.65) 3%,#000 9%,#000 91%,rgba(0,0,0,.65) 97%,transparent 100%);
+  padding-top:10px;
+ }
+}
+
 </style>
 
 </head>
@@ -765,7 +784,7 @@ const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-th
 </div></div>
 </div></div></section>
 <section class="noelia-video-section" id="noelia-videos" data-theme="dark" aria-label="Videos de entrenamiento de Noelia">
-  <div class="noelia-video-rule" aria-hidden="true"></div>
+  
   <div class="noelia-video-viewport" id="noelia-video-viewport" tabindex="0" aria-label="Carrusel de videos de Noelia, se desplaza automáticamente; usá las flechas del teclado para navegar">
     <div class="noelia-video-track" id="noelia-video-track"></div>
   </div>
