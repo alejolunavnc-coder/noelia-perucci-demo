@@ -964,7 +964,11 @@ function noeliaMountGallery(clips){
    near.sort((a,b)=>a.distance-b.distance);
    const prepared=new Set(near.slice(0,4).map(x=>x.card));
    const signature=cards.map((c,i)=>live.has(c)?"P"+i:prepared.has(c)?"R"+i:"").filter(Boolean).join("|");
-   if(signature===lastMobileSignature)return;
+   if(signature===lastMobileSignature){
+    // Un navegador móvil puede suspender la reproducción por memoria o red.
+    for(const card of live){if(card.video?.paused&&card.video.readyState>=2)card.video.play().catch(()=>{});}
+    return;
+   }
    lastMobileSignature=signature;
    for(const card of cards){
     if(live.has(card)){
@@ -1012,7 +1016,8 @@ function noeliaMountGallery(clips){
   const width=cards[clips.length].el.offsetLeft-cards[0].el.offsetLeft;
   if(width>0){cycleWidth=width;offset%=cycleWidth;}
   if(mobile){
-   mobilePadding=parseFloat(getComputedStyle(viewport).paddingLeft)||0;
+   // offsetLeft ya incluye el desplazamiento respecto del viewport.
+   mobilePadding=0;
    mobileWidth=viewport.clientWidth;
    mobilePositions=cards.map(card=>({left:card.el.offsetLeft,width:card.el.offsetWidth}));
    lastMobileSignature="";
