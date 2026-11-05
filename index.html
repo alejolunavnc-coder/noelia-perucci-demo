@@ -872,6 +872,7 @@ function noeliaMountGallery(clips){
  const track=main.querySelector("#noelia-video-track");
  if(!viewport||!track)return;
  if(!clips.length)return;
+ track.replaceChildren();
  let disposed=false,offset=0,cycleWidth=1,lastTime=0,frame=0;
  const cards=[],visible=new Set();
  const cardCount=Math.max(clips.length*4,8);
