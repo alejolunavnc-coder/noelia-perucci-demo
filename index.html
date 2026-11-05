@@ -572,21 +572,21 @@ function noeliaMountMedia(){
  if(hero){
   const type=matchMedia("(min-width:760px)").matches?"desktop":"mobile";
   if(type==="mobile"){
-   // Nuevo montaje móvil: 0096 seguido de 0095, concatenados en un solo MP4 con loop.
-   // Si el archivo todavía no está publicado, conservar el video anterior como respaldo.
-   const mobileSrc="/media/Video_Noelia_Celular.mp4";
-   let fallbackStarted=false;
-   const fallback=()=>{
-    if(fallbackStarted||!hero.isConnected)return;
-    fallbackStarted=true;
-    noeliaMediaUrl("mobile").then(src=>{
-     if(!hero.isConnected)return;
-     hero.src=src;hero.play().catch(()=>{});
-    }).catch(()=>{});
-   };
-   hero.addEventListener("error",fallback,{once:true});
+   // Video móvil definitivo: dos recortes sin subtítulos unidos y en bucle.
+   // Nunca volver al antiguo video subtitulado.
+   const mobileSrc="/media/Video_Noelia_Celular.mp4?v=2fb7175";
+   const githubSrc="https://raw.githubusercontent.com/alejolunavnc-coder/noelia-perucci-demo/main/media/Video_Noelia_Celular.mp4";
+   let usingGithub=false;
+   hero.addEventListener("error",()=>{
+    if(!hero.isConnected||usingGithub)return;
+    usingGithub=true;
+    hero.src=githubSrc;
+    hero.load();
+    hero.play().catch(()=>{});
+   });
    hero.src=mobileSrc;
-   hero.play().catch(()=>{if(hero.error)fallback();});
+   hero.load();
+   hero.play().catch(()=>{});
   }else{
    noeliaMediaUrl(type).then(src=>{if(!hero.isConnected)return;hero.src=src;hero.play().catch(()=>{});}).catch(()=>{});
   }
