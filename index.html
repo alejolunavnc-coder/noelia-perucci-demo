@@ -809,10 +809,7 @@ const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-th
   <div class="noelia-video-viewport" id="noelia-video-viewport" aria-label="Galería de videos de Noelia en movimiento continuo">
     <div class="noelia-video-track" id="noelia-video-track"></div>
   </div>
-  <div class="noelia-video-tools">
-    <div class="noelia-video-dots" id="noelia-video-dots" aria-label="Posición de los videos"></div>
 
-  </div>
 </section><section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="/media/noelia_entrenamiento_personalizado.jpg" alt="Noelia entrenando en el gimnasio" onerror="this.onerror=null;this.src='${asset('dumbbells.webp')}'"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>${noeliaIcon("upRight")}</span></div></div></div></section>${footer()}</div>`;
 const prices={2:50000,3:60000,4:80000,5:80000};
 const price=(n)=>'$'+prices[n].toLocaleString('es-AR');
