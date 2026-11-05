@@ -644,6 +644,18 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  .noelia-video-track,.noelia-video-card,.noelia-video-open,.noelia-video-dot{transition:none!important;animation:none!important}
 }
 
+
+/* NOELIA_VIDEO_AJUSTE_COMPACTO_20261105 — misma sección, sin play ni tiempos. */
+.noelia-feature-preview.about{padding-bottom:22px!important}
+.noelia-video-rule{margin-bottom:10px}
+.noelia-video-viewport{padding-top:18px}
+.noelia-video-card{cursor:pointer}
+.noelia-video-card:focus-visible{outline:2px solid #e77baf;outline-offset:4px}
+@media(max-width:759px){
+ .noelia-feature-preview.about{padding-bottom:16px!important}
+ .noelia-video-rule{margin-bottom:9px}
+ .noelia-video-viewport{padding-top:15px}
+}
 </style>
 
 </head>
@@ -892,14 +904,13 @@ function noeliaInitCarousel(){
    const card=document.createElement("article");card.className="noelia-video-card";card.dataset.logicalId=clip.id;
    card.style.setProperty("--video-position",clip.position);
    const poster=document.createElement("img");poster.className="noelia-video-poster";poster.src=clip.poster;poster.alt="";poster.loading="lazy";
-   const duration=document.createElement("span");duration.className="noelia-video-duration";
-   const len=Math.max(0,Math.round(clip.end-clip.start));duration.textContent="00:"+String(len).padStart(2,"0");
    const name=document.createElement("span");name.className="noelia-video-name";name.textContent=clip.title;
-   const button=document.createElement("button");button.className="noelia-video-open";button.type="button";button.setAttribute("aria-label","Ampliar video: "+clip.title);
-   button.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
-   card.append(poster,duration,name,button);track.append(card);
+   card.setAttribute("role","button");card.setAttribute("tabindex","0");
+   card.setAttribute("aria-label","Ampliar video: "+clip.title);
+   card.append(poster,name);track.append(card);
    const obj={el:card,clip,video:null};cards.push(obj);
-   button.addEventListener("click",()=>openCard(obj));
+   card.addEventListener("click",()=>openCard(obj));
+   card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openCard(obj)}});
   });
  }
  clips.forEach((clip,i)=>{
