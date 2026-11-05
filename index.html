@@ -893,7 +893,7 @@ function noeliaInitCarousel(){
   const delta=lastTime?Math.min(50,time-lastTime):0;lastTime=time;
   const inView=viewport.getBoundingClientRect();
   if(!reduced.matches&&!modalOpen&&!dragging&&time>=manualUntil&&!viewport.matches(":hover")&&!document.hidden&&inView.bottom>0&&inView.top<innerHeight){
-   offset=(offset+(innerWidth<760?21:innerWidth<1200?27:32)*delta/1000)%cycleWidth;
+   offset=(offset+(innerWidth<760?38:innerWidth<1200?27:32)*delta/1000)%cycleWidth;
    place();
   }
   highlight();frame=requestAnimationFrame(tick);
