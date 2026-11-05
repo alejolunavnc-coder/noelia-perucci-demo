@@ -831,7 +831,7 @@ function noeliaInitCarousel(){
  const reduced=matchMedia("(prefers-reduced-motion: reduce)");
  const clips=NOELIA_GALLERY_VIDEOS;
  if(!clips.length)return;
- let disposed=false,paused=false,modalOpen=false,dragging=false,pointerX=0,dragDelta=0,
+ let disposed=false,modalOpen=false,dragging=false,pointerX=0,dragDelta=0,
   offset=0,cycleWidth=1,lastTime=0,frame=0,lastSelected=-1,wasDragged=false;
  const players=new Set(),visible=new Set();
  const cards=[],allObservers=[];
@@ -956,7 +956,6 @@ function noeliaInitCarousel(){
  const onWheel=e=>{
   if(modalOpen||reduced.matches)return;
   const horizontal=Math.abs(e.deltaX)>Math.abs(e.deltaY);
-  if(!horizontal&&!e.shiftKey)return;
   const amount=horizontal?e.deltaX:e.deltaY;
   if(!amount)return;
   e.preventDefault();
