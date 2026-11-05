@@ -538,6 +538,9 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  }
 }
 
+
+/* FOTO_REAL_ENTRENAMIENTO_PERSONALIZADO_20261105 — encuadre de foto vertical */
+.teaser-image img{object-fit:cover;object-position:center 41%}
 </style>
 
 </head>
@@ -645,7 +648,7 @@ const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-th
 <div class="credential"><code>2024</code><span>Argentino NPC · Córdoba</span></div>
 </div></details>
 </div></div>
-</div></div></section><section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="${asset('dumbbells.webp')}" alt="Mancuernas en el gimnasio"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>${noeliaIcon("upRight")}</span></div></div></div></section>${footer()}</div>`;
+</div></div></section><section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="/media/noelia_entrenamiento_personalizado.jpg" alt="Noelia entrenando en el gimnasio" onerror="this.onerror=null;this.src=\'${asset('dumbbells.webp')}\'"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>${noeliaIcon("upRight")}</span></div></div></div></section>${footer()}</div>`;
 const prices={2:50000,3:60000,4:80000,5:80000};
 const price=(n)=>'$'+prices[n].toLocaleString('es-AR');
 const levelNames={principiante:'Principiante',intermedio:'Intermedio',avanzado:'Avanzado'};
