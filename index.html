@@ -917,7 +917,7 @@ function noeliaInitCarousel(){
  const handleVisibility=()=>updatePlayback();
  document.addEventListener("visibilitychange",handleVisibility);
  const onResize=()=>measure();window.addEventListener("resize",onResize);
- const pointerDown=e=>{if(e.pointerType==="mouse"&&e.button!==0)return;dragging=true;pointerX=e.clientX;dragDelta=0;wasDragged=false;viewport.setPointerCapture?.(e.pointerId)};
+ const pointerDown=e=>{if(e.target.closest("button"))return;if(e.pointerType==="mouse"&&e.button!==0)return;dragging=true;pointerX=e.clientX;dragDelta=0;wasDragged=false;viewport.setPointerCapture?.(e.pointerId)};
  const pointerMove=e=>{if(!dragging)return;const diff=e.clientX-pointerX;pointerX=e.clientX;dragDelta+=Math.abs(diff);if(dragDelta>8)wasDragged=true;offset=(offset-diff+cycleWidth)%cycleWidth;place()};
  const pointerUp=()=>{dragging=false;if(wasDragged)setTimeout(()=>{wasDragged=false},100)};
  viewport.addEventListener("pointerdown",pointerDown);viewport.addEventListener("pointermove",pointerMove);
