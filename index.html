@@ -590,6 +590,59 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  .plans-hero h1{max-width:100%;overflow-wrap:normal;white-space:normal}
  .plans-hero:before{background-position:65% 22%!important}
 }
+
+/* NOELIA_VIDEO_CAROUSEL_V1: Galería continua debajo de la biografía.
+   Sin flechas ni encabezados, videos reales y reproducciones bajo demanda de visibilidad. */
+.noelia-video-section{background:#0b0b0f;color:#f4f2ee;padding:0 0 64px;overflow:hidden;position:relative;isolation:isolate}
+.noelia-video-rule{height:1px;background:#38343c;opacity:.85;max-width:1540px;margin:0 auto 47px}
+.noelia-video-viewport{width:100%;overflow:hidden;padding:24px 44px 28px;position:relative;outline:none;touch-action:pan-y pinch-zoom;cursor:grab}
+.noelia-video-viewport:active{cursor:grabbing}
+.noelia-video-viewport:focus-visible{outline:2px solid #e77baf;outline-offset:-4px}
+.noelia-video-track{display:flex;align-items:center;gap:18px;width:max-content;will-change:transform;transform:translate3d(0,0,0)}
+.noelia-video-card{flex:0 0 clamp(215px,calc((100vw - 184px)/5),285px);height:clamp(210px,16vw,245px);position:relative;overflow:hidden;border:1px solid #504b56;border-radius:13px;background:#19171d;transform:scale(var(--focus-scale,1));transition:transform .32s ease,border-color .32s ease,box-shadow .32s ease;box-shadow:0 12px 32px #0004;isolation:isolate;cursor:pointer;user-select:none}
+.noelia-video-card.is-center{border:2px solid #e77baf;box-shadow:0 0 0 1px #ee8ebc45,0 0 22px #cf006d32,0 16px 36px #0007;z-index:2;--focus-scale:1.055}
+.noelia-video-card video,.noelia-video-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--video-position,center 48%);filter:brightness(.88) contrast(1.04);background:#19171d;pointer-events:none}
+.noelia-video-card video{opacity:0;transition:opacity .2s linear}
+.noelia-video-card.is-playing video{opacity:1}
+.noelia-video-card:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#06050acc 0%,#06050a34 39%,transparent 67%);pointer-events:none;z-index:1}
+.noelia-video-duration{position:absolute;right:10px;top:10px;padding:5px 8px;background:#100d13d9;border-radius:14px;color:#fff;font-size:11px;line-height:1;font-weight:700;z-index:2}
+.noelia-video-name{position:absolute;left:19px;right:18px;bottom:18px;z-index:2;font-size:clamp(14px,1.1vw,17px);font-weight:800;line-height:1.24;color:#fff;text-shadow:0 1px 5px #000b}
+.noelia-video-name:after{content:"";display:block;margin-top:11px;width:39px;height:2px;background:#cf006d}
+.noelia-video-open{position:absolute;left:50%;top:50%;z-index:3;transform:translate(-50%,-50%);width:48px;height:48px;display:grid;place-items:center;border-radius:50%;border:1px solid #efafcfb8;background:#6a294abd;color:#ffe2f0;cursor:pointer;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);transition:background .2s,transform .2s}
+.noelia-video-open:hover{background:#cf006ddd;transform:translate(-50%,-50%) scale(1.06)}
+.noelia-video-open:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.noelia-video-open svg{width:16px;height:16px;margin-left:3px}
+.noelia-video-tools{max-width:1520px;margin:0 auto;min-height:33px;display:flex;align-items:center;justify-content:center;position:relative}
+.noelia-video-dots{display:flex;align-items:center;justify-content:center;gap:13px;min-height:20px}
+.noelia-video-dot{border:0;padding:0;width:8px;height:8px;border-radius:50%;background:#77717d;transition:background .2s,transform .2s;cursor:pointer}
+.noelia-video-dot[aria-current="true"]{background:#e75a9d;transform:scale(1.35)}
+.noelia-video-dot:focus-visible{outline:2px solid white;outline-offset:5px}
+.noelia-video-motion{position:absolute;right:46px;top:0;height:31px;min-width:31px;background:#211b23;border:1px solid #504b56;color:#f8e9f1;border-radius:50%;font-size:13px;display:grid;place-items:center}
+.noelia-video-motion:focus-visible{outline:2px solid #e77baf;outline-offset:2px}
+.noelia-video-modal[hidden]{display:none!important}
+.noelia-video-modal{position:fixed;inset:0;z-index:210;background:#08070bea;display:grid;place-items:center;padding:clamp(18px,3vw,48px)}
+.noelia-video-modal-inner{width:min(850px,100%);max-height:90dvh;display:flex;flex-direction:column;align-items:stretch;position:relative}
+.noelia-video-modal video{width:100%;max-height:75dvh;object-fit:contain;background:#000;border-radius:12px}
+.noelia-video-modal-title{margin:12px 0 0;font-size:14px;font-weight:700;color:#f7edf2;text-align:center}
+.noelia-video-close{position:absolute;right:0;top:-47px;border:1px solid #aa7b96;color:white;background:#221923;border-radius:50%;width:40px;height:40px;font-size:26px;line-height:1}
+@media(min-width:760px) and (max-width:1250px){
+ .noelia-video-card{flex-basis:clamp(210px,24vw,260px);height:225px}
+}
+@media(max-width:759px){
+ .noelia-video-section{padding-bottom:46px}
+ .noelia-video-rule{margin:0 18px 29px}
+ .noelia-video-viewport{padding:20px 16px 22px}
+ .noelia-video-track{gap:13px}
+ .noelia-video-card{flex-basis:82vw;height:clamp(300px,94vw,380px);border-radius:12px}
+ .noelia-video-card.is-center{--focus-scale:1.025}
+ .noelia-video-name{font-size:15px;left:18px;bottom:17px}
+ .noelia-video-motion{right:16px}
+ .noelia-video-modal{padding:18px}
+}
+@media(prefers-reduced-motion:reduce){
+ .noelia-video-track,.noelia-video-card,.noelia-video-open,.noelia-video-dot{transition:none!important;animation:none!important}
+}
+
 </style>
 
 </head>
@@ -697,7 +750,17 @@ const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-th
 <div class="credential"><code>2024</code><span>Argentino NPC · Córdoba</span></div>
 </div></details>
 </div></div>
-</div></div></section><section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="/media/noelia_entrenamiento_personalizado.jpg" alt="Noelia entrenando en el gimnasio" onerror="this.onerror=null;this.src='${asset('dumbbells.webp')}'"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>${noeliaIcon("upRight")}</span></div></div></div></section>${footer()}</div>`;
+</div></div></section>
+<section class="noelia-video-section" id="noelia-videos" data-theme="dark" aria-label="Videos de entrenamiento de Noelia">
+  <div class="noelia-video-rule" aria-hidden="true"></div>
+  <div class="noelia-video-viewport" id="noelia-video-viewport" tabindex="0" aria-label="Carrusel de videos de Noelia, se desplaza automáticamente; usá las flechas del teclado para navegar">
+    <div class="noelia-video-track" id="noelia-video-track"></div>
+  </div>
+  <div class="noelia-video-tools">
+    <div class="noelia-video-dots" id="noelia-video-dots" aria-label="Posición de los videos"></div>
+    <button class="noelia-video-motion" type="button" id="noelia-video-motion" aria-label="Pausar movimiento del carrusel" title="Pausar movimiento"><span aria-hidden="true">Ⅱ</span></button>
+  </div>
+</section><section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="/media/noelia_entrenamiento_personalizado.jpg" alt="Noelia entrenando en el gimnasio" onerror="this.onerror=null;this.src='${asset('dumbbells.webp')}'"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>${noeliaIcon("upRight")}</span></div></div></div></section>${footer()}</div>`;
 const prices={2:50000,3:60000,4:80000,5:80000};
 const price=(n)=>'$'+prices[n].toLocaleString('es-AR');
 const levelNames={principiante:'Principiante',intermedio:'Intermedio',avanzado:'Avanzado'};
@@ -716,9 +779,165 @@ const success=()=>`<div class="page-enter"><section class="sub-hero confirmation
 
 const monthly=()=>`<div class="page-enter"><section class="monthly-hero" data-theme="dark"><div class="wrap">${label('RENOVACIÓN / CONTROL OPCIONAL',true)}<h1>CONTROL<br>MENSUAL.</h1><p>Entrená a tu ritmo. Si renovás tu plan, podés pedirle a Noelia que revise tu evolución y te responda por correo.</p></div></section><section class="section white monthly-section" data-theme="light"><div class="wrap monthly-wrap"><div class="monthly-intro">${label('CÓMO FUNCIONA',true)}<h2>REGISTRÁ.<br>COMPARÁ.<br>AVANZÁ.</h2><p>El control no es obligatorio para seguir entrenando ni para cambiar de nivel. Es una revisión personal disponible cuando renovás tu plan.</p></div><div class="monthly-steps"><article><small>01 / AL EMPEZAR</small><h3>GUARDÁ TU PUNTO DE PARTIDA.</h3><p>Tomá fotos de frente, perfil y espalda, siempre con iluminación y postura similares. Anotá tu peso y medidas iniciales. Guardá todo en tu propio celular.</p></article><article><small>02 / AL MES</small><h3>REPETÍ EL REGISTRO.</h3><p>Se puede tener la misma rutina por mucho tiempo, pero los cambios tienen que existir. Repetí las fotografías, el peso y las medidas para observar tu evolución. Cada persona progresa a su ritmo.</p></article><article><small>03 / SI RENOVÁS</small><h3>SOLICITÁ TU CONTROL.</h3><p>Con el número de compra de la renovación, preparás un correo para Noelia. Adjuntás las fotos desde tu correo y ella te responde personalmente.</p></article></div><div class="monthly-card">${label('CONTROL PERSONAL / POR CORREO',true)}<h2>PREPARÁ TU CONSULTA.</h2><p>Este formulario prepara el texto del correo. <strong>No sube ni guarda fotos, peso ni medidas en la web.</strong> En esta vista podés preparar el mensaje para enviarlo desde tu correo.</p><form id="monthly-check-form" class="monthly-form"><label>Tu nombre<input type="text" name="name" placeholder="Nombre y apellido" maxlength="80" required autocomplete="name"></label><label>Tu correo<input type="email" name="email" placeholder="tu@email.com" maxlength="140" required autocomplete="email"></label><label>Número de compra de la renovación<input type="text" name="order" placeholder="El número de tu comprobante" maxlength="80" required></label><div class="monthly-form-grid"><label>Tu nivel<select name="level"><option>Principiante</option><option>Intermedio</option><option>Avanzado</option></select></label><label>Días de entrenamiento<select name="days"><option>2 días</option><option>3 días</option><option>4 días</option><option>5 días</option></select></label></div><label>Tu evolución y medidas<textarea name="progress" placeholder="Peso y medidas iniciales y actuales, cómo te sentís y qué dificultades encontraste..." maxlength="1200" rows="5" required></textarea></label><div class="monthly-privacy"><b>FOTOS: ADJUNTALAS EN TU CORREO.</b><p>Esta página no recibe archivos. Adjuntá tus fotos iniciales y actuales únicamente cuando vayas a enviar el correo. Las imágenes quedarán en los servicios de correo del remitente y destinatario, no en esta web.</p></div><button type="submit" class="btn darkbtn"><span>PREPARAR MENSAJE DE CONTROL</span><span class="arr">${noeliaIcon("upRight")}</span></button></form><div class="monthly-preview" id="monthly-check-preview" hidden aria-live="polite"></div><button type="button" id="copy-control-message" class="tiny-link" hidden>COPIAR MENSAJE PARA MI CORREO <span>${noeliaIcon("upRight")}</span></button><p class="small-disclaimer">Este formulario prepara el texto para copiar: no envía correos ni guarda datos. No incluyas información sensible en esta demostración.</p></div></div></section>${footer()}</div>`;
 const contact=()=>`<div class="page-enter"><section class="contact-hero" data-theme="dark"><div class="wrap">${label('03 / CONTACTO')}<h1>HABLEMOS.<br>OBJETIVOS<br>O DUDAS.<br>DEJÁ TU<br>CONSULTA.</h1><p>Consultas sobre rutinas online o planes personalizados, en un solo lugar.</p></div></section><section class="section white contact-main" data-theme="light"><div class="wrap">${label('CONTACTO DIRECTO',true)}<h2>TU MENSAJE.</h2><div class="contact-card"><form id="contact-form"><label>Tu nombre<input name="name" required maxlength="80" placeholder="¿Cómo te llamás?"></label><label>¿Qué te interesa?<select name="plan"><option value="general">Consulta general</option><option value="integral">Asesoría integral online</option><option value="personalizado">Planes personalizados</option></select></label><label>Tu mensaje<textarea name="message" maxlength="400" placeholder="Contame tu objetivo o tu duda..."></textarea></label>${button('PREPARAR CONSULTA','submit','darkbtn').replace('type="button"','type="submit"')}</form><p class="fine">Prepará tu mensaje y copialo para enviarlo por tu medio de contacto preferido.</p><div id="message-preview" class="message-preview" hidden></div><button id="copy-message" class="tiny-link" type="button" hidden>COPIAR MENSAJE <span>${noeliaIcon("upRight")}</span></button></div></div></section>${footer()}</div>`;
+
+/* Carrusel multimedia continuo: los fragmentos disponibles son 2 clips reales
+   de Noelia unidos en el MP4 ya publicado. El catálogo admite más archivos luego. */
+const NOELIA_GALLERY_VIDEOS=[
+ {id:"clip-0096",title:"Noelia entrenando · 01",src:"/media/Video_Noelia_Celular.mp4",poster:"/media/poster_mobile.webp",start:0,end:4.86,position:"center 45%"},
+ {id:"clip-0095",title:"Noelia entrenando · 02",src:"/media/Video_Noelia_Celular.mp4",poster:"/media/poster_mobile.webp",start:4.87,end:9.03,position:"center 47%"}
+];
+let noeliaCarouselDestroy=()=>{};
+function noeliaInitCarousel(){
+ noeliaCarouselDestroy();
+ const viewport=main.querySelector("#noelia-video-viewport"),track=main.querySelector("#noelia-video-track"),dots=main.querySelector("#noelia-video-dots");
+ if(!viewport||!track||!dots)return;
+ const reduced=matchMedia("(prefers-reduced-motion: reduce)");
+ const clips=NOELIA_GALLERY_VIDEOS;
+ if(!clips.length)return;
+ let disposed=false,paused=false,modalOpen=false,dragging=false,pointerX=0,dragDelta=0,
+  offset=0,cycleWidth=1,lastTime=0,frame=0,lastSelected=-1,wasDragged=false;
+ const players=new Set(),visible=new Set();
+ const cards=[],allObservers=[];
+ const motion=main.querySelector("#noelia-video-motion");
+ const modal=document.createElement("div");modal.className="noelia-video-modal";modal.hidden=true;
+ modal.setAttribute("role","dialog");modal.setAttribute("aria-modal","true");modal.setAttribute("aria-label","Video de entrenamiento ampliado");
+ const inner=document.createElement("div");inner.className="noelia-video-modal-inner";
+ const close=document.createElement("button");close.type="button";close.className="noelia-video-close";close.textContent="×";close.setAttribute("aria-label","Cerrar video");
+ const player=document.createElement("video");player.controls=true;player.playsInline=true;player.preload="metadata";
+ const modalTitle=document.createElement("div");modalTitle.className="noelia-video-modal-title";
+ inner.append(close,player,modalTitle);modal.append(inner);document.body.append(modal);
+ let lastFocus=null,modalClip=null;
+ function syncMotionButton(){motion.querySelector("span").textContent=paused||reduced.matches?"▶":"Ⅱ";motion.setAttribute("aria-label",paused||reduced.matches?"Reanudar movimiento del carrusel":"Pausar movimiento del carrusel")}
+ function ensureVideo(card){
+  if(disposed||card.video)return;
+  const v=document.createElement("video");
+  v.preload="metadata";v.autoplay=true;v.muted=true;v.defaultMuted=true;v.loop=false;v.playsInline=true;v.setAttribute("playsinline","");v.setAttribute("muted","");
+  v.src=card.clip.src;v.style.objectPosition=card.clip.position;v.setAttribute("aria-hidden","true");v.tabIndex=-1;
+  const rewind=()=>{if(!Number.isFinite(v.duration))return;const start=Math.min(card.clip.start,Math.max(0,v.duration-.15));if(v.currentTime<start-.15||v.currentTime>=card.clip.end-.035)v.currentTime=start;};
+  v.addEventListener("loadedmetadata",rewind);
+  v.addEventListener("timeupdate",()=>{if(v.currentTime>=card.clip.end-.08)v.currentTime=card.clip.start});
+  v.addEventListener("ended",()=>{v.currentTime=card.clip.start;v.play().catch(()=>{})});
+  v.addEventListener("playing",()=>card.el.classList.add("is-playing"));
+  v.addEventListener("error",()=>{card.el.classList.remove("is-playing");card.el.dataset.videoError="true"});
+  card.el.insertBefore(v,card.el.firstChild);card.video=v;players.add(v);
+ }
+ function pauseCard(card){
+  if(card.video){card.video.pause();card.video.removeAttribute("src");card.video.load();card.video.remove();players.delete(card.video);card.video=null;card.el.classList.remove("is-playing")}
+ }
+ function updatePlayback(){
+  const running=!disposed&&!document.hidden&&!modalOpen&&viewport.getBoundingClientRect().bottom>0&&viewport.getBoundingClientRect().top<innerHeight;
+  cards.forEach(card=>{
+   if(running&&visible.has(card)&&!reduced.matches){
+    ensureVideo(card);
+    if(card.video&&card.video.paused)card.video.play().catch(()=>{card.el.classList.remove("is-playing")});
+   }else if(card.video){pauseCard(card)}
+  });
+ }
+ function measure(){
+  if(disposed)return;
+  const first=cards[0].el,second=cards[clips.length].el;
+  const measureWidth=second.offsetLeft-first.offsetLeft;
+  if(measureWidth>0){cycleWidth=measureWidth;offset%=cycleWidth}
+  place();
+ }
+ function place(){track.style.transform="translate3d("+(-offset)+"px,0,0)"}
+ function highlight(){
+  const center=viewport.getBoundingClientRect().left+viewport.clientWidth/2;
+  let nearest=-1,distance=Infinity;
+  cards.forEach((c,i)=>{const b=c.el.getBoundingClientRect();const d=Math.abs(b.left+b.width/2-center);if(d<distance){distance=d;nearest=i}});
+  if(nearest===lastSelected)return;
+  cards.forEach((c,i)=>c.el.classList.toggle("is-center",i===nearest));
+  const logical=nearest<0?0:nearest%clips.length;
+  [...dots.children].forEach((d,i)=>d.setAttribute("aria-current",String(i===logical)));
+  lastSelected=nearest;
+ }
+ function tick(time){
+  if(disposed)return;
+  const delta=lastTime?Math.min(50,time-lastTime):0;lastTime=time;
+  const inView=viewport.getBoundingClientRect();
+  if(!paused&&!reduced.matches&&!modalOpen&&!dragging&&!document.hidden&&inView.bottom>0&&inView.top<innerHeight){
+   offset=(offset+(innerWidth<760?21:innerWidth<1200?27:32)*delta/1000)%cycleWidth;
+   place();
+  }
+  highlight();frame=requestAnimationFrame(tick);
+ }
+ function openCard(card){
+  if(disposed||dragging||wasDragged)return;
+  modalClip=card.clip;lastFocus=document.activeElement;
+  modalTitle.textContent=card.clip.title;
+  player.src=card.clip.src;player.muted=false;player.loop=false;modal.hidden=false;modalOpen=true;document.body.style.overflow="hidden";
+  player.load();
+  player.addEventListener("loadedmetadata",function startClip(){player.currentTime=modalClip.start;player.play().catch(()=>{});},{once:true});
+  updatePlayback();close.focus();
+ }
+ function closeModal(){
+  if(modal.hidden)return;
+  player.pause();player.removeAttribute("src");player.load();modal.hidden=true;modalOpen=false;modalClip=null;document.body.style.overflow="";
+  if(lastFocus?.isConnected)lastFocus.focus();updatePlayback();
+ }
+ function onModalTime(){if(modalClip&&player.currentTime>=modalClip.end-.04)player.pause()}
+ player.addEventListener("timeupdate",onModalTime);
+ close.addEventListener("click",closeModal);
+ modal.addEventListener("click",e=>{if(e.target===modal)closeModal()});
+ const onKey=e=>{
+  if(e.key==="Escape"&&!modal.hidden){e.preventDefault();closeModal()}
+  if(document.activeElement===viewport&&(e.key==="ArrowRight"||e.key==="ArrowLeft")){
+   e.preventDefault();offset=(offset+(e.key==="ArrowRight"?1:-1)*viewport.clientWidth*.24+cycleWidth)%cycleWidth;place();highlight()
+  }
+ };
+ document.addEventListener("keydown",onKey);
+ for(let cycle=0;cycle<4;cycle++){
+  clips.forEach((clip,i)=>{
+   const card=document.createElement("article");card.className="noelia-video-card";card.dataset.logicalId=clip.id;
+   card.style.setProperty("--video-position",clip.position);
+   const poster=document.createElement("img");poster.className="noelia-video-poster";poster.src=clip.poster;poster.alt="";poster.loading="lazy";
+   const duration=document.createElement("span");duration.className="noelia-video-duration";
+   const len=Math.max(0,Math.round(clip.end-clip.start));duration.textContent="00:"+String(len).padStart(2,"0");
+   const name=document.createElement("span");name.className="noelia-video-name";name.textContent=clip.title;
+   const button=document.createElement("button");button.className="noelia-video-open";button.type="button";button.setAttribute("aria-label","Ampliar video: "+clip.title);
+   button.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+   card.append(poster,duration,name,button);track.append(card);
+   const obj={el:card,clip,video:null};cards.push(obj);
+   button.addEventListener("click",()=>openCard(obj));
+  });
+ }
+ clips.forEach((clip,i)=>{
+  const d=document.createElement("button");d.className="noelia-video-dot";d.type="button";
+  d.setAttribute("aria-label","Ir al video "+(i+1));
+  d.addEventListener("click",()=>{offset=(i*(cards[1].el.offsetLeft-cards[0].el.offsetLeft))%cycleWidth;place();highlight()});
+  dots.append(d);
+ });
+ const observer=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{const card=cards.find(c=>c.el===entry.target);if(!card)return;if(entry.isIntersecting)visible.add(card);else visible.delete(card)});
+  updatePlayback();
+ },{root:viewport,rootMargin:"0px 180px",threshold:0});
+ cards.forEach(c=>observer.observe(c.el));allObservers.push(observer);
+ const monitor=new IntersectionObserver(()=>updatePlayback(),{threshold:0});monitor.observe(viewport);allObservers.push(monitor);
+ const handleVisibility=()=>updatePlayback();
+ document.addEventListener("visibilitychange",handleVisibility);
+ const onResize=()=>measure();window.addEventListener("resize",onResize);
+ const pointerDown=e=>{if(e.pointerType==="mouse"&&e.button!==0)return;dragging=true;pointerX=e.clientX;dragDelta=0;wasDragged=false;viewport.setPointerCapture?.(e.pointerId)};
+ const pointerMove=e=>{if(!dragging)return;const diff=e.clientX-pointerX;pointerX=e.clientX;dragDelta+=Math.abs(diff);if(dragDelta>8)wasDragged=true;offset=(offset-diff+cycleWidth)%cycleWidth;place()};
+ const pointerUp=()=>{dragging=false;if(wasDragged)setTimeout(()=>{wasDragged=false},100)};
+ viewport.addEventListener("pointerdown",pointerDown);viewport.addEventListener("pointermove",pointerMove);
+ viewport.addEventListener("pointerup",pointerUp);viewport.addEventListener("pointercancel",pointerUp);
+ motion.addEventListener("click",()=>{paused=!paused;syncMotionButton()});
+ const reduceChanged=()=>{syncMotionButton();updatePlayback()};
+ reduced.addEventListener?.("change",reduceChanged);
+ noeliaCarouselDestroy=()=>{
+  if(disposed)return;disposed=true;cancelAnimationFrame(frame);
+  allObservers.forEach(o=>o.disconnect());cards.forEach(pauseCard);
+  document.removeEventListener("keydown",onKey);document.removeEventListener("visibilitychange",handleVisibility);
+  window.removeEventListener("resize",onResize);reduced.removeEventListener?.("change",reduceChanged);
+  modal.remove();document.body.style.overflow="";
+  noeliaCarouselDestroy=()=>{};
+ };
+ syncMotionButton();measure();highlight();updatePlayback();frame=requestAnimationFrame(tick);
+}
+
 const routes={inicio:home,entrenamientos:trainings,rutina:routine,pago:checkout,confirmacion:success,control:monthly,contacto:contact};
 function setMenu(open){menu.classList.toggle('open',open);menu.setAttribute('aria-hidden',String(!open));menu.inert=!open;header.querySelector('#openMenu').setAttribute('aria-expanded',String(open));document.body.classList.toggle('menu-open',open);if(open)document.getElementById('closeMenu').focus()}
-function render(route){current=routes[route]?route:'inicio';setMenu(false);main.innerHTML=routes[current]();window.scrollTo({top:0,behavior:'instant'});document.querySelectorAll('.menu-links a').forEach(a=>a.classList.toggle('current',a.dataset.route===current));if(current==='contacto')main.querySelector('select[name="plan"]').value=interest;if(obs)obs.disconnect();if('IntersectionObserver' in window&&!matchMedia('(prefers-reduced-motion:reduce)').matches){obs=new IntersectionObserver(entries=>entries.forEach(x=>{if(x.isIntersecting){x.target.classList.add('is-visible');obs.unobserve(x.target)}}),{threshold:.08});main.querySelectorAll('.reveal').forEach(el=>obs.observe(el))}else main.querySelectorAll('.reveal').forEach(el=>el.classList.add('is-visible'));scrollTheme();noeliaMountMedia()}
+function render(route){noeliaCarouselDestroy();current=routes[route]?route:'inicio';setMenu(false);main.innerHTML=routes[current]();window.scrollTo({top:0,behavior:'instant'});document.querySelectorAll('.menu-links a').forEach(a=>a.classList.toggle('current',a.dataset.route===current));if(current==='contacto')main.querySelector('select[name="plan"]').value=interest;if(obs)obs.disconnect();if('IntersectionObserver' in window&&!matchMedia('(prefers-reduced-motion:reduce)').matches){obs=new IntersectionObserver(entries=>entries.forEach(x=>{if(x.isIntersecting){x.target.classList.add('is-visible');obs.unobserve(x.target)}}),{threshold:.08});main.querySelectorAll('.reveal').forEach(el=>obs.observe(el))}else main.querySelectorAll('.reveal').forEach(el=>el.classList.add('is-visible'));scrollTheme();noeliaMountMedia();if(current==='inicio')noeliaInitCarousel()}
 function goto(route){const hash='#'+route;if(location.hash===hash)render(route);else location.hash=hash}
 function scrollTheme(){const progress=document.querySelector('.scroll-progress');if(progress){const max=document.documentElement.scrollHeight-window.innerHeight;progress.style.transform=`scaleX(${max>0?Math.min(1,Math.max(0,window.scrollY/max)):0})`;}let isLight=[...main.querySelectorAll('[data-theme="light"]')].some(el=>{const b=el.getBoundingClientRect();return b.top<70&&b.bottom>70});header.classList.toggle('light',isLight);header.classList.toggle('scrolled',window.scrollY>15)}
 function notify(t){clearTimeout(toastTimer);toast.textContent=t;toast.classList.add('show');toastTimer=setTimeout(()=>toast.classList.remove('show'),2600)}
