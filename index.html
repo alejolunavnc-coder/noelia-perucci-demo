@@ -875,7 +875,9 @@ function noeliaMountGallery(clips){
  track.replaceChildren();
  let disposed=false,offset=0,cycleWidth=1,lastTime=0,frame=0,inView=false;
  const cards=[],visible=new Set();
- const cardCount=Math.max(clips.length*4,8);
+ const mobileGallery=matchMedia("(max-width:759px)").matches;
+ // Dos ciclos alcanzan para un recorrido infinito con menos carga de GPU.
+ const cardCount=Math.max(clips.length*2,4);
  for(let i=0;i<cardCount;i++){
   const clip=clips[i%clips.length];
   const card=document.createElement("article");
@@ -906,7 +908,7 @@ function noeliaMountGallery(clips){
    v.addEventListener("ended",()=>{v.currentTime=card.clip.start;v.play().catch(()=>{})});
   }
   v.addEventListener("playing",()=>card.el.classList.add("is-playing"));
-  v.addEventListener("waiting",()=>card.el.classList.remove("is-playing"));
+  // No ocultar el video si el búfer se interrumpe momentáneamente.
   v.addEventListener("error",()=>card.el.classList.remove("is-playing"));
   card.el.insertBefore(v,card.el.firstChild);card.video=v;
  }
@@ -917,8 +919,16 @@ function noeliaMountGallery(clips){
  }
  function updatePlayback(){
   const running=!disposed&&!document.hidden&&inView;
+  // En celular, máximo dos videos decodificándose simultáneamente.
+  const candidates=running?[...visible]:[];
+  if(mobileGallery&&candidates.length>2){
+   const center=viewport.getBoundingClientRect().left+viewport.clientWidth/2;
+   candidates.sort((a,b)=>Math.abs(a.el.getBoundingClientRect().left+a.el.offsetWidth/2-center)-Math.abs(b.el.getBoundingClientRect().left+b.el.offsetWidth/2-center));
+   candidates.length=2;
+  }
+  const active=new Set(candidates);
   cards.forEach(card=>{
-   if(running&&visible.has(card)){
+   if(running&&active.has(card)){
     ensureVideo(card);
     if(card.video?.paused)card.video.play().catch(()=>card.el.classList.remove("is-playing"));
    }else pauseVideo(card);
@@ -947,7 +957,7 @@ function noeliaMountGallery(clips){
    if(entry.isIntersecting)visible.add(card);else visible.delete(card);
   });
   updatePlayback();
- },{root:viewport,rootMargin:"0px 400px",threshold:0});
+ },{root:viewport,rootMargin:mobileGallery?"0px 115px":"0px 300px",threshold:0});
  cards.forEach(card=>cardsObserver.observe(card.el));
  const sectionObserver=new IntersectionObserver(entries=>{
   inView=entries[0]?.isIntersecting??false;
