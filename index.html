@@ -892,6 +892,7 @@ function noeliaMountGallery(clips){
  const cardCount=Math.max(clips.length*2,4);
  const cards=[];
  let disposed=false,offset=0,cycleWidth=1,lastTime=0,frame=0,inView=false,lastSync=0;
+ let mobilePositions=[],mobilePadding=0,mobileWidth=0,lastMobileSignature="";
  let touchStartX=0,touchStartY=0,touchLastX=0,touchMode=0;
  for(let i=0;i<cardCount;i++){
   const clip=clips[i%clips.length];
@@ -945,7 +946,37 @@ function noeliaMountGallery(clips){
  function updatePlayback(){
   if(disposed)return;
   const running=inView&&!document.hidden;
-  if(!running){cards.forEach(card=>stopVideo(card));return;}
+  if(!running){lastMobileSignature="";cards.forEach(card=>stopVideo(card));return;}
+  if(mobile){
+   // No forzar layout: usar posiciones cacheadas y actualizar solo cuando
+   // cambia el conjunto de tarjetas que requieren reproducción.
+   const near=[];
+   const margin=Math.max(340,mobileWidth*.9);
+   for(let i=0;i<cards.length;i++){
+    const left=mobilePadding+mobilePositions[i].left-offset;
+    const right=left+mobilePositions[i].width;
+    const distance=right<0?-right:left>mobileWidth?left-mobileWidth:0;
+    if(distance<=margin)near.push({card:cards[i],distance,left,right});
+   }
+   const visibleCards=near.filter(x=>x.right>0&&x.left<mobileWidth);
+   visibleCards.sort((a,b)=>Math.abs((a.left+a.right)/2-mobileWidth/2)-Math.abs((b.left+b.right)/2-mobileWidth/2));
+   const live=new Set(visibleCards.slice(0,2).map(x=>x.card));
+   near.sort((a,b)=>a.distance-b.distance);
+   const prepared=new Set(near.slice(0,4).map(x=>x.card));
+   const signature=cards.map((c,i)=>live.has(c)?"P"+i:prepared.has(c)?"R"+i:"").filter(Boolean).join("|");
+   if(signature===lastMobileSignature)return;
+   lastMobileSignature=signature;
+   for(const card of cards){
+    if(live.has(card)){
+     ensureVideo(card);
+     if(card.video?.paused)card.video.play().catch(()=>{});
+    }else if(prepared.has(card)){
+     ensureVideo(card);
+     stopVideo(card);
+    }else stopVideo(card,true);
+   }
+   return;
+  }
   const box=viewport.getBoundingClientRect();
   const viewportLeft=box.left,viewportRight=box.right;
   // La próxima tarjeta se descarga con anticipación y queda preparada.
@@ -980,6 +1011,12 @@ function noeliaMountGallery(clips){
   if(disposed)return;
   const width=cards[clips.length].el.offsetLeft-cards[0].el.offsetLeft;
   if(width>0){cycleWidth=width;offset%=cycleWidth;}
+  if(mobile){
+   mobilePadding=parseFloat(getComputedStyle(viewport).paddingLeft)||0;
+   mobileWidth=viewport.clientWidth;
+   mobilePositions=cards.map(card=>({left:card.el.offsetLeft,width:card.el.offsetWidth}));
+   lastMobileSignature="";
+  }
   track.style.transform="translate3d("+(-offset)+"px,0,0)";
   updatePlayback();
  }
@@ -990,7 +1027,7 @@ function noeliaMountGallery(clips){
    const speed=innerWidth<760?42:innerWidth<1200?48:55;
    offset=(offset+speed*delta/1000)%cycleWidth;
    track.style.transform="translate3d("+(-offset)+"px,0,0)";
-   if(time-lastSync>180){lastSync=time;updatePlayback();}
+   if(time-lastSync>(mobile?280:180)){lastSync=time;updatePlayback();}
   }
   frame=requestAnimationFrame(tick);
  }
@@ -1015,9 +1052,8 @@ function noeliaMountGallery(clips){
   offset=((offset-(x-touchLastX))%cycleWidth+cycleWidth)%cycleWidth;
   touchLastX=x;
   track.style.transform="translate3d("+(-offset)+"px,0,0)";
-  updatePlayback();
  };
- const onTouchEnd=()=>{touchMode=0;};
+ const onTouchEnd=()=>{if(touchMode===2)updatePlayback();touchMode=0;};
  if(mobile){
   viewport.addEventListener("touchstart",onTouchStart,{passive:true});
   viewport.addEventListener("touchmove",onTouchMove,{passive:false});
