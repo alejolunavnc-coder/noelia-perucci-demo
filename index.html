@@ -892,6 +892,7 @@ function noeliaMountGallery(clips){
  const cardCount=Math.max(clips.length*2,4);
  const cards=[];
  let disposed=false,offset=0,cycleWidth=1,lastTime=0,frame=0,inView=false,lastSync=0;
+ let touchStartX=0,touchStartY=0,touchLastX=0,touchMode=0;
  for(let i=0;i<cardCount;i++){
   const clip=clips[i%clips.length];
   const el=document.createElement("article");
@@ -993,6 +994,36 @@ function noeliaMountGallery(clips){
   }
   frame=requestAnimationFrame(tick);
  }
+ // Solo móvil: gesto lateral sin tocar el estado play/pause de los videos.
+ // El desplazamiento automático continúa incluso mientras se arrastra.
+ const onTouchStart=e=>{
+  if(!mobile||e.touches.length!==1){touchMode=0;return;}
+  touchStartX=touchLastX=e.touches[0].clientX;
+  touchStartY=e.touches[0].clientY;
+  touchMode=1;
+ };
+ const onTouchMove=e=>{
+  if(!mobile||!touchMode||e.touches.length!==1||!cycleWidth)return;
+  const x=e.touches[0].clientX,y=e.touches[0].clientY;
+  if(touchMode===1){
+   if(Math.abs(x-touchStartX)<7&&Math.abs(y-touchStartY)<7)return;
+   if(Math.abs(y-touchStartY)>Math.abs(x-touchStartX)){touchMode=0;return;}
+   touchMode=2;
+  }
+  if(touchMode!==2)return;
+  if(e.cancelable)e.preventDefault();
+  offset=((offset-(x-touchLastX))%cycleWidth+cycleWidth)%cycleWidth;
+  touchLastX=x;
+  track.style.transform="translate3d("+(-offset)+"px,0,0)";
+  updatePlayback();
+ };
+ const onTouchEnd=()=>{touchMode=0;};
+ if(mobile){
+  viewport.addEventListener("touchstart",onTouchStart,{passive:true});
+  viewport.addEventListener("touchmove",onTouchMove,{passive:false});
+  viewport.addEventListener("touchend",onTouchEnd,{passive:true});
+  viewport.addEventListener("touchcancel",onTouchEnd,{passive:true});
+ }
  const sectionObserver=new IntersectionObserver(entries=>{
   inView=entries[0]?.isIntersecting??false;
   lastTime=0;
@@ -1008,6 +1039,12 @@ function noeliaMountGallery(clips){
   for(const card of cards)stopVideo(card,true);
   document.removeEventListener("visibilitychange",onVisibility);
   window.removeEventListener("resize",onResize);
+  if(mobile){
+   viewport.removeEventListener("touchstart",onTouchStart);
+   viewport.removeEventListener("touchmove",onTouchMove);
+   viewport.removeEventListener("touchend",onTouchEnd);
+   viewport.removeEventListener("touchcancel",onTouchEnd);
+  }
   noeliaCarouselDestroy=()=>{};
  };
  measure();frame=requestAnimationFrame(tick);
