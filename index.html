@@ -525,6 +525,19 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   .habit-hero .hero-video-frame:after{z-index:3}
 }
 
+
+/* HERO_MOVIL_DOS_CLIPS_20261105 — el plano comienza justo debajo del header fijo. */
+@media(max-width:759px){
+ .habit-hero .hero-video-frame{
+   top:74px!important;
+   height:min(78svh,690px)!important;
+ }
+ .habit-hero .hero-video-frame .hero-background-video{
+   object-fit:cover!important;
+   object-position:center center!important;
+ }
+}
+
 </style>
 
 </head>
@@ -558,7 +571,25 @@ function noeliaMountMedia(){
  const hero=main.querySelector("#noelia-hero-video");
  if(hero){
   const type=matchMedia("(min-width:760px)").matches?"desktop":"mobile";
-  noeliaMediaUrl(type).then(src=>{if(!hero.isConnected)return;hero.src=src;hero.play().catch(()=>{});}).catch(()=>{});
+  if(type==="mobile"){
+   // Nuevo montaje móvil: 0096 seguido de 0095, concatenados en un solo MP4 con loop.
+   // Si el archivo todavía no está publicado, conservar el video anterior como respaldo.
+   const mobileSrc="/media/noelia_hero_celular_sin_subtitulos.mp4";
+   let fallbackStarted=false;
+   const fallback=()=>{
+    if(fallbackStarted||!hero.isConnected)return;
+    fallbackStarted=true;
+    noeliaMediaUrl("mobile").then(src=>{
+     if(!hero.isConnected)return;
+     hero.src=src;hero.play().catch(()=>{});
+    }).catch(()=>{});
+   };
+   hero.addEventListener("error",fallback,{once:true});
+   hero.src=mobileSrc;
+   hero.play().catch(()=>{if(hero.error)fallback();});
+  }else{
+   noeliaMediaUrl(type).then(src=>{if(!hero.isConnected)return;hero.src=src;hero.play().catch(()=>{});}).catch(()=>{});
+  }
  }
  const video=main.querySelector("#noelia-workout-video");
  const toggle=main.querySelector("#noelia-play-video");
