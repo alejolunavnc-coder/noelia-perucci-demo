@@ -836,13 +836,41 @@ const NOELIA_GALLERY_VIDEOS=[
  {id:"clip-0096",title:"Noelia entrenando · 01",src:"/media/Video_Noelia_Celular.mp4",poster:"/media/poster_mobile.webp",start:0,end:4.86,position:"center 45%"},
  {id:"clip-0095",title:"Noelia entrenando · 02",src:"/media/Video_Noelia_Celular.mp4",poster:"/media/poster_mobile.webp",start:4.87,end:9.03,position:"center 47%"}
 ];
+
+const NOELIA_GALLERY_NEW_VIDEOS=[
+ {id:"noe111",title:"Noelia entrenando · 01",src:"/media/entrenamientos/noe111.mp4",poster:"/media/entrenamientos/noe111.jpg",start:0,end:11.96,position:"center center"},
+ {id:"noe222",title:"Noelia entrenando · 02",src:"/media/entrenamientos/noe222.mp4",poster:"/media/entrenamientos/noe222.jpg",start:0,end:6.18,position:"center center"},
+ {id:"noe333",title:"Noelia entrenando · 03",src:"/media/entrenamientos/noe333.mp4",poster:"/media/entrenamientos/noe333.jpg",start:0,end:9.32,position:"center center"},
+ {id:"noe444",title:"Noelia entrenando · 04",src:"/media/entrenamientos/noe444.mp4",poster:"/media/entrenamientos/noe444.jpg",start:0,end:7.93,position:"center center"},
+ {id:"noe555",title:"Noelia entrenando · 05",src:"/media/entrenamientos/noe555.mp4",poster:"/media/entrenamientos/noe555.jpg",start:0,end:11.55,position:"center center"},
+ {id:"noe666",title:"Noelia entrenando · 06",src:"/media/entrenamientos/noe666.mp4",poster:"/media/entrenamientos/noe666.jpg",start:0,end:13.078,position:"center center"},
+ {id:"noe777",title:"Noelia entrenando · 07",src:"/media/entrenamientos/noe777.mp4",poster:"/media/entrenamientos/noe777.jpg",start:0,end:9.016,position:"center center"},
+ {id:"noe888",title:"Noelia entrenando · 08",src:"/media/entrenamientos/noe888.mp4",poster:"/media/entrenamientos/noe888.jpg",start:0,end:9.652,position:"center center"},
+ {id:"noe999",title:"Noelia entrenando · 09",src:"/media/entrenamientos/noe999.mp4",poster:"/media/entrenamientos/noe999.jpg",start:0,end:8.737,position:"center center"},
+];
+let noeliaGalleryReady=null;
+function noeliaCheckNewGallery(){
+ if(!noeliaGalleryReady){
+  noeliaGalleryReady=Promise.all(NOELIA_GALLERY_NEW_VIDEOS.map(async clip=>{
+   try{const r=await fetch(clip.src,{method:"HEAD",cache:"no-store"});return r.ok}catch{return false}
+  })).then(a=>a.every(Boolean)).catch(()=>false);
+ }
+ return noeliaGalleryReady;
+}
 let noeliaCarouselDestroy=()=>{};
 function noeliaInitCarousel(){
+ const viewport=main.querySelector("#noelia-video-viewport");
+ if(!viewport)return;
+ noeliaMountGallery(NOELIA_GALLERY_VIDEOS);
+ noeliaCheckNewGallery().then(ready=>{
+  if(ready&&viewport.isConnected&&current==="inicio")noeliaMountGallery(NOELIA_GALLERY_NEW_VIDEOS);
+ });
+}
+function noeliaMountGallery(clips){
  noeliaCarouselDestroy();
  const viewport=main.querySelector("#noelia-video-viewport");
  const track=main.querySelector("#noelia-video-track");
  if(!viewport||!track)return;
- const clips=NOELIA_GALLERY_VIDEOS;
  if(!clips.length)return;
  let disposed=false,offset=0,cycleWidth=1,lastTime=0,frame=0;
  const cards=[],visible=new Set();
