@@ -680,6 +680,22 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 .noelia-video-card{cursor:pointer}
 .noelia-video-card:hover,.noelia-video-card:focus-visible{filter:brightness(1.08)}
 .noelia-video-viewport{overscroll-behavior-x:contain}
+
+/* CARRUSEL_SOLO_VISUAL_20261105 — sin pausa, controles, interacción ni selección.
+   Velocidad móvil 58 px/s y PC 45 px/s (tablet 42 px/s). */
+.noelia-video-viewport{cursor:default!important;touch-action:pan-y!important}
+.noelia-video-viewport:active{cursor:default!important}
+.noelia-video-card,.noelia-video-card:hover,.noelia-video-card:focus-visible{
+ cursor:default!important;
+ --focus-scale:1!important;
+ transform:none!important;
+ filter:none!important;
+ border:1px solid #504b56!important;
+ box-shadow:0 12px 32px #0004!important;
+}
+.noelia-video-card{pointer-events:none}
+.noelia-video-tools{display:none!important}
+@media(prefers-reduced-motion:reduce){.noelia-video-track{animation:none!important}}
 </style>
 
 </head>
@@ -790,7 +806,7 @@ const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-th
 </div></div></section>
 <section class="noelia-video-section" id="noelia-videos" data-theme="dark" aria-label="Videos de entrenamiento de Noelia">
   
-  <div class="noelia-video-viewport" id="noelia-video-viewport" tabindex="0" aria-label="Carrusel de videos de Noelia, se desplaza automáticamente; usá las flechas del teclado para navegar">
+  <div class="noelia-video-viewport" id="noelia-video-viewport" aria-label="Galería de videos de Noelia en movimiento continuo">
     <div class="noelia-video-track" id="noelia-video-track"></div>
   </div>
   <div class="noelia-video-tools">
@@ -826,161 +842,100 @@ const NOELIA_GALLERY_VIDEOS=[
 let noeliaCarouselDestroy=()=>{};
 function noeliaInitCarousel(){
  noeliaCarouselDestroy();
- const viewport=main.querySelector("#noelia-video-viewport"),track=main.querySelector("#noelia-video-track"),dots=main.querySelector("#noelia-video-dots");
- if(!viewport||!track||!dots)return;
- const reduced=matchMedia("(prefers-reduced-motion: reduce)");
+ const viewport=main.querySelector("#noelia-video-viewport");
+ const track=main.querySelector("#noelia-video-track");
+ if(!viewport||!track)return;
  const clips=NOELIA_GALLERY_VIDEOS;
  if(!clips.length)return;
- let disposed=false,modalOpen=false,dragging=false,pointerX=0,dragDelta=0,
-  offset=0,cycleWidth=1,lastTime=0,frame=0,lastSelected=-1,wasDragged=false;
- const players=new Set(),visible=new Set();
- const cards=[],allObservers=[];
-
- const modal=document.createElement("div");modal.className="noelia-video-modal";modal.hidden=true;
- modal.setAttribute("role","dialog");modal.setAttribute("aria-modal","true");modal.setAttribute("aria-label","Video de entrenamiento ampliado");
- const inner=document.createElement("div");inner.className="noelia-video-modal-inner";
- const close=document.createElement("button");close.type="button";close.className="noelia-video-close";close.textContent="×";close.setAttribute("aria-label","Cerrar video");
- const player=document.createElement("video");player.controls=true;player.playsInline=true;player.preload="metadata";
- const modalTitle=document.createElement("div");modalTitle.className="noelia-video-modal-title";
- inner.append(close,player,modalTitle);modal.append(inner);document.body.append(modal);
- let lastFocus=null,modalClip=null;
-
+ let disposed=false,offset=0,cycleWidth=1,lastTime=0,frame=0;
+ const cards=[],visible=new Set();
+ const cardCount=Math.max(clips.length*4,8);
+ for(let i=0;i<cardCount;i++){
+  const clip=clips[i%clips.length];
+  const card=document.createElement("article");
+  card.className="noelia-video-card";
+  card.style.setProperty("--video-position",clip.position);
+  card.setAttribute("aria-label",clip.title);
+  const poster=document.createElement("img");
+  poster.className="noelia-video-poster";poster.src=clip.poster;poster.alt="";poster.loading="lazy";
+  const name=document.createElement("span");name.className="noelia-video-name";name.textContent=clip.title;
+  card.append(poster,name);track.append(card);
+  cards.push({el:card,clip,video:null});
+ }
  function ensureVideo(card){
   if(disposed||card.video)return;
   const v=document.createElement("video");
-  v.preload="metadata";v.autoplay=true;v.muted=true;v.defaultMuted=true;v.loop=false;v.playsInline=true;v.setAttribute("playsinline","");v.setAttribute("muted","");
+  v.preload="metadata";v.autoplay=true;v.muted=true;v.defaultMuted=true;v.loop=false;
+  v.playsInline=true;v.setAttribute("playsinline","");v.setAttribute("muted","");
   v.src=card.clip.src;v.style.objectPosition=card.clip.position;v.setAttribute("aria-hidden","true");v.tabIndex=-1;
-  const rewind=()=>{if(!Number.isFinite(v.duration))return;const start=Math.min(card.clip.start,Math.max(0,v.duration-.15));if(v.currentTime<start-.15||v.currentTime>=card.clip.end-.035)v.currentTime=start;};
+  const rewind=()=>{
+   if(!Number.isFinite(v.duration))return;
+   const start=Math.min(card.clip.start,Math.max(0,v.duration-.15));
+   if(v.currentTime<start-.15||v.currentTime>=card.clip.end-.035)v.currentTime=start;
+  };
   v.addEventListener("loadedmetadata",rewind);
   v.addEventListener("timeupdate",()=>{if(v.currentTime>=card.clip.end-.08)v.currentTime=card.clip.start});
   v.addEventListener("ended",()=>{v.currentTime=card.clip.start;v.play().catch(()=>{})});
   v.addEventListener("playing",()=>card.el.classList.add("is-playing"));
-  v.addEventListener("error",()=>{card.el.classList.remove("is-playing");card.el.dataset.videoError="true"});
-  card.el.insertBefore(v,card.el.firstChild);card.video=v;players.add(v);
+  v.addEventListener("error",()=>card.el.classList.remove("is-playing"));
+  card.el.insertBefore(v,card.el.firstChild);card.video=v;
  }
- function pauseCard(card){
-  if(card.video){card.video.pause();card.video.removeAttribute("src");card.video.load();card.video.remove();players.delete(card.video);card.video=null;card.el.classList.remove("is-playing")}
+ function pauseVideo(card){
+  if(!card.video)return;
+  const v=card.video;v.pause();v.removeAttribute("src");v.load();v.remove();
+  card.video=null;card.el.classList.remove("is-playing");
  }
  function updatePlayback(){
-  const running=!disposed&&!document.hidden&&!modalOpen&&viewport.getBoundingClientRect().bottom>0&&viewport.getBoundingClientRect().top<innerHeight;
+  const b=viewport.getBoundingClientRect();
+  const running=!disposed&&!document.hidden&&b.bottom>0&&b.top<innerHeight;
   cards.forEach(card=>{
-   if(running&&visible.has(card)&&!reduced.matches){
+   if(running&&visible.has(card)){
     ensureVideo(card);
-    if(card.video&&card.video.paused)card.video.play().catch(()=>{card.el.classList.remove("is-playing")});
-   }else if(card.video){pauseCard(card)}
+    if(card.video?.paused)card.video.play().catch(()=>card.el.classList.remove("is-playing"));
+   }else pauseVideo(card);
   });
  }
  function measure(){
   if(disposed)return;
-  const first=cards[0].el,second=cards[clips.length].el;
-  const measureWidth=second.offsetLeft-first.offsetLeft;
-  if(measureWidth>0){cycleWidth=measureWidth;offset%=cycleWidth}
-  place();
- }
- function place(){track.style.transform="translate3d("+(-offset)+"px,0,0)"}
- function highlight(){
-  const center=viewport.getBoundingClientRect().left+viewport.clientWidth/2;
-  let nearest=-1,distance=Infinity;
-  cards.forEach((c,i)=>{const b=c.el.getBoundingClientRect();const d=Math.abs(b.left+b.width/2-center);if(d<distance){distance=d;nearest=i}});
-  if(nearest===lastSelected)return;
-
-  const logical=nearest<0?0:nearest%clips.length;
-  [...dots.children].forEach((d,i)=>d.setAttribute("aria-current",String(i===logical)));
-  lastSelected=nearest;
+  const width=cards[clips.length].el.offsetLeft-cards[0].el.offsetLeft;
+  if(width>0){cycleWidth=width;offset%=cycleWidth}
+  track.style.transform="translate3d("+(-offset)+"px,0,0)";
  }
  function tick(time){
   if(disposed)return;
   const delta=lastTime?Math.min(50,time-lastTime):0;lastTime=time;
-  const inView=viewport.getBoundingClientRect();
-  if(!reduced.matches&&!modalOpen&&!dragging&&time>=manualUntil&&!viewport.matches(":hover")&&!document.hidden&&inView.bottom>0&&inView.top<innerHeight){
-   offset=(offset+(innerWidth<760?38:innerWidth<1200?27:32)*delta/1000)%cycleWidth;
-   place();
+  const b=viewport.getBoundingClientRect();
+  if(!document.hidden&&b.bottom>0&&b.top<innerHeight){
+   const speed=innerWidth<760?58:innerWidth<1200?42:45;
+   offset=(offset+speed*delta/1000)%cycleWidth;
+   track.style.transform="translate3d("+(-offset)+"px,0,0)";
   }
-  highlight();frame=requestAnimationFrame(tick);
+  frame=requestAnimationFrame(tick);
  }
- function openCard(card){
-  if(disposed||dragging||wasDragged)return;
-  modalClip=card.clip;lastFocus=document.activeElement;
-  modalTitle.textContent=card.clip.title;
-  player.src=card.clip.src;player.muted=false;player.loop=false;modal.hidden=false;modalOpen=true;document.body.style.overflow="hidden";
-  player.load();
-  player.addEventListener("loadedmetadata",function startClip(){player.currentTime=modalClip.start;player.play().catch(()=>{});},{once:true});
-  updatePlayback();close.focus();
- }
- function closeModal(){
-  if(modal.hidden)return;
-  player.pause();player.removeAttribute("src");player.load();modal.hidden=true;modalOpen=false;modalClip=null;document.body.style.overflow="";
-  if(lastFocus?.isConnected)lastFocus.focus();updatePlayback();
- }
- function onModalTime(){if(modalClip&&player.currentTime>=modalClip.end-.04)player.pause()}
- player.addEventListener("timeupdate",onModalTime);
- close.addEventListener("click",closeModal);
- modal.addEventListener("click",e=>{if(e.target===modal)closeModal()});
- const onKey=e=>{
-  if(e.key==="Escape"&&!modal.hidden){e.preventDefault();closeModal()}
-  if(document.activeElement===viewport&&(e.key==="ArrowRight"||e.key==="ArrowLeft")){
-   e.preventDefault();offset=(offset+(e.key==="ArrowRight"?1:-1)*viewport.clientWidth*.24+cycleWidth)%cycleWidth;place();highlight()
-  }
- };
- document.addEventListener("keydown",onKey);
- for(let cycle=0;cycle<4;cycle++){
-  clips.forEach((clip,i)=>{
-   const card=document.createElement("article");card.className="noelia-video-card";card.dataset.logicalId=clip.id;
-   card.style.setProperty("--video-position",clip.position);
-   const poster=document.createElement("img");poster.className="noelia-video-poster";poster.src=clip.poster;poster.alt="";poster.loading="lazy";
-   const name=document.createElement("span");name.className="noelia-video-name";name.textContent=clip.title;
-   card.setAttribute("role","button");card.setAttribute("tabindex","0");
-   card.setAttribute("aria-label","Ampliar video: "+clip.title);
-   card.append(poster,name);track.append(card);
-   const obj={el:card,clip,video:null};cards.push(obj);
-   card.addEventListener("click",()=>openCard(obj));
-   card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openCard(obj)}});
+ const cardsObserver=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+   const card=cards.find(c=>c.el===entry.target);
+   if(!card)return;
+   if(entry.isIntersecting)visible.add(card);else visible.delete(card);
   });
- }
- clips.forEach((clip,i)=>{
-  const d=document.createElement("button");d.className="noelia-video-dot";d.type="button";
-  d.setAttribute("aria-label","Ir al video "+(i+1));
-  d.addEventListener("click",()=>{offset=(i*(cards[1].el.offsetLeft-cards[0].el.offsetLeft))%cycleWidth;place();highlight()});
-  dots.append(d);
- });
- const observer=new IntersectionObserver(entries=>{
-  entries.forEach(entry=>{const card=cards.find(c=>c.el===entry.target);if(!card)return;if(entry.isIntersecting)visible.add(card);else visible.delete(card)});
   updatePlayback();
- },{root:viewport,rootMargin:"0px 180px",threshold:0});
- cards.forEach(c=>observer.observe(c.el));allObservers.push(observer);
- const monitor=new IntersectionObserver(()=>updatePlayback(),{threshold:0});monitor.observe(viewport);allObservers.push(monitor);
- const handleVisibility=()=>updatePlayback();
- document.addEventListener("visibilitychange",handleVisibility);
- const onResize=()=>measure();window.addEventListener("resize",onResize);
- let manualUntil=0;
- const onWheel=e=>{
-  if(modalOpen||reduced.matches)return;
-  const horizontal=Math.abs(e.deltaX)>Math.abs(e.deltaY);
-  const amount=horizontal?e.deltaX:e.deltaY;
-  if(!amount)return;
-  e.preventDefault();
-  manualUntil=performance.now()+1500;
-  offset=((offset+amount)%cycleWidth+cycleWidth)%cycleWidth;
-  place();highlight();
- };
- viewport.addEventListener("wheel",onWheel,{passive:false});
- const pointerDown=e=>{if(e.target.closest("button"))return;if(e.pointerType==="mouse"&&e.button!==0)return;dragging=true;pointerX=e.clientX;dragDelta=0;wasDragged=false;viewport.setPointerCapture?.(e.pointerId)};
- const pointerMove=e=>{if(!dragging)return;const diff=e.clientX-pointerX;pointerX=e.clientX;dragDelta+=Math.abs(diff);if(dragDelta>8)wasDragged=true;offset=(offset-diff+cycleWidth)%cycleWidth;place()};
- const pointerUp=()=>{dragging=false;if(wasDragged)setTimeout(()=>{wasDragged=false},100)};
- viewport.addEventListener("pointerdown",pointerDown);viewport.addEventListener("pointermove",pointerMove);
- viewport.addEventListener("pointerup",pointerUp);viewport.addEventListener("pointercancel",pointerUp);
-
- const reduceChanged=()=>{updatePlayback()};
- reduced.addEventListener?.("change",reduceChanged);
+ },{root:viewport,rootMargin:"0px 150px",threshold:0});
+ cards.forEach(card=>cardsObserver.observe(card.el));
+ const sectionObserver=new IntersectionObserver(()=>updatePlayback(),{threshold:0});
+ sectionObserver.observe(viewport);
+ const onVisibility=()=>updatePlayback(),onResize=()=>measure();
+ document.addEventListener("visibilitychange",onVisibility);
+ window.addEventListener("resize",onResize);
  noeliaCarouselDestroy=()=>{
-  if(disposed)return;disposed=true;cancelAnimationFrame(frame);
-  allObservers.forEach(o=>o.disconnect());cards.forEach(pauseCard);
-  document.removeEventListener("keydown",onKey);document.removeEventListener("visibilitychange",handleVisibility);
-  window.removeEventListener("resize",onResize);viewport.removeEventListener("wheel",onWheel);reduced.removeEventListener?.("change",reduceChanged);
-  modal.remove();document.body.style.overflow="";
+  if(disposed)return;
+  disposed=true;cancelAnimationFrame(frame);
+  cardsObserver.disconnect();sectionObserver.disconnect();
+  cards.forEach(pauseVideo);
+  document.removeEventListener("visibilitychange",onVisibility);
+  window.removeEventListener("resize",onResize);
   noeliaCarouselDestroy=()=>{};
  };
- measure();highlight();updatePlayback();frame=requestAnimationFrame(tick);
+ measure();updatePlayback();frame=requestAnimationFrame(tick);
 }
 
 const routes={inicio:home,entrenamientos:trainings,rutina:routine,pago:checkout,confirmacion:success,control:monthly,contacto:contact};
