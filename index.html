@@ -600,7 +600,7 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 .noelia-video-viewport:focus-visible{outline:2px solid #e77baf;outline-offset:-4px}
 .noelia-video-track{display:flex;align-items:center;gap:18px;width:max-content;will-change:transform;transform:translate3d(0,0,0)}
 .noelia-video-card{flex:0 0 clamp(215px,calc((100vw - 184px)/5),285px);height:clamp(210px,16vw,245px);position:relative;overflow:hidden;border:1px solid #504b56;border-radius:13px;background:#19171d;transform:scale(var(--focus-scale,1));transition:transform .32s ease,border-color .32s ease,box-shadow .32s ease;box-shadow:0 12px 32px #0004;isolation:isolate;cursor:pointer;user-select:none}
-.noelia-video-card.is-center{border:2px solid #e77baf;box-shadow:0 0 0 1px #ee8ebc45,0 0 22px #cf006d32,0 16px 36px #0007;z-index:2;--focus-scale:1.055}
+.noelia-video-card:hover,.noelia-video-card:focus-visible{border:2px solid #e77baf;box-shadow:0 0 0 1px #ee8ebc45,0 0 22px #cf006d32,0 16px 36px #0007;z-index:2;--focus-scale:1.045}
 .noelia-video-card video,.noelia-video-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--video-position,center 48%);filter:brightness(.88) contrast(1.04);background:#19171d;pointer-events:none}
 .noelia-video-card video{opacity:0;z-index:1;transition:opacity .2s linear}
 .noelia-video-poster{z-index:0}
@@ -635,7 +635,7 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  .noelia-video-viewport{padding:20px 16px 22px}
  .noelia-video-track{gap:13px}
  .noelia-video-card{flex-basis:82vw;height:clamp(300px,94vw,380px);border-radius:12px}
- .noelia-video-card.is-center{--focus-scale:1.025}
+ .noelia-video-card:hover,.noelia-video-card:focus-visible{--focus-scale:1.025}
  .noelia-video-name{font-size:15px;left:18px;bottom:17px}
  .noelia-video-motion{right:16px}
  .noelia-video-modal{padding:18px}
@@ -675,6 +675,11 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  }
 }
 
+
+/* NOELIA_VIDEO_MANUAL_HOVER_20261105 — selección exclusiva en hover/foco, sin controles de pausa. */
+.noelia-video-card{cursor:pointer}
+.noelia-video-card:hover,.noelia-video-card:focus-visible{filter:brightness(1.08)}
+.noelia-video-viewport{overscroll-behavior-x:contain}
 </style>
 
 </head>
@@ -790,7 +795,7 @@ const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-th
   </div>
   <div class="noelia-video-tools">
     <div class="noelia-video-dots" id="noelia-video-dots" aria-label="Posición de los videos"></div>
-    <button class="noelia-video-motion" type="button" id="noelia-video-motion" aria-label="Pausar movimiento del carrusel" title="Pausar movimiento"><span aria-hidden="true">Ⅱ</span></button>
+
   </div>
 </section><section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="/media/noelia_entrenamiento_personalizado.jpg" alt="Noelia entrenando en el gimnasio" onerror="this.onerror=null;this.src='${asset('dumbbells.webp')}'"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>${noeliaIcon("upRight")}</span></div></div></div></section>${footer()}</div>`;
 const prices={2:50000,3:60000,4:80000,5:80000};
@@ -830,7 +835,7 @@ function noeliaInitCarousel(){
   offset=0,cycleWidth=1,lastTime=0,frame=0,lastSelected=-1,wasDragged=false;
  const players=new Set(),visible=new Set();
  const cards=[],allObservers=[];
- const motion=main.querySelector("#noelia-video-motion");
+
  const modal=document.createElement("div");modal.className="noelia-video-modal";modal.hidden=true;
  modal.setAttribute("role","dialog");modal.setAttribute("aria-modal","true");modal.setAttribute("aria-label","Video de entrenamiento ampliado");
  const inner=document.createElement("div");inner.className="noelia-video-modal-inner";
@@ -839,7 +844,7 @@ function noeliaInitCarousel(){
  const modalTitle=document.createElement("div");modalTitle.className="noelia-video-modal-title";
  inner.append(close,player,modalTitle);modal.append(inner);document.body.append(modal);
  let lastFocus=null,modalClip=null;
- function syncMotionButton(){motion.querySelector("span").textContent=paused||reduced.matches?"▶":"Ⅱ";motion.setAttribute("aria-label",paused||reduced.matches?"Reanudar movimiento del carrusel":"Pausar movimiento del carrusel")}
+
  function ensureVideo(card){
   if(disposed||card.video)return;
   const v=document.createElement("video");
@@ -878,7 +883,7 @@ function noeliaInitCarousel(){
   let nearest=-1,distance=Infinity;
   cards.forEach((c,i)=>{const b=c.el.getBoundingClientRect();const d=Math.abs(b.left+b.width/2-center);if(d<distance){distance=d;nearest=i}});
   if(nearest===lastSelected)return;
-  cards.forEach((c,i)=>c.el.classList.toggle("is-center",i===nearest));
+
   const logical=nearest<0?0:nearest%clips.length;
   [...dots.children].forEach((d,i)=>d.setAttribute("aria-current",String(i===logical)));
   lastSelected=nearest;
@@ -887,7 +892,7 @@ function noeliaInitCarousel(){
   if(disposed)return;
   const delta=lastTime?Math.min(50,time-lastTime):0;lastTime=time;
   const inView=viewport.getBoundingClientRect();
-  if(!paused&&!reduced.matches&&!modalOpen&&!dragging&&!document.hidden&&inView.bottom>0&&inView.top<innerHeight){
+  if(!reduced.matches&&!modalOpen&&!dragging&&time>=manualUntil&&!viewport.matches(":hover")&&!document.hidden&&inView.bottom>0&&inView.top<innerHeight){
    offset=(offset+(innerWidth<760?21:innerWidth<1200?27:32)*delta/1000)%cycleWidth;
    place();
   }
@@ -947,23 +952,36 @@ function noeliaInitCarousel(){
  const handleVisibility=()=>updatePlayback();
  document.addEventListener("visibilitychange",handleVisibility);
  const onResize=()=>measure();window.addEventListener("resize",onResize);
+ let manualUntil=0;
+ const onWheel=e=>{
+  if(modalOpen||reduced.matches)return;
+  const horizontal=Math.abs(e.deltaX)>Math.abs(e.deltaY);
+  if(!horizontal&&!e.shiftKey)return;
+  const amount=horizontal?e.deltaX:e.deltaY;
+  if(!amount)return;
+  e.preventDefault();
+  manualUntil=performance.now()+1500;
+  offset=((offset+amount)%cycleWidth+cycleWidth)%cycleWidth;
+  place();highlight();
+ };
+ viewport.addEventListener("wheel",onWheel,{passive:false});
  const pointerDown=e=>{if(e.target.closest("button"))return;if(e.pointerType==="mouse"&&e.button!==0)return;dragging=true;pointerX=e.clientX;dragDelta=0;wasDragged=false;viewport.setPointerCapture?.(e.pointerId)};
  const pointerMove=e=>{if(!dragging)return;const diff=e.clientX-pointerX;pointerX=e.clientX;dragDelta+=Math.abs(diff);if(dragDelta>8)wasDragged=true;offset=(offset-diff+cycleWidth)%cycleWidth;place()};
  const pointerUp=()=>{dragging=false;if(wasDragged)setTimeout(()=>{wasDragged=false},100)};
  viewport.addEventListener("pointerdown",pointerDown);viewport.addEventListener("pointermove",pointerMove);
  viewport.addEventListener("pointerup",pointerUp);viewport.addEventListener("pointercancel",pointerUp);
- motion.addEventListener("click",()=>{paused=!paused;syncMotionButton()});
- const reduceChanged=()=>{syncMotionButton();updatePlayback()};
+
+ const reduceChanged=()=>{updatePlayback()};
  reduced.addEventListener?.("change",reduceChanged);
  noeliaCarouselDestroy=()=>{
   if(disposed)return;disposed=true;cancelAnimationFrame(frame);
   allObservers.forEach(o=>o.disconnect());cards.forEach(pauseCard);
   document.removeEventListener("keydown",onKey);document.removeEventListener("visibilitychange",handleVisibility);
-  window.removeEventListener("resize",onResize);reduced.removeEventListener?.("change",reduceChanged);
+  window.removeEventListener("resize",onResize);viewport.removeEventListener("wheel",onWheel);reduced.removeEventListener?.("change",reduceChanged);
   modal.remove();document.body.style.overflow="";
   noeliaCarouselDestroy=()=>{};
  };
- syncMotionButton();measure();highlight();updatePlayback();frame=requestAnimationFrame(tick);
+ measure();highlight();updatePlayback();frame=requestAnimationFrame(tick);
 }
 
 const routes={inicio:home,entrenamientos:trainings,rutina:routine,pago:checkout,confirmacion:success,control:monthly,contacto:contact};
