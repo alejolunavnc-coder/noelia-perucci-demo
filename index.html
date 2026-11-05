@@ -891,17 +891,20 @@ function noeliaMountGallery(clips){
  function ensureVideo(card){
   if(disposed||card.video)return;
   const v=document.createElement("video");
-  v.preload="metadata";v.autoplay=true;v.muted=true;v.defaultMuted=true;v.loop=false;
+  const isFullClip=card.clip.start===0&&card.clip.src!=="/media/Video_Noelia_Celular.mp4";
+  v.preload="metadata";v.autoplay=true;v.muted=true;v.defaultMuted=true;v.loop=isFullClip;
   v.playsInline=true;v.setAttribute("playsinline","");v.setAttribute("muted","");
   v.src=card.clip.src;v.style.objectPosition=card.clip.position;v.setAttribute("aria-hidden","true");v.tabIndex=-1;
-  const rewind=()=>{
-   if(!Number.isFinite(v.duration))return;
-   const start=Math.min(card.clip.start,Math.max(0,v.duration-.15));
-   if(v.currentTime<start-.15||v.currentTime>=card.clip.end-.035)v.currentTime=start;
-  };
-  v.addEventListener("loadedmetadata",rewind);
-  v.addEventListener("timeupdate",()=>{if(v.currentTime>=card.clip.end-.08)v.currentTime=card.clip.start});
-  v.addEventListener("ended",()=>{v.currentTime=card.clip.start;v.play().catch(()=>{})});
+  if(!isFullClip){
+   const rewind=()=>{
+    if(!Number.isFinite(v.duration))return;
+    const start=Math.min(card.clip.start,Math.max(0,v.duration-.15));
+    if(v.currentTime<start-.15||v.currentTime>=card.clip.end-.035)v.currentTime=start;
+   };
+   v.addEventListener("loadedmetadata",rewind);
+   v.addEventListener("timeupdate",()=>{if(v.currentTime>=card.clip.end-.08)v.currentTime=card.clip.start});
+   v.addEventListener("ended",()=>{v.currentTime=card.clip.start;v.play().catch(()=>{})});
+  }
   v.addEventListener("playing",()=>card.el.classList.add("is-playing"));
   v.addEventListener("error",()=>card.el.classList.remove("is-playing"));
   card.el.insertBefore(v,card.el.firstChild);card.video=v;
