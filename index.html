@@ -542,8 +542,8 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 /* FOTO_REAL_ENTRENAMIENTO_PERSONALIZADO_20261105 — encuadre de foto vertical */
 .teaser-image img{object-fit:cover;object-position:center 41%}
 
-/* PLANES_HERO_REDISENO_20261105 — foto real + tipografía existente intacta.
-   El oscuro y magenta se aplican por CSS para no modificar la fotografía. */
+/* PLANES_HERO_IMAGEN_APROBADA_20261105 — imagen cinematográfica sin textos ni header;
+   texto y navegación reales de la página superpuestos por HTML. */
 .plans-hero{
   min-height:clamp(560px,73svh,790px);
   padding:clamp(155px,20vh,208px) var(--pad) clamp(65px,9vh,102px);
@@ -554,15 +554,14 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 .plans-hero:before{
   inset:0;
   background:
-    linear-gradient(90deg,rgba(10,8,12,.99) 0%,rgba(10,8,12,.96) 20%,rgba(10,8,12,.85) 39%,rgba(10,8,12,.22) 68%,rgba(10,8,12,.16) 100%),
-    linear-gradient(0deg,rgba(8,7,11,.72),transparent 26%,transparent 78%,rgba(8,7,11,.36)),
-    url('/media/noelia_planes_entrenamiento.jpg') 77% 46% / cover no-repeat!important;
-  filter:saturate(.94) contrast(1.04)!important;
+    linear-gradient(90deg,rgba(10,8,12,.20) 0%,rgba(10,8,12,.08) 34%,transparent 64%),
+    linear-gradient(0deg,rgba(8,7,11,.20),transparent 22%,transparent 82%,rgba(8,7,11,.10)),
+    url('/media/noelia_planes_hero.jpg') center center / cover no-repeat!important;
+  filter:none!important;
 }
 .plans-hero:after{
   content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
-  background:radial-gradient(ellipse at 101% 90%,rgba(207,0,109,.18),transparent 44%),
-    linear-gradient(180deg,transparent 75%,rgba(11,10,14,.38));
+  background:linear-gradient(180deg,transparent 80%,rgba(11,10,14,.12));
 }
 .plans-hero .wrap{position:relative;z-index:1;width:100%}
 .plans-hero .eyebrow{color:#d6b4c6;letter-spacing:.19em}
@@ -573,9 +572,9 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  .plans-hero{min-height: min(85svh,770px);padding:136px var(--pad) 56px;align-items:flex-end}
  .plans-hero:before{
    background:
-     linear-gradient(0deg,rgba(10,8,12,.97) 0%,rgba(10,8,12,.85) 27%,rgba(10,8,12,.16) 66%,rgba(10,8,12,.38) 100%),
-     linear-gradient(90deg,rgba(10,8,12,.35),transparent 70%),
-     url('/media/noelia_planes_entrenamiento.jpg') 54% 24% / cover no-repeat!important;
+     linear-gradient(0deg,rgba(10,8,12,.88) 0%,rgba(10,8,12,.52) 27%,rgba(10,8,12,.04) 66%,rgba(10,8,12,.09) 100%),
+     linear-gradient(90deg,rgba(10,8,12,.16),transparent 70%),
+     url('/media/noelia_planes_hero.jpg') 65% 30% / cover no-repeat!important;
  }
  .plans-hero h1{font-size:clamp(58px,15vw,94px);line-height:.96}
  .plans-hero p{max-width:350px;font-size:15px;margin-top:20px}
