@@ -752,7 +752,7 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 .results-wave{height:27%;opacity:.4}
 .results-caption{min-height:67px;font-size:11px}
 }
-@media(max-width:380px){.results-heading h2{font-size:clamp(42px,11.8vw,51px)}.results-image-label{font-size:9px}.results-compare-card{border-radius:25px}}
+@media(max-width:380px){.results-heading h2{font-size:clamp(35px,10.7vw,43px)}.results-image-label{font-size:9px}.results-compare-card{border-radius:25px}}
 @media(prefers-reduced-motion:reduce){.real-results .reveal,.real-results .reveal.is-visible{animation:none!important;opacity:1!important;transform:none!important}.results-divider,.results-divider-grip{transition:none!important}}
 </style>
 
@@ -1159,7 +1159,6 @@ document.addEventListener('pointerdown',e=>{
  if(!range||(e.pointerType==='mouse'&&e.button!==0))return;
  slider.setPointerCapture(e.pointerId);
  slider.dataset.activePointer=String(e.pointerId);
- range.focus({preventScroll:true});
  const bounds=slider.getBoundingClientRect();
  if(bounds.width)noeliaSetResultComparison(slider,(e.clientX-bounds.left)/bounds.width*100);
 });
