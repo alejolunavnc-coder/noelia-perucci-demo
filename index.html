@@ -698,8 +698,8 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 @media(prefers-reduced-motion:reduce){.noelia-video-track{animation:none!important}}
 
 /* Comparador accesible y táctil de resultados reales, sin librerías ni animaciones pesadas. */
-.results-compare-card{max-width:520px;border-radius:14px;overflow:hidden}
-.results-comparison{position:relative;width:100%;aspect-ratio:3/5;max-height:680px;overflow:hidden;background:#242226;isolation:isolate;--compare:50%}
+.results-compare-card{width:100%;max-width:340px;justify-self:center;border-radius:14px;overflow:hidden}
+.results-comparison{position:relative;width:100%;aspect-ratio:3/4;max-height:460px;overflow:hidden;background:#242226;isolation:isolate;--compare:50%}
 .results-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;user-select:none;-webkit-user-drag:none}
 .results-photo-before{clip-path:inset(0 calc(100% - var(--compare)) 0 0)}
 .results-image-label{position:absolute;z-index:2;top:16px;padding:8px 10px;border-radius:3px;background:#151316b8;color:#fff;font:700 10px/1.2 var(--label);letter-spacing:.14em;pointer-events:none}
@@ -712,7 +712,7 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 .results-comparison-range::-webkit-slider-thumb{-webkit-appearance:none;width:46px;height:46px;cursor:ew-resize}
 .results-comparison-range::-moz-range-thumb{width:46px;height:46px;cursor:ew-resize}
 .results-caption-help{color:#e8bacf;font-size:10px}
-@media(max-width:759px){.results-compare-card{width:100%;max-width:420px}.results-comparison{max-height:570px}.results-image-label{top:12px}.results-image-label-before{left:12px}.results-image-label-after{right:12px}.results-caption{gap:8px;flex-wrap:wrap}.results-caption-help{font-size:9px}}
+@media(max-width:759px){.results-compare-card{width:100%;max-width:340px;margin-inline:auto}.results-comparison{max-height:460px}.results-image-label{top:12px}.results-image-label-before{left:12px}.results-image-label-after{right:12px}.results-caption{gap:8px;flex-wrap:wrap}.results-caption-help{font-size:9px}}
 </style>
 
 </head>
