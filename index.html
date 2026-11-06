@@ -696,6 +696,23 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 .noelia-video-card{pointer-events:none}
 .noelia-video-tools{display:none!important}
 @media(prefers-reduced-motion:reduce){.noelia-video-track{animation:none!important}}
+
+/* Comparador accesible y táctil de resultados reales, sin librerías ni animaciones pesadas. */
+.results-compare-card{max-width:520px;border-radius:14px;overflow:hidden}
+.results-comparison{position:relative;width:100%;aspect-ratio:3/5;max-height:680px;overflow:hidden;background:#242226;isolation:isolate;--compare:50%}
+.results-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.results-photo-before{clip-path:inset(0 calc(100% - var(--compare)) 0 0)}
+.results-image-label{position:absolute;z-index:2;top:16px;padding:8px 10px;border-radius:3px;background:#151316b8;color:#fff;font:700 10px/1.2 var(--label);letter-spacing:.14em;pointer-events:none}
+.results-image-label-before{left:16px}.results-image-label-after{right:16px}
+.results-divider{position:absolute;z-index:3;left:var(--compare);top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 8px #0009;transform:translateX(-50%);pointer-events:none}
+.results-divider-grip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;background:#fff;color:#171319;box-shadow:0 3px 20px #0008;font:700 24px/1 Arial,sans-serif;white-space:nowrap}
+.results-comparison-range{position:absolute;z-index:4;inset:0;margin:0;width:100%;height:100%;opacity:0;cursor:ew-resize;touch-action:pan-y;-webkit-appearance:none;appearance:none}
+.results-comparison-range:focus-visible{opacity:1;outline:3px solid #f4a8cc;outline-offset:-4px}
+.results-comparison-range:focus-visible::-webkit-slider-thumb{background:#fff;box-shadow:0 0 0 7px #e882b9;opacity:.65}
+.results-comparison-range::-webkit-slider-thumb{-webkit-appearance:none;width:46px;height:46px;cursor:ew-resize}
+.results-comparison-range::-moz-range-thumb{width:46px;height:46px;cursor:ew-resize}
+.results-caption-help{color:#e8bacf;font-size:10px}
+@media(max-width:759px){.results-compare-card{width:100%;max-width:420px}.results-comparison{max-height:570px}.results-image-label{top:12px}.results-image-label-before{left:12px}.results-image-label-after{right:12px}.results-caption{gap:8px;flex-wrap:wrap}.results-caption-help{font-size:9px}}
 </style>
 
 </head>
@@ -824,7 +841,7 @@ const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-th
     <div class="noelia-video-track" id="noelia-video-track"></div>
   </div>
 
-</section><section class="section dark real-results" data-theme="dark" id="resultados-reales"><div class="wrap"><div class="section-index"><small>01 / RESULTADOS REALES</small><small>ANTES Y DESPUÉS</small></div><div class="results-heading reveal">${label('TRANSFORMACIONES REALES',true)}<h2>RESULTADOS<br>REALES.</h2><p>Cuerpos reales. Resultados reales. Los cambios se construyen con disciplina y constancia. Primero en el hábito de la alimentación y luego el entrenamiento. Acá podrás ver estos hermosos cambios.</p></div><div class="results-future reveal" aria-label="Resultados de transformación"><div class="results-mock"><div class="result-half"><span>ANTES</span><strong>01</strong></div><div class="result-half"><span>DESPUÉS</span><strong>02</strong></div></div><div class="results-caption"><span>RESULTADOS REALES</span><span class="results-arrow" aria-hidden="true">${noeliaIcon("upRight")}</span></div></div></div></section>
+</section><section class="section dark real-results" data-theme="dark" id="resultados-reales"><div class="wrap"><div class="section-index"><small>01 / RESULTADOS REALES</small><small>ANTES Y DESPUÉS</small></div><div class="results-heading reveal">${label('TRANSFORMACIONES REALES',true)}<h2>RESULTADOS<br>REALES.</h2><p>Cuerpos reales. Resultados reales. Los cambios se construyen con disciplina y constancia. Primero en el hábito de la alimentación y luego el entrenamiento. Acá podrás ver estos hermosos cambios.</p></div><div class="results-future results-compare-card reveal" aria-label="Comparador de fotografías antes y después"><div class="results-comparison" style="--compare:50%"><img class="results-photo results-photo-after" src="/media/noelia_resultado_01_despues.webp" alt="Fotografía después de la transformación, de perfil" loading="lazy" decoding="async"><img class="results-photo results-photo-before" src="/media/noelia_resultado_01_antes.webp" alt="Fotografía antes de la transformación, de perfil" loading="lazy" decoding="async"><span class="results-image-label results-image-label-before">ANTES</span><span class="results-image-label results-image-label-after">DESPUÉS</span><div class="results-divider" aria-hidden="true"><span class="results-divider-grip">‹ ›</span></div><input type="range" class="results-comparison-range" min="0" max="100" step="1" value="50" aria-label="Deslizar para comparar las fotografías de antes y después"></div><div class="results-caption"><span>RESULTADO REAL · 01</span><span class="results-caption-help">DESLIZÁ PARA COMPARAR <span aria-hidden="true">↔</span></span></div></div></div></section>
 <section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="/media/noelia_entrenamiento_personalizado.jpg" alt="Noelia entrenando en el gimnasio" onerror="this.onerror=null;this.src='${asset('dumbbells.webp')}'"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>${noeliaIcon("upRight")}</span></div></div></div></section>${footer()}</div>`;
 const prices={2:50000,3:60000,4:80000,5:80000};
 const price=(n)=>'$'+prices[n].toLocaleString('es-AR');
@@ -1070,6 +1087,7 @@ document.addEventListener('submit',e=>{
  const target=document.getElementById('message-preview');target.hidden=false;target.textContent=msg;
  document.getElementById('copy-message').hidden=false;notify('Consulta preparada para copiar. No fue enviada.');
 });
+document.addEventListener('input',e=>{if(e.target.matches('.results-comparison-range'))e.target.parentElement.style.setProperty('--compare',e.target.value+'%')});
 document.addEventListener('click',async e=>{if(e.target.closest('#copy-control-message')){const msg=document.getElementById('monthly-check-preview')?.textContent||'';try{await navigator.clipboard.writeText(msg);notify('Mensaje copiado. Adjuntá tus fotos desde tu correo.')}catch{notify('Seleccioná el texto y copialo manualmente.')}return;}if(e.target.closest('#copy-message')){const msg=document.getElementById('message-preview')?.textContent||'';try{await navigator.clipboard.writeText(msg);notify('Texto copiado')}catch{notify('Seleccioná el texto para copiarlo')}}});
 document.getElementById('openMenu').addEventListener('click',()=>setMenu(true));document.getElementById('closeMenu').addEventListener('click',()=>setMenu(false));document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});window.addEventListener('hashchange',()=>render(decodeURIComponent(location.hash.slice(1))));window.addEventListener('scroll',scrollTheme,{passive:true});render(decodeURIComponent(location.hash.slice(1)||'inicio'));
 
