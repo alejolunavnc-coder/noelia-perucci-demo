@@ -885,159 +885,89 @@ function noeliaMountGallery(clips){
  noeliaCarouselDestroy();
  const viewport=main.querySelector("#noelia-video-viewport");
  const track=main.querySelector("#noelia-video-track");
- if(!viewport||!track||!clips.length)return;
+ if(!viewport||!track)return;
+ if(!clips.length)return;
  track.replaceChildren();
+ let disposed=false,offset=0,cycleWidth=1,lastTime=0,frame=0;
+ const cards=[],visible=new Set();
  const mobile=matchMedia("(max-width:759px)").matches;
- // Dos copias bastan: una puede salir mientras la otra entra sin cortes.
- const cardCount=Math.max(clips.length*2,4);
- const cards=[];
- let disposed=false,offset=0,cycleWidth=1,lastTime=0,frame=0,inView=false,lastSync=0;
- let mobilePositions=[],mobilePadding=0,mobileWidth=0,lastMobileSignature="";
  let touchStartX=0,touchStartY=0,touchLastX=0,touchMode=0;
+ const cardCount=Math.max(clips.length*4,8);
  for(let i=0;i<cardCount;i++){
   const clip=clips[i%clips.length];
-  const el=document.createElement("article");
-  el.className="noelia-video-card";
-  el.style.setProperty("--video-position",clip.position);
-  el.setAttribute("aria-label",clip.title);
+  const card=document.createElement("article");
+  card.className="noelia-video-card";
+  card.style.setProperty("--video-position",clip.position);
+  card.setAttribute("aria-label",clip.title);
   const poster=document.createElement("img");
-  poster.className="noelia-video-poster";poster.src=clip.poster;poster.alt="";
-  poster.loading="lazy";
-  const name=document.createElement("span");
-  name.className="noelia-video-name";name.textContent=clip.title;
-  el.append(poster,name);track.append(el);
-  cards.push({el,clip,video:null});
+  poster.className="noelia-video-poster";poster.src=clip.poster;poster.alt="";poster.loading="lazy";
+  const name=document.createElement("span");name.className="noelia-video-name";name.textContent=clip.title;
+  card.append(poster,name);track.append(card);
+  cards.push({el:card,clip,video:null});
  }
  function ensureVideo(card){
   if(disposed||card.video)return;
   const v=document.createElement("video");
   const full=card.clip.start===0&&card.clip.src!=="/media/Video_Noelia_Celular.mp4";
-  v.preload="auto";v.autoplay=false;v.muted=true;v.defaultMuted=true;v.loop=full;
+  v.preload="metadata";v.autoplay=true;v.muted=true;v.defaultMuted=true;v.loop=full;
   v.playsInline=true;v.setAttribute("playsinline","");v.setAttribute("muted","");
-  v.disablePictureInPicture=true;v.controls=false;
-  v.src=card.clip.src;v.style.objectPosition=card.clip.position;
-  v.setAttribute("aria-hidden","true");v.tabIndex=-1;
+  v.src=card.clip.src;v.style.objectPosition=card.clip.position;v.setAttribute("aria-hidden","true");v.tabIndex=-1;
   if(!full){
-   const rewind=()=>{
-    if(!Number.isFinite(v.duration))return;
-    const from=Math.min(card.clip.start,Math.max(0,v.duration-.15));
-    if(v.currentTime<from-.15||v.currentTime>=card.clip.end-.035)v.currentTime=from;
-   };
-   v.addEventListener("loadedmetadata",rewind);
-   v.addEventListener("timeupdate",()=>{if(v.currentTime>=card.clip.end-.08)v.currentTime=card.clip.start;});
-   v.addEventListener("ended",()=>{v.currentTime=card.clip.start;v.play().catch(()=>{});});
+  const rewind=()=>{
+   if(!Number.isFinite(v.duration))return;
+   const start=Math.min(card.clip.start,Math.max(0,v.duration-.15));
+   if(v.currentTime<start-.15||v.currentTime>=card.clip.end-.035)v.currentTime=start;
+  };
+  v.addEventListener("loadedmetadata",rewind);
+  v.addEventListener("timeupdate",()=>{if(v.currentTime>=card.clip.end-.08)v.currentTime=card.clip.start});
+  v.addEventListener("ended",()=>{v.currentTime=card.clip.start;v.play().catch(()=>{})});
   }
-  // Mostrar el video únicamente cuando ya tiene un fotograma disponible.
-  v.addEventListener("playing",()=>{if(v.readyState>=2)card.el.classList.add("is-playing");});
-  v.addEventListener("loadeddata",()=>{if(!v.paused)card.el.classList.add("is-playing");});
+  v.addEventListener("playing",()=>card.el.classList.add("is-playing"));
   v.addEventListener("error",()=>card.el.classList.remove("is-playing"));
   card.el.insertBefore(v,card.el.firstChild);card.video=v;
  }
- function stopVideo(card,release=false){
+ function pauseVideo(card){
   if(!card.video)return;
-  const v=card.video;
-  if(!v.paused)v.pause();
-  if(release){
-   card.el.classList.remove("is-playing");
-   v.removeAttribute("src");v.remove();
-   card.video=null;
-  }
+  const v=card.video;v.pause();v.removeAttribute("src");v.load();v.remove();
+  card.video=null;card.el.classList.remove("is-playing");
  }
  function updatePlayback(){
-  if(disposed)return;
-  const running=inView&&!document.hidden;
-  if(!running){lastMobileSignature="";cards.forEach(card=>stopVideo(card));return;}
-  if(mobile){
-   // No forzar layout: usar posiciones cacheadas y actualizar solo cuando
-   // cambia el conjunto de tarjetas que requieren reproducción.
-   const near=[];
-   const margin=Math.max(340,mobileWidth*.9);
-   for(let i=0;i<cards.length;i++){
-    const left=mobilePadding+mobilePositions[i].left-offset;
-    const right=left+mobilePositions[i].width;
-    const distance=right<0?-right:left>mobileWidth?left-mobileWidth:0;
-    if(distance<=margin)near.push({card:cards[i],distance,left,right});
-   }
-   const visibleCards=near.filter(x=>x.right>0&&x.left<mobileWidth);
-   visibleCards.sort((a,b)=>Math.abs((a.left+a.right)/2-mobileWidth/2)-Math.abs((b.left+b.right)/2-mobileWidth/2));
-   const live=new Set(visibleCards.slice(0,2).map(x=>x.card));
-   near.sort((a,b)=>a.distance-b.distance);
-   const prepared=new Set(near.slice(0,4).map(x=>x.card));
-   const signature=cards.map((c,i)=>live.has(c)?"P"+i:prepared.has(c)?"R"+i:"").filter(Boolean).join("|");
-   if(signature===lastMobileSignature){
-    // Un navegador móvil puede suspender la reproducción por memoria o red.
-    for(const card of live){if(card.video?.paused&&card.video.readyState>=2)card.video.play().catch(()=>{});}
-    return;
-   }
-   lastMobileSignature=signature;
-   for(const card of cards){
-    if(live.has(card)){
-     ensureVideo(card);
-     if(card.video?.paused)card.video.play().catch(()=>{});
-    }else if(prepared.has(card)){
-     ensureVideo(card);
-     stopVideo(card);
-    }else stopVideo(card,true);
-   }
-   return;
-  }
-  const box=viewport.getBoundingClientRect();
-  const viewportLeft=box.left,viewportRight=box.right;
-  // La próxima tarjeta se descarga con anticipación y queda preparada.
-  const preloadMargin=mobile?Math.max(280,box.width*.85):350;
-  const playing=[],near=[];
-  for(const card of cards){
-   const rect=card.el.getBoundingClientRect();
-   const distance=rect.right<viewportLeft?viewportLeft-rect.right:rect.left>viewportRight?rect.left-viewportRight:0;
-   if(distance<=preloadMargin)near.push({card,distance});
-   if(distance===0)playing.push(card);
-  }
-  // En móvil, la próxima tarjeta se prepara sin reproducirse en paralelo.
-  // Limitar el número de decodificadores activos reduce cuadros perdidos.
-  const center=(viewportLeft+viewportRight)/2;
-  playing.sort((a,b)=>Math.abs(a.el.getBoundingClientRect().left+a.el.offsetWidth/2-center)-Math.abs(b.el.getBoundingClientRect().left+b.el.offsetWidth/2-center));
-  const live=new Set(playing.slice(0,mobile?2:5));
-  near.sort((a,b)=>a.distance-b.distance);
-  const prepared=new Set(near.slice(0,mobile?3:7).map(item=>item.card));
-  for(const card of cards){
-   if(live.has(card)){
+  const b=viewport.getBoundingClientRect();
+  const running=!disposed&&!document.hidden&&b.bottom>0&&b.top<innerHeight;
+  cards.forEach(card=>{
+   if(running&&visible.has(card)){
     ensureVideo(card);
-    if(card.video?.paused)card.video.play().catch(()=>{});
-   }else if(prepared.has(card)){
-    ensureVideo(card);
-    stopVideo(card);
-   }else{
-    stopVideo(card,true);
-   }
-  }
+    if(card.video?.paused)card.video.play().catch(()=>card.el.classList.remove("is-playing"));
+   }else pauseVideo(card);
+  });
  }
  function measure(){
   if(disposed)return;
   const width=cards[clips.length].el.offsetLeft-cards[0].el.offsetLeft;
-  if(width>0){cycleWidth=width;offset%=cycleWidth;}
-  if(mobile){
-   // offsetLeft ya incluye el desplazamiento respecto del viewport.
-   mobilePadding=0;
-   mobileWidth=viewport.clientWidth;
-   mobilePositions=cards.map(card=>({left:card.el.offsetLeft,width:card.el.offsetWidth}));
-   lastMobileSignature="";
-  }
+  if(width>0){cycleWidth=width;offset%=cycleWidth}
   track.style.transform="translate3d("+(-offset)+"px,0,0)";
-  updatePlayback();
  }
  function tick(time){
   if(disposed)return;
-  const delta=lastTime?Math.min(80,Math.max(0,time-lastTime)):0;lastTime=time;
-  if(inView&&!document.hidden){
+  const delta=lastTime?Math.min(50,time-lastTime):0;lastTime=time;
+  const b=viewport.getBoundingClientRect();
+  if(!document.hidden&&b.bottom>0&&b.top<innerHeight){
    const speed=innerWidth<760?42:innerWidth<1200?48:55;
    offset=(offset+speed*delta/1000)%cycleWidth;
    track.style.transform="translate3d("+(-offset)+"px,0,0)";
-   if(time-lastSync>(mobile?280:180)){lastSync=time;updatePlayback();}
   }
   frame=requestAnimationFrame(tick);
  }
- // Solo móvil: gesto lateral sin tocar el estado play/pause de los videos.
- // El desplazamiento automático continúa incluso mientras se arrastra.
+ const cardsObserver=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+   const card=cards.find(c=>c.el===entry.target);
+   if(!card)return;
+   if(entry.isIntersecting)visible.add(card);else visible.delete(card);
+  });
+  updatePlayback();
+ },{root:viewport,rootMargin:"0px 150px",threshold:0});
+ cards.forEach(card=>cardsObserver.observe(card.el));
+ // Los gestos táctiles desplazan el carrusel sin detener ni manipular los videos.
  const onTouchStart=e=>{
   if(!mobile||e.touches.length!==1){touchMode=0;return;}
   touchStartX=touchLastX=e.touches[0].clientX;
@@ -1058,26 +988,23 @@ function noeliaMountGallery(clips){
   touchLastX=x;
   track.style.transform="translate3d("+(-offset)+"px,0,0)";
  };
- const onTouchEnd=()=>{if(touchMode===2)updatePlayback();touchMode=0;};
+ const onTouchEnd=()=>{touchMode=0;};
  if(mobile){
   viewport.addEventListener("touchstart",onTouchStart,{passive:true});
   viewport.addEventListener("touchmove",onTouchMove,{passive:false});
   viewport.addEventListener("touchend",onTouchEnd,{passive:true});
   viewport.addEventListener("touchcancel",onTouchEnd,{passive:true});
  }
- const sectionObserver=new IntersectionObserver(entries=>{
-  inView=entries[0]?.isIntersecting??false;
-  lastTime=0;
-  updatePlayback();
- },{threshold:0,rootMargin:"0px 100px"});
+ const sectionObserver=new IntersectionObserver(()=>updatePlayback(),{threshold:0});
  sectionObserver.observe(viewport);
- const onVisibility=()=>{lastTime=0;updatePlayback();},onResize=()=>measure();
+ const onVisibility=()=>updatePlayback(),onResize=()=>measure();
  document.addEventListener("visibilitychange",onVisibility);
  window.addEventListener("resize",onResize);
  noeliaCarouselDestroy=()=>{
   if(disposed)return;
-  disposed=true;cancelAnimationFrame(frame);sectionObserver.disconnect();
-  for(const card of cards)stopVideo(card,true);
+  disposed=true;cancelAnimationFrame(frame);
+  cardsObserver.disconnect();sectionObserver.disconnect();
+  cards.forEach(pauseVideo);
   document.removeEventListener("visibilitychange",onVisibility);
   window.removeEventListener("resize",onResize);
   if(mobile){
@@ -1088,7 +1015,7 @@ function noeliaMountGallery(clips){
   }
   noeliaCarouselDestroy=()=>{};
  };
- measure();frame=requestAnimationFrame(tick);
+ measure();updatePlayback();frame=requestAnimationFrame(tick);
 }
 
 const routes={inicio:home,entrenamientos:trainings,rutina:routine,pago:checkout,confirmacion:success,control:monthly,contacto:contact};
