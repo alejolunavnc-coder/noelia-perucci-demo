@@ -755,6 +755,9 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 @media(max-width:380px){.results-heading h2{font-size:clamp(35px,10.7vw,43px)}.results-image-label{font-size:9px}.results-compare-card{border-radius:25px}}
 @media(prefers-reduced-motion:reduce){.real-results .reveal,.real-results .reveal.is-visible{animation:none!important;opacity:1!important;transform:none!important}.results-divider,.results-divider-grip{transition:none!important}}
 
+/* Resultado 02: mismo encuadre, marco y control que el resultado 01. */
+.results-next:disabled{opacity:.55;cursor:progress}
+.results-second-slide{width:100%}
 /* MARGENES MOVILES CONSISTENTES: respeta el contenedor global de texto.
    Los fondos, portadas y carruseles de ancho completo no se modifican. */
 @media(max-width:759px){
@@ -780,7 +783,7 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 .results-next span{font-size:19px;color:#ed087c;line-height:.65}
 .results-next:hover,.results-next:focus-visible{background:#3b1730;border-color:#f14c9f;outline-offset:3px}
 .results-upcoming{min-height:506px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:17px;padding:30px 19px;background:radial-gradient(ellipse at 45% 45%,#341329,#140d17 75%)}
-.results-upcoming[hidden],.results-active-slide[hidden]{display:none!important}
+.results-upcoming[hidden],.results-active-slide[hidden],.results-second-slide[hidden]{display:none!important}
 .results-upcoming-kicker{font:700 10px/1.4 var(--label);letter-spacing:.14em;color:#d68fb5}
 .results-upcoming-index{font:950 100px/.95 var(--head);color:#f3098425;letter-spacing:-.08em}
 .results-upcoming p{font:900 clamp(25px,3vw,34px)/1.08 var(--head);color:#f8f3f5;margin:0}
@@ -940,6 +943,13 @@ const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-th
 <div class="results-divider" aria-hidden="true"><span class="results-divider-grip"><span>‹</span><span>›</span></span></div>
 <input type="range" class="results-comparison-range" min="0" max="100" step="1" value="50" aria-label="Comparar las imágenes de antes y después" aria-valuetext="50 por ciento de la fotografía de antes">
 </div><div class="results-caption"><span>RESULTADO REAL · 01</span><span class="results-caption-dash" aria-hidden="true"></span></div></div>
+<div class="results-second-slide" hidden><div class="results-comparison" style="--compare:50%">
+<img class="results-photo results-photo-after" src="/media/noelia_resultado_02_despues.webp" alt="Segunda transformación, fotografía después, vista lateral, conjunto rosa" width="1000" height="1500" loading="lazy" decoding="async">
+<img class="results-photo results-photo-before" src="/media/noelia_resultado_02_antes.webp" alt="Segunda transformación, fotografía antes, vista lateral, conjunto oscuro" width="995" height="1581" loading="lazy" decoding="async">
+<span class="results-image-label results-image-label-before">ANTES</span><span class="results-image-label results-image-label-after">DESPUÉS</span>
+<div class="results-divider" aria-hidden="true"><span class="results-divider-grip"><span>‹</span><span>›</span></span></div>
+<input type="range" class="results-comparison-range" min="0" max="100" step="1" value="50" aria-label="Comparar las fotografías de la segunda transformación" aria-valuetext="50 por ciento de la fotografía de antes">
+</div><div class="results-caption"><span>RESULTADO REAL · 02</span><span class="results-caption-dash" aria-hidden="true"></span></div></div>
 <div class="results-upcoming" hidden aria-live="polite"><span class="results-upcoming-kicker">RESULTADOS REALES</span><span class="results-upcoming-index">02</span><p>PRÓXIMAMENTE<br>OTRA TRANSFORMACIÓN.</p><small>Más historias reales se incorporarán a esta sección.</small></div>
 </div><div class="results-gallery-nav"><span class="results-gallery-index" aria-live="polite">01 / 01</span><button class="results-next" type="button" data-results-next aria-label="Ver próximos cambios">VER OTROS CAMBIOS <span aria-hidden="true">→</span></button></div></div>
 </div></section>
@@ -1223,20 +1233,43 @@ for(const eventName of ['pointerup','pointercancel']){
   if(slider.hasPointerCapture(e.pointerId))slider.releasePointerCapture(e.pointerId);
  });
 }
-// El catálogo admite nuevas parejas de fotos; mientras solo existe una, la siguiente vista lo aclara.
-document.addEventListener('click',e=>{
+// Carrusel de transformaciones: activar la segunda pareja solo cuando ambos archivos estén publicados.
+document.addEventListener('click',async e=>{
  const button=e.target.closest('[data-results-next]');
- if(!button)return;
+ if(!button||button.disabled)return;
  const gallery=button.closest('.results-gallery');
  if(!gallery)return;
- const real=gallery.querySelector('.results-active-slide');
+ const first=gallery.querySelector('.results-active-slide');
+ const second=gallery.querySelector('.results-second-slide');
  const upcoming=gallery.querySelector('.results-upcoming');
  const indicator=gallery.querySelector('.results-gallery-index');
- const showUpcoming=upcoming.hidden;
- real.hidden=showUpcoming;upcoming.hidden=!showUpcoming;
- indicator.textContent=showUpcoming?'PRÓXIMAMENTE':'01 / 01';
- button.innerHTML=showUpcoming?'VOLVER AL RESULTADO 01 <span aria-hidden="true">←</span>':'VER OTROS CAMBIOS <span aria-hidden="true">→</span>';
- button.setAttribute('aria-label',showUpcoming?'Volver al resultado real número uno':'Ver próximos cambios');
+ const duration=gallery.closest('.real-results')?.querySelector('.results-duration');
+ const showingFirst=!first.hidden;
+ let showSecond=false;
+ let showUpcoming=false;
+ if(showingFirst){
+  button.disabled=true;
+  try{
+   if(gallery.dataset.secondReady!=='yes'){
+    const paths=['/media/noelia_resultado_02_antes.webp','/media/noelia_resultado_02_despues.webp'];
+    const available=await Promise.all(paths.map(async p=>{
+     const response=await fetch(p,{method:'HEAD',cache:'no-store'});
+     return response.ok&&((response.headers.get('content-type')||'').includes('image')||p.endsWith('.webp'));
+    }));
+    if(available.every(Boolean))gallery.dataset.secondReady='yes';
+   }
+   showSecond=gallery.dataset.secondReady==='yes';
+   showUpcoming=!showSecond;
+  }catch{showUpcoming=true;}
+  finally{button.disabled=false;}
+ }
+ first.hidden=showSecond||showUpcoming;
+ second.hidden=!showSecond;
+ upcoming.hidden=!showUpcoming;
+ if(duration)duration.hidden=!first.hidden;
+ indicator.textContent=showSecond?'02 / 02':showUpcoming?'PRÓXIMAMENTE':'01 / 02';
+ button.innerHTML=showingFirst?'VOLVER AL RESULTADO 01 <span aria-hidden="true">←</span>':'VER OTROS CAMBIOS <span aria-hidden="true">→</span>';
+ button.setAttribute('aria-label',showingFirst?'Volver al resultado real número uno':'Ver otro resultado real');
 });
 document.addEventListener('click',async e=>{if(e.target.closest('#copy-control-message')){const msg=document.getElementById('monthly-check-preview')?.textContent||'';try{await navigator.clipboard.writeText(msg);notify('Mensaje copiado. Adjuntá tus fotos desde tu correo.')}catch{notify('Seleccioná el texto y copialo manualmente.')}return;}if(e.target.closest('#copy-message')){const msg=document.getElementById('message-preview')?.textContent||'';try{await navigator.clipboard.writeText(msg);notify('Texto copiado')}catch{notify('Seleccioná el texto para copiarlo')}}});
 document.getElementById('openMenu').addEventListener('click',()=>setMenu(true));document.getElementById('closeMenu').addEventListener('click',()=>setMenu(false));document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});window.addEventListener('hashchange',()=>render(decodeURIComponent(location.hash.slice(1))));window.addEventListener('scroll',scrollTheme,{passive:true});render(decodeURIComponent(location.hash.slice(1)||'inicio'));
