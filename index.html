@@ -905,7 +905,7 @@ const label=(text,pink=false)=>`<div class="eyebrow ${pink?'pink':''}">${text}</
 const noeliaIcon=(name)=>{const paths={upRight:'<path d="M7 17 17 7M8 7h9v9"/>',down:'<path d="M12 5v14m-7-7 7 7 7-7"/>',left:'<path d="M19 12H5m7-7-7 7 7 7"/>',check:'<path d="M20 6 9 17l-5-5"/>',close:'<path d="M18 6 6 18M6 6l12 12"/>',plus:'<path d="M12 5v14M5 12h14"/>'};return '<svg class="noelia-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+(paths[name]||'')+'</svg>'};
 const button=(text,action,cls='')=>`<button class="btn ${cls}" type="button" data-action="${action}"><span>${text}</span><span class="arr">${noeliaIcon("upRight")}</span></button>`;
 const footer=()=>`<footer class="footer"><div class="footer-inner"><div><div class="brand">NOELIA<span> PERUCCI</span></div><small>PERSONAL TRAINER · IFBB</small></div><nav class="footer-nav" aria-label="Navegación secundaria"><a href="#inicio" data-route="inicio">Inicio</a><a href="#entrenamientos" data-route="entrenamientos">Entrenamientos</a><a href="#control" data-route="control">Control mensual</a><a href="#contacto" data-route="contacto">Contacto</a></nav></div></footer>`;
-const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-theme="dark"><div class="hero-photo hero-video-frame" aria-hidden="true"><div class="hero-video-soft-back" style="background-image:url('${NOELIA_HERO_POSTER}')"></div><video id="noelia-hero-video" class="hero-background-video" poster="${matchMedia('(min-width:760px)').matches?NOELIA_OPCION_2_POSTER:NOELIA_HERO_POSTER}" autoplay muted loop playsinline preload="metadata" tabindex="-1"></video></div><div class="wrap">${label('EMPEZÁ EL CAMBIO DE TU VIDA HOY')}<h1>UN DÍA<br>A LA VEZ<span class="habit-period">.</span></h1><p>Prepárate para comenzar un cambio de hábito y de salud antes que nada. Las buenas costumbres llevan a concretar niveles que ni sabías que podías lograr.</p><div class="habit-actions">${button('CONÓCEME','conoceme')}${button('PLANES','entrenamientos','outline')}</div><div class="hero-end"><span>CONSTANCIA · HÁBITOS · PROGRESO</span><b>${noeliaIcon("down")}</b></div></div></section>
+const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-theme="dark"><div class="hero-photo hero-video-frame" aria-hidden="true"><div class="hero-video-soft-back" style="background-image:url('${NOELIA_HERO_POSTER}')"></div><video id="noelia-hero-video" class="hero-background-video" poster="${matchMedia('(min-width:760px)').matches?NOELIA_OPCION_2_POSTER:NOELIA_HERO_POSTER}" autoplay muted loop playsinline preload="metadata" tabindex="-1"></video></div><div class="wrap">${label('EMPEZÁ EL CAMBIO DE TU VIDA HOY')}<h1>UN DÍA<br>A LA VEZ<span class="habit-period">.</span></h1><p>Las buenas costumbres llevan a concretar niveles que ni sabías que podías lograr. Prepárate para comenzar el cambio.</p><div class="habit-actions">${button('CONÓCEME','conoceme')}${button('PLANES','entrenamientos','outline')}</div><div class="hero-end"><span>CONSTANCIA · HÁBITOS · PROGRESO</span><b>${noeliaIcon("down")}</b></div></div></section>
 <section class="section dark about noelia-feature-preview" data-theme="dark" id="noelia"><div class="wrap"><div class="section-index"><small>02 / QUIÉN ES BARBIEMONSTRUO</small><small>PERSONAL TRAINER</small></div>
 <div class="about-layout">
   <div class="about-media-stack">
@@ -944,49 +944,49 @@ const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-th
 <div class="wrap">
 <div class="results-heading reveal"><div class="results-kicker"><span class="eyebrow">TRANSFORMACIONES REALES</span><span class="results-kicker-light" aria-hidden="true"></span></div><h2>RESULTADOS<br>REALES<span class="results-period">.</span></h2><p>Cuerpos reales. Resultados reales. Los cambios se construyen con disciplina y constancia. Primero en el hábito de la alimentación y luego el entrenamiento. Acá podrás ver estos hermosos cambios.</p><div class="results-duration"><span class="results-duration-num">03</span><span class="results-duration-copy"><strong>MESES</strong><small>TIEMPO DE TRANSFORMACIÓN</small></span></div></div>
 <div class="results-gallery reveal" data-result-index="0"><div class="results-compare-card" aria-label="Comparadores interactivos de las siete transformaciones">
-<div class="results-slide" data-result="1"><div class="results-comparison" style="--compare:50%">
+<div class="results-slide" data-result="1" data-months="3"><div class="results-comparison" style="--compare:50%">
 <img class="results-photo results-photo-after" src="/media/noelia_resultado_01_despues.webp" alt="Fotografía después de la primera transformación" loading="lazy" decoding="async">
 <img class="results-photo results-photo-before" src="/media/noelia_resultado_01_antes.webp" alt="Fotografía antes de la primera transformación" loading="lazy" decoding="async">
 <span class="results-image-label results-image-label-before">ANTES</span><span class="results-image-label results-image-label-after">DESPUÉS</span>
 <div class="results-divider" aria-hidden="true"><span class="results-divider-grip"><span>‹</span><span>›</span></span></div>
 <input type="range" class="results-comparison-range" min="0" max="100" step="1" value="50" aria-label="Comparar imágenes antes y después, resultado 1 de 7" aria-valuetext="50 por ciento de la fotografía de antes">
 </div><div class="results-caption"><span>RESULTADO REAL · 01</span><span class="results-caption-dash" aria-hidden="true"></span></div></div>
-<div class="results-slide" data-result="2" hidden><div class="results-comparison" style="--compare:50%">
-<img class="results-photo results-photo-after" src="/media/noelia_resultado_02_despues.webp" alt="Fotografía después de la segunda transformación" loading="lazy" decoding="async">
-<img class="results-photo results-photo-before" src="/media/noelia_resultado_02_antes.webp" alt="Fotografía antes de la segunda transformación" loading="lazy" decoding="async">
+<div class="results-slide" data-result="2" data-months="2" hidden><div class="results-comparison" style="--compare:50%">
+<img class="results-photo results-photo-after" src="/media/noelia_resultado_02_antes.webp" alt="Fotografía después de la segunda transformación" loading="lazy" decoding="async">
+<img class="results-photo results-photo-before" src="/media/noelia_resultado_02_despues.webp" alt="Fotografía antes de la segunda transformación" loading="lazy" decoding="async">
 <span class="results-image-label results-image-label-before">ANTES</span><span class="results-image-label results-image-label-after">DESPUÉS</span>
 <div class="results-divider" aria-hidden="true"><span class="results-divider-grip"><span>‹</span><span>›</span></span></div>
 <input type="range" class="results-comparison-range" min="0" max="100" step="1" value="50" aria-label="Comparar imágenes antes y después, resultado 2 de 7" aria-valuetext="50 por ciento de la fotografía de antes">
 </div><div class="results-caption"><span>RESULTADO REAL · 02</span><span class="results-caption-dash" aria-hidden="true"></span></div></div>
-<div class="results-slide" data-result="3" hidden><div class="results-comparison" style="--compare:50%">
+<div class="results-slide" data-result="3" data-months="6" hidden><div class="results-comparison" style="--compare:50%">
 <img class="results-photo results-photo-after" src="/media/noelia_resultado_03_despues.webp" alt="Fotografía después de la tercera transformación" loading="lazy" decoding="async">
 <img class="results-photo results-photo-before" src="/media/noelia_resultado_03_antes.webp" alt="Fotografía antes de la tercera transformación" loading="lazy" decoding="async">
 <span class="results-image-label results-image-label-before">ANTES</span><span class="results-image-label results-image-label-after">DESPUÉS</span>
 <div class="results-divider" aria-hidden="true"><span class="results-divider-grip"><span>‹</span><span>›</span></span></div>
 <input type="range" class="results-comparison-range" min="0" max="100" step="1" value="50" aria-label="Comparar imágenes antes y después, resultado 3 de 7" aria-valuetext="50 por ciento de la fotografía de antes">
 </div><div class="results-caption"><span>RESULTADO REAL · 03</span><span class="results-caption-dash" aria-hidden="true"></span></div></div>
-<div class="results-slide" data-result="4" hidden><div class="results-comparison" style="--compare:50%">
+<div class="results-slide" data-result="4" data-months="3" hidden><div class="results-comparison" style="--compare:50%">
 <img class="results-photo results-photo-after" src="/media/noelia_resultado_04_despues.webp" alt="Fotografía después de la cuarta transformación" loading="lazy" decoding="async">
 <img class="results-photo results-photo-before" src="/media/noelia_resultado_04_antes.webp" alt="Fotografía antes de la cuarta transformación" loading="lazy" decoding="async">
 <span class="results-image-label results-image-label-before">ANTES</span><span class="results-image-label results-image-label-after">DESPUÉS</span>
 <div class="results-divider" aria-hidden="true"><span class="results-divider-grip"><span>‹</span><span>›</span></span></div>
 <input type="range" class="results-comparison-range" min="0" max="100" step="1" value="50" aria-label="Comparar imágenes antes y después, resultado 4 de 7" aria-valuetext="50 por ciento de la fotografía de antes">
 </div><div class="results-caption"><span>RESULTADO REAL · 04</span><span class="results-caption-dash" aria-hidden="true"></span></div></div>
-<div class="results-slide" data-result="5" hidden><div class="results-comparison" style="--compare:50%">
+<div class="results-slide" data-result="5" data-months="5" hidden><div class="results-comparison" style="--compare:50%">
 <img class="results-photo results-photo-after" src="/media/noelia_resultado_05_despues.webp" alt="Fotografía después de la quinta transformación" loading="lazy" decoding="async">
 <img class="results-photo results-photo-before" src="/media/noelia_resultado_05_antes.webp" alt="Fotografía antes de la quinta transformación" loading="lazy" decoding="async">
 <span class="results-image-label results-image-label-before">ANTES</span><span class="results-image-label results-image-label-after">DESPUÉS</span>
 <div class="results-divider" aria-hidden="true"><span class="results-divider-grip"><span>‹</span><span>›</span></span></div>
 <input type="range" class="results-comparison-range" min="0" max="100" step="1" value="50" aria-label="Comparar imágenes antes y después, resultado 5 de 7" aria-valuetext="50 por ciento de la fotografía de antes">
 </div><div class="results-caption"><span>RESULTADO REAL · 05</span><span class="results-caption-dash" aria-hidden="true"></span></div></div>
-<div class="results-slide" data-result="6" hidden><div class="results-comparison" style="--compare:50%">
+<div class="results-slide" data-result="6" data-months="6" hidden><div class="results-comparison" style="--compare:50%">
 <img class="results-photo results-photo-after" src="/media/noelia_resultado_06_despues.webp" alt="Fotografía después de la sexta transformación" loading="lazy" decoding="async">
 <img class="results-photo results-photo-before" src="/media/noelia_resultado_06_antes.webp" alt="Fotografía antes de la sexta transformación" loading="lazy" decoding="async">
 <span class="results-image-label results-image-label-before">ANTES</span><span class="results-image-label results-image-label-after">DESPUÉS</span>
 <div class="results-divider" aria-hidden="true"><span class="results-divider-grip"><span>‹</span><span>›</span></span></div>
 <input type="range" class="results-comparison-range" min="0" max="100" step="1" value="50" aria-label="Comparar imágenes antes y después, resultado 6 de 7" aria-valuetext="50 por ciento de la fotografía de antes">
 </div><div class="results-caption"><span>RESULTADO REAL · 06</span><span class="results-caption-dash" aria-hidden="true"></span></div></div>
-<div class="results-slide" data-result="7" hidden><div class="results-comparison" style="--compare:50%">
+<div class="results-slide" data-result="7" data-months="3" hidden><div class="results-comparison" style="--compare:50%">
 <img class="results-photo results-photo-after" src="/media/noelia_resultado_07_despues.webp" alt="Fotografía después de la séptima transformación" loading="lazy" decoding="async">
 <img class="results-photo results-photo-before" src="/media/noelia_resultado_07_antes.webp" alt="Fotografía antes de la séptima transformación" loading="lazy" decoding="async">
 <span class="results-image-label results-image-label-before">ANTES</span><span class="results-image-label results-image-label-after">DESPUÉS</span>
@@ -1291,7 +1291,16 @@ document.addEventListener('click',e=>{
  gallery.dataset.resultIndex=String(next);
  gallery.querySelector('.results-gallery-index').textContent=String(next+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
  const duration=gallery.closest('.real-results')?.querySelector('.results-duration');
- if(duration)duration.hidden=next!==0; // Tres meses confirmados solo para la primera transformación.
+ if(duration){
+  const months=Number(slides[next].dataset.months);
+  const number=duration.querySelector('.results-duration-num');
+  const unit=duration.querySelector('.results-duration-copy strong');
+  if(number&&unit&&Number.isInteger(months)&&months>0){
+   number.textContent=String(months).padStart(2,'0');
+   unit.textContent=months===1?'MES':'MESES';
+   duration.hidden=false;
+  }else{duration.hidden=true}
+ }
 });
 document.addEventListener('click',async e=>{if(e.target.closest('#copy-control-message')){const msg=document.getElementById('monthly-check-preview')?.textContent||'';try{await navigator.clipboard.writeText(msg);notify('Mensaje copiado. Adjuntá tus fotos desde tu correo.')}catch{notify('Seleccioná el texto y copialo manualmente.')}return;}if(e.target.closest('#copy-message')){const msg=document.getElementById('message-preview')?.textContent||'';try{await navigator.clipboard.writeText(msg);notify('Texto copiado')}catch{notify('Seleccioná el texto para copiarlo')}}});
 document.getElementById('openMenu').addEventListener('click',()=>setMenu(true));document.getElementById('closeMenu').addEventListener('click',()=>setMenu(false));document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});window.addEventListener('hashchange',()=>render(decodeURIComponent(location.hash.slice(1))));window.addEventListener('scroll',scrollTheme,{passive:true});render(decodeURIComponent(location.hash.slice(1)||'inicio'));
