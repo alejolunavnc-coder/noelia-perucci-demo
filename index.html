@@ -962,6 +962,40 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  .noelia-feature-preview .about-bio .eyebrow::after{max-width:92px}
  .noelia-feature-preview .about-bio .bio-closing::after{margin-top:15px}
 }
+
+/* GYM_TANDA_01_ENTRENAMIENTOS_LINEAS_FUCSIAS_20261110 */
+/* Líneas decorativas coordinadas con Noelia y Resultados reales.
+   Fondo blanco, retrato, tipografía, botones y grilla intactos. */
+.section.white.teaser{isolation:isolate}
+.section.white.teaser::before{
+ content:"";position:absolute;top:0;left:var(--pad);
+ width:min(42%,360px);height:1px;pointer-events:none;
+ background:linear-gradient(90deg,#ed087c 0%,rgba(237,8,124,.65) 46%,transparent 100%);
+ box-shadow:0 0 9px rgba(237,8,124,.48);
+}
+.section.white.teaser .teaser-grid>.reveal:first-child>.eyebrow{
+ display:flex;align-items:center;gap:16px;
+}
+.section.white.teaser .teaser-grid>.reveal:first-child>.eyebrow::after{
+ content:"";display:block;flex:1;max-width:155px;min-width:16px;height:1px;
+ background:linear-gradient(90deg,rgba(237,8,124,.4),#ed087c 62%,transparent);
+ box-shadow:0 0 9px rgba(237,8,124,.48);
+}
+.section.white.teaser .teaser-grid>.reveal:first-child>p{
+ position:relative;
+}
+.section.white.teaser .teaser-grid>.reveal:first-child>p::after{
+ content:"";position:absolute;bottom:-10px;left:0;
+ width:min(65%,310px);height:1px;pointer-events:none;
+ background:linear-gradient(90deg,#ed087c 0%,rgba(237,8,124,.6) 60%,transparent 100%);
+ box-shadow:0 0 8px rgba(237,8,124,.43);
+}
+@media(max-width:759px){
+ .section.white.teaser::before{width:min(48%,190px)}
+ .section.white.teaser .teaser-grid>.reveal:first-child>.eyebrow{gap:10px}
+ .section.white.teaser .teaser-grid>.reveal:first-child>.eyebrow::after{max-width:90px}
+ .section.white.teaser .teaser-grid>.reveal:first-child>p::after{width:min(60%,220px)}
+}
 </style>
 
 </head>
