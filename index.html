@@ -847,40 +847,50 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  .noelia-feature-preview .portrait-below small{text-align:left}
 }
 
-/* NOELIA 2026-11-10 — la sección biográfica ocupa su propia pantalla;
-   tarjeta vertical ampliada, foto y firma completas, sin cortar contenido. */
+/* NOELIA 2026-11-10 — ajuste de altura real disponible:
+   retrato completo Y epígrafe dentro de pantalla, sin mostrar el carrusel al pie. */
 @media(min-width:760px){
  .noelia-feature-preview.about{
-  min-height:100svh;
+  min-height:calc(100svh - 74px);
+  height:auto;
   box-sizing:border-box;
   display:flex;
-  align-items:center;
-  padding-top:clamp(34px,4svh,55px)!important;
-  padding-bottom:clamp(52px,7svh,84px)!important;
+  align-items:flex-start;
+  padding-top:clamp(16px,2.5svh,26px)!important;
+  padding-bottom:clamp(24px,4svh,38px)!important;
  }
  .noelia-feature-preview.about>.wrap{width:min(100%,1040px)}
+ .noelia-feature-preview .section-index{margin-bottom:clamp(17px,2.4svh,25px)}
  .noelia-feature-preview .about-layout{
   grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  gap:clamp(38px,4.5vw,65px);
+  gap:clamp(34px,4.5vw,65px);
   align-items:center;
  }
  .noelia-feature-preview .about-media-stack{align-items:flex-start}
+ .noelia-feature-preview figure.portrait.about-portrait{
+  width:fit-content;max-width:100%;height:auto;
+  max-height:none;aspect-ratio:auto;overflow:hidden;
+ }
  .noelia-feature-preview figure.portrait.about-portrait>img{
-  height:auto;width:auto;max-width:100%;max-height:min(79svh,760px);
+  display:block;width:auto;height:auto;
+  max-width:100%;max-height:max(290px,calc(100svh - 260px));
   aspect-ratio:auto;object-fit:contain;object-position:center;
  }
  .noelia-feature-preview figure.portrait.about-portrait>.portrait-below{
-  flex-wrap:wrap;min-height:43px;
+  flex:0 0 auto;flex-wrap:wrap;min-height:44px;
+  padding:11px 13px;
  }
 }
+@media(min-width:760px) and (max-height:690px){
+ .noelia-feature-preview.about{padding-top:12px!important;padding-bottom:24px!important}
+ .noelia-feature-preview .section-index{margin-bottom:13px}
+ .noelia-feature-preview figure.portrait.about-portrait>img{max-height:max(240px,calc(100svh - 218px))}
+}
 @media(max-width:759px){
- .noelia-feature-preview.about{
-  min-height:100svh;
-  padding-bottom:clamp(42px,7svh,76px)!important;
- }
+ .noelia-feature-preview.about{min-height:100svh;padding-bottom:clamp(42px,7svh,76px)!important}
  .noelia-feature-preview figure.portrait.about-portrait>img{
-  width:auto;height:auto;max-width:100%;max-height:min(72svh,710px);
-  aspect-ratio:auto;object-fit:contain;
+  width:auto;height:auto;max-width:100%;max-height:min(68svh,670px);
+  aspect-ratio:auto;object-fit:contain
  }
 }
 </style>
