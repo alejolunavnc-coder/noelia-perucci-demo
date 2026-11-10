@@ -893,6 +893,75 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   aspect-ratio:auto;object-fit:contain
  }
 }
+
+/* IDENTIDAD COMPARTIDA CON RESULTADOS REALES — luces y líneas fucsias.
+   Solo decoración: no altera el encuadre del retrato ni el espacio de su pie. */
+.noelia-feature-preview.about{
+ position:relative;isolation:isolate;
+ background:#0b0a0e;
+ border-block:1px solid #30202b;
+}
+.noelia-feature-preview.about::before{
+ content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+ background:
+  radial-gradient(ellipse 35% 55% at 21% 44%,rgba(151,10,85,.19),transparent 83%),
+  radial-gradient(ellipse 42% 56% at 82% 52%,rgba(149,10,84,.20),transparent 80%),
+  radial-gradient(ellipse 55% 28% at 70% 100%,rgba(110,6,65,.16),transparent 80%);
+}
+.noelia-feature-preview.about::after{
+ content:"";position:absolute;inset:auto 0 0;height:31%;z-index:0;pointer-events:none;
+ background:
+  linear-gradient(168deg,transparent 43%,rgba(237,8,124,.27) 43.18%,transparent 43.55%),
+  radial-gradient(ellipse 70% 46% at 72% 100%,rgba(97,10,60,.20),transparent 85%);
+ opacity:.65;
+}
+.noelia-feature-preview.about>.wrap{position:relative;z-index:1}
+.noelia-feature-preview .section-index{
+ border-top-color:#624156;
+}
+.noelia-feature-preview .section-index::after{
+ content:"";position:absolute;left:0;top:-1px;
+ height:1px;width:min(32%,250px);pointer-events:none;
+ background:linear-gradient(90deg,#ed087c 0%,rgba(237,8,124,.65) 40%,transparent 100%);
+ box-shadow:0 0 9px rgba(237,8,124,.4);
+}
+.noelia-feature-preview .section-index{position:relative}
+.noelia-feature-preview .about-bio .eyebrow{
+ display:flex;align-items:center;gap:17px;
+ color:#ed087c;letter-spacing:.14em;
+}
+.noelia-feature-preview .about-bio .eyebrow::after{
+ content:"";display:block;flex:1;max-width:156px;min-width:20px;height:1px;
+ background:linear-gradient(90deg,rgba(237,8,124,.35),#ed087c 65%,transparent);
+ box-shadow:0 0 9px rgba(237,8,124,.65);
+}
+.noelia-feature-preview .about-bio h2{
+ text-shadow:0 0 30px rgba(237,8,124,.06);
+}
+.noelia-feature-preview .about-bio .bio-closing{
+ position:relative;
+}
+.noelia-feature-preview .about-bio .bio-closing::after{
+ content:"";display:block;width:min(70%,350px);height:1px;margin-top:19px;
+ background:linear-gradient(90deg,transparent,#ed087c 52%,transparent);
+ box-shadow:0 0 10px rgba(237,8,124,.56);
+}
+.noelia-feature-preview figure.portrait.about-portrait{
+ box-shadow:
+  0 0 0 1px rgba(250,80,168,.22),
+  0 0 12px rgba(237,8,124,.52),
+  0 0 35px rgba(237,8,124,.17),
+  0 24px 65px rgba(0,0,0,.48);
+}
+.noelia-feature-preview figure.portrait.about-portrait>.portrait-below{
+ border-top-color:rgba(237,8,124,.35);
+}
+@media(max-width:759px){
+ .noelia-feature-preview.about::after{height:23%;opacity:.38}
+ .noelia-feature-preview .about-bio .eyebrow{gap:10px}
+ .noelia-feature-preview .about-bio .eyebrow::after{max-width:92px}
+ .noelia-feature-preview .about-bio .bio-closing::after{margin-top:15px}
+}
 </style>
 
 </head>
