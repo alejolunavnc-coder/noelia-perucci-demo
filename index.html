@@ -810,6 +810,42 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 .results-prev:hover,.results-prev:focus-visible{background:#3b1730;border-color:#f14c9f;outline-offset:3px}
 @media(max-width:380px){.results-gallery-nav{gap:7px}.results-gallery-index{font-size:10px}.results-gallery-actions{gap:5px}.results-prev,.results-next{font-size:9px;padding:10px 11px}}
 @media(prefers-reduced-motion:reduce){.results-prev{transition:none}}
+
+/* NOELIA — retrato completo con pie legible, marco rosa (desktop/tablet/celular).
+   Mantener proporción original: nunca recortar ni superponer el pie de foto. */
+.noelia-feature-preview .about-media-stack{min-width:0;align-items:flex-start}
+.noelia-feature-preview figure.portrait.about-portrait{
+ display:flex;flex-direction:column;align-items:stretch;
+ width:fit-content;max-width:100%;height:auto;max-height:none;
+ margin:0;overflow:hidden;aspect-ratio:auto;
+ border:2px solid #ed087c;border-radius:16px;
+ background:#151419;
+ box-shadow:0 0 0 1px rgba(237,8,124,.2),0 0 18px rgba(237,8,124,.25),0 20px 50px rgba(0,0,0,.5);
+}
+.noelia-feature-preview figure.portrait.about-portrait>img{
+ display:block;flex:0 1 auto;width:auto;height:auto;
+ max-width:100%;max-height:min(66svh,610px);
+ aspect-ratio:auto;object-fit:contain;object-position:center;
+ border-radius:13px 13px 0 0;filter:none;transform:none;
+}
+.noelia-feature-preview figure.portrait.about-portrait>.portrait-below{
+ position:static;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+ flex:0 0 auto;gap:6px 14px;width:100%;min-width:0;max-width:100%;
+ margin:0;padding:12px 14px;
+ background:#17151a;border-top:1px solid #6b3652;border-radius:0 0 13px 13px;
+}
+.noelia-feature-preview .portrait-below strong,
+.noelia-feature-preview .portrait-below small{white-space:normal;overflow-wrap:break-word}
+@media(max-width:759px){
+ .noelia-feature-preview .about-media-stack{align-items:stretch}
+ .noelia-feature-preview figure.portrait.about-portrait{max-width:100%;align-self:center}
+ .noelia-feature-preview figure.portrait.about-portrait>img{max-height: min(68svh,670px)}
+ .noelia-feature-preview figure.portrait.about-portrait>.portrait-below{padding:12px 13px}
+}
+@media(max-width:380px){
+ .noelia-feature-preview figure.portrait.about-portrait>.portrait-below{flex-direction:column;align-items:flex-start}
+ .noelia-feature-preview .portrait-below small{text-align:left}
+}
 </style>
 
 </head>
