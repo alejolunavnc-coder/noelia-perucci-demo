@@ -996,6 +996,60 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  .section.white.teaser .teaser-grid>.reveal:first-child>.eyebrow::after{max-width:90px}
  .section.white.teaser .teaser-grid>.reveal:first-child>p::after{width:min(60%,220px)}
 }
+
+/* GYM_TANDA_02_IDENTIDAD_FUCSIA_SOBRE_BLANCO_20261110 */
+/* Reutiliza fucsia #ed087c, líneas degradadas y glow de Noelia/Resultados.
+   Decoración aislada, sin modificar contenido, fotografía ni distribución. */
+.section.white.teaser{
+ position:relative;isolation:isolate;
+ background:#f4f2ee;color:#141313;
+}
+.section.white.teaser::after{
+ content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+ background:
+  linear-gradient(164deg,transparent 29.75%,rgba(237,8,124,.17) 29.83%,transparent 29.98%) 100% 0/55% 100% no-repeat,
+  linear-gradient(157deg,transparent 64.7%,rgba(237,8,124,.20) 64.8%,transparent 64.95%) 100% 0/72% 100% no-repeat,
+  linear-gradient(18deg,transparent 76%,rgba(237,8,124,.14) 76.11%,transparent 76.24%) 0 100%/56% 70% no-repeat,
+  radial-gradient(ellipse 28% 43% at 92% 19%,rgba(237,8,124,.085),transparent 82%),
+  radial-gradient(ellipse 30% 32% at 6% 91%,rgba(237,8,124,.065),transparent 80%);
+}
+.section.white.teaser>.wrap{position:relative;z-index:1}
+.section.white.teaser .teaser-grid>.reveal:first-child{position:relative}
+.section.white.teaser .teaser-grid>.reveal:first-child::before{
+ content:"";position:absolute;top:12%;left:-18px;width:2px;height:clamp(50px,12vw,105px);
+ background:linear-gradient(180deg,transparent,#ed087c 42%,rgba(237,8,124,.2) 88%,transparent);
+ box-shadow:0 0 11px rgba(237,8,124,.46);pointer-events:none;
+}
+.section.white.teaser .teaser-grid>.reveal:first-child>h2{position:relative}
+.section.white.teaser .teaser-grid>.reveal:first-child>h2::after{
+ content:"";position:absolute;bottom:-5px;right:0;width:min(28%,118px);height:1px;
+ background:linear-gradient(90deg,transparent,#ed087c 62%,transparent);
+ box-shadow:0 0 10px rgba(237,8,124,.5);pointer-events:none;
+}
+.section.white.teaser .teaser-image{
+ outline:2px solid #ed087c;outline-offset:0;
+ box-shadow:
+  0 0 0 1px rgba(250,80,168,.22),
+  0 0 12px rgba(237,8,124,.46),
+  0 0 35px rgba(237,8,124,.17),
+  0 24px 60px rgba(0,0,0,.17);
+}
+@media(max-width:759px){
+ .section.white.teaser::after{
+  background:
+   linear-gradient(157deg,transparent 59.8%,rgba(237,8,124,.13) 59.95%,transparent 60.12%) 100% 0/80% 72% no-repeat,
+   linear-gradient(20deg,transparent 69.8%,rgba(237,8,124,.13) 69.95%,transparent 70.12%) 0 100%/76% 48% no-repeat,
+   radial-gradient(ellipse 65% 27% at 100% 15%,rgba(237,8,124,.06),transparent 83%),
+   radial-gradient(ellipse 60% 26% at 0 94%,rgba(237,8,124,.05),transparent 83%);
+ }
+ .section.white.teaser .teaser-grid>.reveal:first-child::before{
+  left:-11px;height:60px;top:9%;
+ }
+ .section.white.teaser .teaser-grid>.reveal:first-child>h2::after{width:70px}
+ .section.white.teaser .teaser-image{
+  box-shadow:0 0 0 1px rgba(250,80,168,.2),0 0 10px rgba(237,8,124,.36),0 0 25px rgba(237,8,124,.13),0 18px 45px rgba(0,0,0,.14);
+ }
+}
 </style>
 
 </head>
