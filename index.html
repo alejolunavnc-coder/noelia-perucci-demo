@@ -1079,6 +1079,77 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
    0 18px 45px rgba(0,0,0,.14);
  }
 }
+
+/* GYM_TANDA_04_PLANES_COMPACTOS_20261111 */
+/* Solo sección Elegí cómo entrenar: reducción de altura sin ocultar contenido,
+   alterar las fotos, precios, textos, acciones o distribución de las tarjetas. */
+.section.white.plans-list{
+ padding-top:clamp(22px,3vw,38px);
+ padding-bottom:clamp(28px,3.5vw,48px);
+}
+.section.white.plans-list h2{
+ font-size:clamp(34px,4.6vw,56px);
+ line-height:1.01;
+ margin-top:4px;
+ margin-bottom:5px;
+}
+.section.white.plans-list .topcopy{
+ margin-bottom:clamp(13px,2vw,22px);
+ font-size:14px;
+ line-height:1.45;
+}
+.section.white.plans-list .offer-grid{gap:clamp(13px,1.6vw,20px)}
+.section.white.plans-list .offer{margin-bottom:0}
+.section.white.plans-list .offer .offer-image{height:clamp(120px,15vw,175px)}
+.section.white.plans-list .offer .offer-info{
+ min-height:0;
+ padding:clamp(13px,1.6vw,19px);
+}
+.section.white.plans-list .offer .offer-title{
+ font-size:clamp(25px,3vw,35px);
+ line-height:1;
+ margin:5px 0 7px;
+}
+.section.white.plans-list .offer .offer-info>p:not(.note){
+ min-height:0;
+ font-size:13px;
+ line-height:1.4;
+ margin-bottom:9px;
+}
+.section.white.plans-list .offer-price{
+ font-size:clamp(20px,2.3vw,26px);
+ margin:0 0 9px;
+}
+.section.white.plans-list .offer .feature-list{margin:0 0 12px}
+.section.white.plans-list .offer .feature{
+ padding:7px 0;
+ gap:10px;
+ line-height:1.28;
+ font-size:12px;
+}
+.section.white.plans-list .offer .feature small{font-size:9px}
+.section.white.plans-list .offer .offer-info>.btn{
+ min-height:41px;
+ padding:5px 7px 5px 13px;
+ font-size:12px;
+}
+.section.white.plans-list .offer .offer-info>.btn .arr{width:29px;height:29px}
+.section.white.plans-list .offer .note{margin:8px 0 0}
+.section.white.plans-list .offer .offer-image .figure-num{
+ top:11px;left:11px;padding:6px 9px;font-size:10px;
+}
+@media(max-width:759px){
+ .section.white.plans-list{padding:37px var(--pad) 46px}
+ .section.white.plans-list h2{font-size:clamp(34px,9vw,45px)}
+ .section.white.plans-list .topcopy{margin-bottom:20px}
+ .section.white.plans-list .offer-grid{gap:17px}
+ .section.white.plans-list .offer .offer-image{height:clamp(165px,48vw,220px)}
+ .section.white.plans-list .offer .offer-info{padding:18px}
+ .section.white.plans-list .offer .offer-title{font-size:clamp(30px,8vw,40px)}
+ .section.white.plans-list .offer .offer-info>p:not(.note){font-size:14px;line-height:1.5}
+ .section.white.plans-list .offer .feature{font-size:13px;padding:9px 0}
+ .section.white.plans-list .offer .offer-info>.btn{min-height:48px;font-size:13px}
+}
 </style>
 
 </head>
