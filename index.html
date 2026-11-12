@@ -1230,6 +1230,57 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   margin-inline:auto;
  }
 }
+
+/* GYM_TANDA_08_LINEAS_ROSAS_FONDO_PLANES_20261112 */
+/* Mismo fucsia, líneas oblicuas y glow sutil que las secciones blancas existentes.
+   Capa puramente decorativa, por detrás del encabezado y ambas tarjetas. */
+.section.white.plans-list{
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
+}
+.section.white.plans-list::before{
+ content:"";
+ position:absolute;
+ z-index:0;
+ pointer-events:none;
+ top:0;
+ left:var(--pad);
+ width:min(43%,390px);
+ height:1px;
+ background:linear-gradient(90deg,#ed087c 0%,rgba(237,8,124,.65) 48%,transparent);
+ box-shadow:0 0 9px rgba(237,8,124,.48);
+}
+.section.white.plans-list::after{
+ content:"";
+ position:absolute;
+ inset:0;
+ z-index:0;
+ pointer-events:none;
+ background:
+  linear-gradient(157deg,transparent 55.4%,rgba(237,8,124,.23) 55.5%,transparent 55.67%) 100% 0/64% 100% no-repeat,
+  linear-gradient(166deg,transparent 29.2%,rgba(237,8,124,.17) 29.32%,transparent 29.49%) 100% 0/52% 82% no-repeat,
+  linear-gradient(19deg,transparent 67.1%,rgba(237,8,124,.18) 67.22%,transparent 67.38%) 0 100%/58% 73% no-repeat,
+  radial-gradient(ellipse 27% 33% at 97% 18%,rgba(237,8,124,.075),transparent 86%),
+  radial-gradient(ellipse 28% 30% at 3% 86%,rgba(237,8,124,.055),transparent 84%);
+}
+.section.white.plans-list>.wrap{
+ position:relative;
+ z-index:1;
+}
+@media(max-width:759px){
+ .section.white.plans-list::before{
+  left:var(--pad);
+  width:min(56%,220px);
+ }
+ .section.white.plans-list::after{
+  background:
+   linear-gradient(158deg,transparent 57%,rgba(237,8,124,.19) 57.15%,transparent 57.35%) 100% 0/70% 65% no-repeat,
+   linear-gradient(20deg,transparent 60%,rgba(237,8,124,.14) 60.18%,transparent 60.38%) 0 100%/67% 60% no-repeat,
+   radial-gradient(ellipse 45% 27% at 99% 12%,rgba(237,8,124,.065),transparent 85%),
+   radial-gradient(ellipse 40% 23% at 2% 93%,rgba(237,8,124,.055),transparent 85%);
+ }
+}
 </style>
 
 </head>
