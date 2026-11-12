@@ -1420,37 +1420,39 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  .section.smoke.process.process-redesign .process-actions>.btn{transition:none}
 }
 
-/* GYM_TANDA_16_TRANSICION_VIOLETA_SUAVE_20261112 */
-/* Fusión difusa en la frontera entre Planes y Así funciona.
-   Dos halos equivalentes comparten el mismo tono en el borde sin bandas opacas.
-   No modifica medidas ni elementos interactivos. */
+/* GYM_TANDA_17_UNION_SIN_CORTE_20261112 */
+/* Sustituye los halos semitransparentes de Tanda 16, que dejaban ver
+   distintas capas debajo de cada sección y mostraban una raya en la unión.
+   Ambas caras se funden en el MISMO color opaco #efd9e8 en el borde. */
 .section.white.plans-list::after{
  content:"";
  position:absolute;
- left:0;right:0;bottom:0;
+ left:0;
+ right:0;
+ bottom:0;
  height:clamp(115px,15vw,205px);
- z-index:0;
+ z-index:1;
  pointer-events:none;
- background:
-  radial-gradient(ellipse 67% 116% at 50% 100%,
-    rgba(209,123,197,.18) 0%,
-    rgba(221,147,199,.13) 36%,
-    rgba(237,175,206,.065) 65%,
-    transparent 94%);
+ background:linear-gradient(to bottom,
+  rgba(244,242,238,0) 0%,
+  rgba(239,217,232,.16) 24%,
+  rgba(239,217,232,.54) 62%,
+  #efd9e8 100%);
 }
 .section.smoke.process.process-redesign::after{
  content:"";
  position:absolute;
- left:0;right:0;top:0;
+ left:0;
+ right:0;
+ top:0;
  height:clamp(105px,13vw,185px);
- z-index:0;
+ z-index:1;
  pointer-events:none;
- background:
-  radial-gradient(ellipse 67% 116% at 50% 0%,
-    rgba(209,123,197,.18) 0%,
-    rgba(221,147,199,.13) 36%,
-    rgba(237,175,206,.065) 65%,
-    transparent 94%);
+ background:linear-gradient(to bottom,
+  #efd9e8 0%,
+  rgba(239,217,232,.54) 38%,
+  rgba(239,217,232,.16) 76%,
+  rgba(244,242,238,0) 100%);
 }
 @media(max-width:759px){
  .section.white.plans-list::after{height:130px}
