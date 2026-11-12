@@ -1268,6 +1268,157 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 @media(max-width:759px){
  .section.white.plans-list{padding-top:40px}
 }
+
+/* GYM_TANDA_15_PROCESO_COMPACTO_MODELO_20261112 */
+/* Aplicación aislada del modelo aprobado de Así funciona; sin cambiar las acciones. */
+.section.smoke.process.process-redesign{
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
+ background:#f4f2ee;
+ padding:34px var(--pad) 94px;
+}
+.section.smoke.process.process-redesign::before{
+ content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+ background:
+  radial-gradient(ellipse 43% 55% at 0% 85%,rgba(255,41,151,.25),rgba(255,86,165,.11) 53%,transparent 94%),
+  radial-gradient(ellipse 43% 55% at 100% 81%,rgba(246,24,136,.24),rgba(253,120,185,.11) 53%,transparent 94%),
+  radial-gradient(ellipse 64% 28% at 50% 105%,rgba(248,56,145,.23),rgba(248,96,169,.1) 55%,transparent 100%),
+  linear-gradient(180deg,rgba(253,208,231,.17),transparent 30%,transparent 60%,rgba(255,103,176,.09));
+}
+.section.smoke.process.process-redesign>.process-wave{
+ position:absolute;bottom:-1px;left:0;width:100%;height:clamp(145px,18vw,245px);
+ pointer-events:none;z-index:1;display:block;
+}
+.section.smoke.process.process-redesign>.process-content{
+ position:relative;z-index:2;max-width:1100px;
+}
+.section.smoke.process.process-redesign .process-content>.eyebrow{
+ color:#ed087c;
+ font-size:clamp(11px,1vw,14px);
+ font-weight:700;
+ letter-spacing:.16em;
+ line-height:1.35;
+}
+.section.smoke.process.process-redesign .process-content>h2{
+ font-size:clamp(43px,4.15vw,64px);
+ line-height:.98;
+ margin:9px 0 23px;
+ letter-spacing:-.065em;
+ white-space:nowrap;
+ overflow-wrap:normal;
+}
+.section.smoke.process.process-redesign .process-title-dot{color:#ed087c}
+.section.smoke.process.process-redesign .process-steps{width:100%}
+.section.smoke.process.process-redesign .process-row{
+ display:grid;grid-template-columns:70px minmax(0,1fr);align-items:center;
+ gap:22px;
+ min-height:88px;
+ padding:12px 0;
+ border-top:1px solid rgba(80,69,69,.2);
+ border-bottom:0;
+}
+.section.smoke.process.process-redesign .process-row:last-child{
+ border-bottom:1px solid rgba(80,69,69,.2);
+}
+.section.smoke.process.process-redesign .process-number{
+ display:flex;align-items:center;justify-content:center;
+ width:62px;height:62px;border-radius:17px;
+ background:rgba(248,76,160,.14);
+ flex:none;
+}
+.section.smoke.process.process-redesign .process-number code{
+ font:900 clamp(26px,2.4vw,35px)/1 var(--head);
+ color:#d60070;
+ font-variant-numeric:tabular-nums;
+ letter-spacing:-.06em;
+}
+.section.smoke.process.process-redesign .process-row h3{
+ font:950 clamp(25px,2.5vw,34px)/1 var(--head);
+ letter-spacing:-.055em;
+ margin:0 0 5px;
+ color:#141313;
+}
+.section.smoke.process.process-redesign .process-row p{
+ color:#5c5656;
+ font-size:clamp(13px,1.08vw,16px);
+ line-height:1.38;
+ margin:0;
+}
+.section.smoke.process.process-redesign .process-actions{
+ display:grid;
+ grid-template-columns: minmax(0,1fr) minmax(0,1.16fr);
+ gap:20px;
+ align-items:stretch;
+ margin-top:21px;
+}
+.section.smoke.process.process-redesign .process-actions>.btn{
+ width:100%;
+ max-width:none;
+ min-width:0;
+ min-height:58px;
+ margin:0;
+ padding:7px 10px 7px 19px;
+ border-radius:17px;
+ gap:10px;
+ display:flex;
+ align-items:center;
+}
+.section.smoke.process.process-redesign .process-actions>.btn>span:first-child{
+ min-width:0;
+ font-size:clamp(11px,1vw,14px);
+ line-height:1.18;
+}
+.section.smoke.process.process-redesign .process-actions>.btn .arr{
+ width:39px;height:39px;flex:none;border-radius:13px;
+}
+.section.smoke.process.process-redesign .process-actions>.btn.lightoutline{
+ background:rgba(255,255,255,.57);
+ border:1px solid rgba(61,51,56,.36);
+ color:#151316;
+}
+.section.smoke.process.process-redesign .process-actions>.btn.lightoutline .arr{
+ background:#1513160b;
+}
+@media(min-width:760px) and (max-height:790px){
+ .section.smoke.process.process-redesign{padding-top:27px;padding-bottom:75px}
+ .section.smoke.process.process-redesign .process-content>h2{margin-bottom:15px;font-size:clamp(39px,3.5vw,53px)}
+ .section.smoke.process.process-redesign .process-row{min-height:76px;padding:8px 0}
+ .section.smoke.process.process-redesign .process-number{width:54px;height:54px}
+ .section.smoke.process.process-redesign .process-row{grid-template-columns:60px minmax(0,1fr)}
+ .section.smoke.process.process-redesign .process-actions{margin-top:15px}
+}
+@media(max-width:759px){
+ .section.smoke.process.process-redesign{padding:34px var(--pad) 95px}
+ .section.smoke.process.process-redesign .process-content>h2{
+  font-size:clamp(32px,8.2vw,47px);
+  line-height:1.02;
+  white-space:normal;
+  text-wrap:balance;
+  margin:9px 0 20px;
+ }
+ .section.smoke.process.process-redesign .process-row{
+  grid-template-columns:50px minmax(0,1fr);
+  gap:13px;min-height:80px;padding:13px 0;
+ }
+ .section.smoke.process.process-redesign .process-number{
+  width:48px;height:48px;border-radius:13px;
+ }
+ .section.smoke.process.process-redesign .process-number code{font-size:25px}
+ .section.smoke.process.process-redesign .process-row h3{font-size:clamp(22px,5.4vw,29px)}
+ .section.smoke.process.process-redesign .process-row p{font-size:13px;line-height:1.47}
+ .section.smoke.process.process-redesign .process-actions{
+  grid-template-columns:minmax(0,1fr);gap:12px;margin-top:19px;
+ }
+ .section.smoke.process.process-redesign .process-actions>.btn{
+  min-height:52px;
+ }
+ .section.smoke.process.process-redesign .process-actions>.btn>span:first-child{font-size:12px}
+ .section.smoke.process.process-redesign>.process-wave{height:clamp(135px,35vw,205px)}
+}
+@media(prefers-reduced-motion:reduce){
+ .section.smoke.process.process-redesign .process-actions>.btn{transition:none}
+}
 </style>
 
 </head>
@@ -1463,7 +1614,7 @@ const offers=[
 {id:'personalizado',number:'02',title:'PLANES<br>PERSONALIZADOS',desc:'Planes personalizados acordes a tu objetivo.',img:'weights.webp',price:'PRECIO A CONFIRMAR',features:['Evaluación y planificación individual','Entrenamiento y nutrición acorde a objetivos','Seguimiento según las condiciones acordadas'],cta:'CONSULTAR POR WHATSAPP',action:'personalizado'}
 ];
 const offer=(x)=>`<article class="offer reveal"><div class="offer-image"><img src="${asset(x.img)}" alt="Fotografía de entrenamiento"><span class="figure-num">PLAN ${x.number}</span></div><div class="offer-info">${label(x.id==='integral'?'RUTINAS DIGITALES / DESDE $50.000':'ATENCIÓN PERSONALIZADA',true)}<h3 class="offer-title">${x.title}</h3><p>${x.desc}</p><div class="offer-price">${x.price}</div><div class="feature-list">${x.features.map((f,i)=>`<div class="feature"><small>${String(i+1).padStart(2,'0')}</small><span>${f}</span></div>`).join('')}</div>${button(x.cta,x.action,'darkbtn')}</div></article>`;
-const trainings=()=>`<div class="page-enter"><section class="plans-hero" data-theme="dark"><div class="wrap">${label('02 / ENTRENAMIENTOS')}<h1>TUS<br>PLANES<span class="plans-period">.</span></h1><p>Dos formas de entrenar. Elegí la que se adapta a vos.</p></div></section><section class="section white plans-list" data-theme="light"><svg class="plans-wave" aria-hidden="true" focusable="false" viewBox="0 0 1440 390" preserveAspectRatio="none"><defs><linearGradient id="np-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#830342"/><stop offset=".25" stop-color="#690032"/><stop offset=".68" stop-color="#420022"/><stop offset="1" stop-color="#280018"/></linearGradient><linearGradient id="np-edge" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fc1689"/><stop offset=".5" stop-color="#ff299f"/><stop offset="1" stop-color="#ed087c"/></linearGradient><filter id="np-softglow" x="-12%" y="-230%" width="124%" height="560%"><feGaussianBlur stdDeviation="6"/></filter></defs><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222L1440 390H0Z" fill="url(#np-fill)"/><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222" fill="none" stroke="#ed087c" stroke-width="12" stroke-opacity=".35" filter="url(#np-softglow)"/><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222" fill="none" stroke="url(#np-edge)" stroke-width="3" stroke-linecap="round"/></svg><div class="wrap"><div class="plans-intro">${label('ENTRENAMIENTO ONLINE',true)}<h2>ELEGÍ CÓMO ENTRENAR.</h2><p class="topcopy">Rutinas ya preparadas o una propuesta personalizada.</p></div><div class="offer-grid">${offers.map(offer).join('')}</div></div></section><section class="section smoke process" data-theme="light"><div class="wrap">${label('UN PROCESO SIMPLE',true)}<h2>ASÍ FUNCIONA.</h2>${[['01','ELEGÍ','Seleccioná tu nivel y cantidad de días.'],['02','REVISÁ','Conocé el precio de tu rutina antes de comprar.'],['03','DESCARGÁ','Después de un pago aprobado, recibís tu PDF sin depender de una consulta.'],['04','AL RENOVAR','Si querés, podés solicitar un control mensual. Noelia lo revisa y responde por correo.']].map(x=>`<div class="process-row"><code>${x[0]}</code><div><h3>${x[1]}</h3><p>${x[2]}</p></div></div>`).join('')}${button('ELEGIR RUTINA','rutina','darkbtn')}${button('CÓMO FUNCIONA EL CONTROL MENSUAL','control','lightoutline')}</div></section>${footer()}</div>`;
+const trainings=()=>`<div class="page-enter"><section class="plans-hero" data-theme="dark"><div class="wrap">${label('02 / ENTRENAMIENTOS')}<h1>TUS<br>PLANES<span class="plans-period">.</span></h1><p>Dos formas de entrenar. Elegí la que se adapta a vos.</p></div></section><section class="section white plans-list" data-theme="light"><svg class="plans-wave" aria-hidden="true" focusable="false" viewBox="0 0 1440 390" preserveAspectRatio="none"><defs><linearGradient id="np-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#830342"/><stop offset=".25" stop-color="#690032"/><stop offset=".68" stop-color="#420022"/><stop offset="1" stop-color="#280018"/></linearGradient><linearGradient id="np-edge" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fc1689"/><stop offset=".5" stop-color="#ff299f"/><stop offset="1" stop-color="#ed087c"/></linearGradient><filter id="np-softglow" x="-12%" y="-230%" width="124%" height="560%"><feGaussianBlur stdDeviation="6"/></filter></defs><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222L1440 390H0Z" fill="url(#np-fill)"/><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222" fill="none" stroke="#ed087c" stroke-width="12" stroke-opacity=".35" filter="url(#np-softglow)"/><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222" fill="none" stroke="url(#np-edge)" stroke-width="3" stroke-linecap="round"/></svg><div class="wrap"><div class="plans-intro">${label('ENTRENAMIENTO ONLINE',true)}<h2>ELEGÍ CÓMO ENTRENAR.</h2><p class="topcopy">Rutinas ya preparadas o una propuesta personalizada.</p></div><div class="offer-grid">${offers.map(offer).join('')}</div></div></section><section class="section smoke process process-redesign" data-theme="light"><svg class="process-wave" viewBox="0 0 1440 390" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="pr-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#830342"/><stop offset=".28" stop-color="#690032"/><stop offset=".7" stop-color="#420022"/><stop offset="1" stop-color="#280018"/></linearGradient><linearGradient id="pr-edge" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fc1689"/><stop offset=".55" stop-color="#ff299f"/><stop offset="1" stop-color="#ed087c"/></linearGradient><filter id="pr-softglow" x="-12%" y="-230%" width="124%" height="560%"><feGaussianBlur stdDeviation="6"/></filter></defs><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222L1440 390H0Z" fill="url(#pr-fill)"/><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222" fill="none" stroke="#ed087c" stroke-width="12" stroke-opacity=".35" filter="url(#pr-softglow)"/><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222" fill="none" stroke="url(#pr-edge)" stroke-width="3" stroke-linecap="round"/></svg><div class="wrap process-content">${label('UN PROCESO SIMPLE',true)}<h2>ASÍ FUNCIONA<span class="process-title-dot">.</span></h2><div class="process-steps">${[['01','ELEGÍ','Seleccioná tu nivel y cantidad de días.'],['02','REVISÁ','Conocé el precio de tu rutina antes de comprar.'],['03','DESCARGÁ','Después de un pago aprobado, recibís tu PDF sin depender de una consulta.'],['04','AL RENOVAR','Si querés, podés solicitar un control mensual. Noelia lo revisa y responde por correo.']].map(x=>`<div class="process-row"><span class="process-number"><code>${x[0]}</code></span><div class="process-row-copy"><h3>${x[1]}</h3><p>${x[2]}</p></div></div>`).join('')}</div><div class="process-actions">${button('ELEGIR RUTINA','rutina','darkbtn')}${button('CÓMO FUNCIONA EL CONTROL MENSUAL','control','lightoutline')}</div></div></section>${footer()}</div>`;
 const levelChoice=()=>Object.keys(levelNames).map(l=>`<button type="button" class="choice level-choice ${chosenLevel===l?'is-selected':''}" data-level="${l}" aria-pressed="${chosenLevel===l}"><span class="choice-main">${levelNames[l]}</span><span class="choice-indicator" aria-hidden="true"></span></button>`).join('');
 const dayChoice=()=>[2,3,4,5].map(d=>`<button type="button" class="day-choice ${chosenDays===d?'is-selected':''}" data-days="${d}" aria-pressed="${chosenDays===d}"><b>${d}</b><small>DÍAS</small></button>`).join('');
 const routine=()=>`<div class="page-enter"><section class="sub-hero routine-hero" data-theme="dark"><div class="wrap">${label('ASESORÍA INTEGRAL ONLINE',true)}<h1>ELEGÍ TU<br>RUTINA.</h1><p>Entrenamientos preparados para tu nivel y la cantidad de días que quieras dedicar.</p></div></section><section class="section white shop-section" data-theme="light"><div class="wrap shop-wrap"><div class="selector-card"><div class="selector-label">01 / SELECCIONÁ TU NIVEL</div><div class="level-grid" role="group" aria-label="Nivel de entrenamiento">${levelChoice()}</div><div class="selector-label step-two">02 / ¿CUÁNTOS DÍAS POR SEMANA?</div><div class="days-grid" role="group" aria-label="Días por semana">${dayChoice()}</div><div class="selected-summary" aria-live="polite">${label('TU RUTINA SELECCIONADA',true)}<h3 id="selected-label">${levelNames[chosenLevel]} · ${chosenDays} días</h3><strong id="selected-price">${price(chosenDays)} ARS</strong><ul class="checklist"><li>Rutina completa de entrenamiento en PDF</li><li>Ejercicios, series y repeticiones</li><li>Organizada según tu nivel y tus días disponibles</li></ul><p class="small-disclaimer">Solo entrenamiento. Al renovar el plan podés solicitar un control mensual opcional con fotos, peso y medidas, para recibir una devolución personal de Noelia por correo.</p>${button('CONTINUAR AL PAGO','pago')}</div></div><div class="selector-side"><img src="${asset('barbell.webp')}" alt="Detalle de pesas en un gimnasio"><p>ENTRENÁ A TU RITMO.<br>SEGUÍ UN PLAN.</p></div></div></section>${footer()}</div>`;
