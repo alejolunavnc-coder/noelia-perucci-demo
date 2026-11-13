@@ -1593,6 +1593,36 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   background:linear-gradient(90deg,rgba(8,8,10,.90),rgba(8,8,10,.60)),url('/media/planes-personalizados.webp') 67% center/cover no-repeat;
  }
 }
+
+/* GYM_TANDA_27_BANNERS_IMAGENES_COMPLETAS_20261113 */
+/* Nuevos archivos (1) subidos a media. Mantener el dibujo completo ajustando por alto,
+   con fondo oscuro a la izquierda para texto; nunca usar cover en estos dos banners. */
+.sub-hero.routine-hero:before{
+ background-color:#0b0b0f;
+ background-image:linear-gradient(90deg,rgba(8,8,10,.92),rgba(8,8,10,.55) 40%,rgba(8,8,10,.05) 100%),url('/media/asesoria-integral-online%20%281%29.webp');
+ background-position:center center,right center;
+ background-size:cover,auto 100%;
+ background-repeat:no-repeat;
+}
+.contact-hero.personalized-hero{
+ background-color:#0b0b0f;
+ background-image:linear-gradient(90deg,rgba(8,8,10,.92),rgba(8,8,10,.55) 40%,rgba(8,8,10,.05) 100%),url('/media/planes-personalizados%20%281%29.webp');
+ background-position:center center,right center;
+ background-size:cover,auto 100%;
+ background-repeat:no-repeat;
+}
+@media(max-width:759px){
+ .sub-hero.routine-hero:before{
+  background-image:linear-gradient(90deg,rgba(8,8,10,.90),rgba(8,8,10,.40)),url('/media/asesoria-integral-online%20%281%29.webp');
+  background-position:center center,right center;
+  background-size:cover,auto 100%;
+ }
+ .contact-hero.personalized-hero{
+  background-image:linear-gradient(90deg,rgba(8,8,10,.90),rgba(8,8,10,.40)),url('/media/planes-personalizados%20%281%29.webp');
+  background-position:center center,right center;
+  background-size:cover,auto 100%;
+ }
+}
 </style>
 
 </head>
