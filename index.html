@@ -2031,6 +2031,15 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  }
 }
 
+/* GYM_TANDA_41_ANCHO_TOTAL_ENTREGA_20261114
+   Corrige el recorte lateral de onda y footer. La tarjeta permanece
+   centrada a 880px con la misma separación lateral responsive. */
+.section.white.download-section{padding-left:0;padding-right:0}
+.section.white.download-section>.download-wrap{
+ width:calc(100% - (2 * var(--pad)));
+ max-width:880px;
+}
+
 /* GYM_TANDA_37_FOOTER_ONDA_COMPRA_20261114
    Reutiliza exactamente la geometría, degradados y brillo de la onda de Tus Planes.
    Sólo COMPLETÁ TU COMPRA; preserva la tarjeta, el formulario y los otros cierres. */
