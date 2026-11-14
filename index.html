@@ -1695,6 +1695,30 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  .contact-hero.personalized-hero h1{font-size:26px}
 }
 /* FIN GYM_TANDA_28_UNIFICACION_HEROS */
+
+/* GYM_TANDA_30_FONDO_RUTINAS_IGUAL_A_PLANES_20261114 */
+/* Copia exacta del fondo de Planes para el selector de Rutinas, sin tocar controles ni estructura. */
+.section.white.shop-section{position:relative;isolation:isolate;overflow:hidden;background:var(--cream)}
+.section.white.shop-section::before{
+ content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+ background:
+ radial-gradient(ellipse 40% 58% at 0% 81%,rgba(255,41,151,.29) 0%,rgba(255,86,165,.13) 49%,transparent 93%),
+ radial-gradient(ellipse 43% 62% at 100% 78%,rgba(246,24,136,.27) 0%,rgba(253,120,185,.13) 51%,transparent 92%),
+ radial-gradient(ellipse 60% 29% at 52% 104%,rgba(248,56,145,.25) 0%,rgba(248,96,169,.1) 55%,transparent 100%),
+ linear-gradient(180deg,rgba(253,208,231,.18),transparent 25%,transparent 64%,rgba(255,103,176,.1) 100%);
+}
+
+.section.white.shop-section>.wrap{position:relative;z-index:2}
+@media(max-width:759px){
+ .section.white.shop-section::before{
+  background:
+   radial-gradient(ellipse 57% 36% at 0% 84%,rgba(255,41,151,.22),transparent 94%),
+   radial-gradient(ellipse 57% 37% at 100% 77%,rgba(246,24,136,.22),transparent 94%),
+   radial-gradient(ellipse 84% 21% at 50% 104%,rgba(248,56,145,.2),transparent 100%);
+ }
+
+}
+
 </style>
 
 </head>
