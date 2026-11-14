@@ -1606,23 +1606,40 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  position:relative;
  z-index:1;
 }
-.sub-hero.routine-hero:before{
- content:"";
- position:absolute;
- inset:0;
- z-index:-1;
- pointer-events:none;
- background-color:#0b0b0f;
- background-image:linear-gradient(90deg,rgba(8,8,10,.92) 0%,rgba(8,8,10,.77) 35%,rgba(8,8,10,.25) 75%,rgba(8,8,10,.10) 100%),url('/media/asesoria-integral-online%20%281%29.webp');
- background-position:center center,right 3vw bottom -16px;
- background-size:cover,auto var(--gym-inner-hero-art-scale);
- background-repeat:no-repeat;
+/* GYM_TANDA_29_FONDO_CONTINUO_20261114
+   Fondo: área SIN figura de la misma imagen (mitad izquierda, magnificación 200%).
+   Arte: segunda capa de tamaño, posición y proporción idénticos a Tanda 28.
+   La máscara bidimensional elimina los cuatro bordes de la miniatura.
+   Se limita estrictamente a los dos banners interiores. */
+.sub-hero.routine-hero{
+ --gym-banner-image:url('/media/asesoria-integral-online%20%281%29.webp');
 }
 .contact-hero.personalized-hero{
- background-image:linear-gradient(90deg,rgba(8,8,10,.92) 0%,rgba(8,8,10,.77) 35%,rgba(8,8,10,.25) 75%,rgba(8,8,10,.10) 100%),url('/media/planes-personalizados%20%281%29.webp');
- background-position:center center,right 3vw bottom -16px;
- background-size:cover,auto var(--gym-inner-hero-art-scale);
+ --gym-banner-image:url('/media/planes-personalizados%20%281%29.webp');
+}
+.sub-hero.routine-hero,
+.contact-hero.personalized-hero{
+ background-color:#0b0b0f;
+ background-image:linear-gradient(90deg,rgba(8,8,10,.87) 0%,rgba(8,8,10,.56) 35%,rgba(8,8,10,.19) 80%),var(--gym-banner-image);
+ background-position:center center,left center;
+ background-size:cover,200% auto;
  background-repeat:no-repeat;
+}
+.sub-hero.routine-hero:before,
+.contact-hero.personalized-hero:before{
+ content:"";
+ position:absolute;
+ inset:auto 3vw -16px auto;
+ width:auto;
+ height:var(--gym-inner-hero-art-scale);
+ aspect-ratio:2048/682;
+ z-index:-1;
+ pointer-events:none;
+ background:var(--gym-banner-image) center center / 100% 100% no-repeat;
+ -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 28%,#000 83%,transparent 100%),linear-gradient(180deg,transparent 0%,#000 14%,#000 86%,transparent 100%);
+ -webkit-mask-composite:source-in;
+ mask-image:linear-gradient(90deg,transparent 0%,#000 28%,#000 83%,transparent 100%),linear-gradient(180deg,transparent 0%,#000 14%,#000 86%,transparent 100%);
+ mask-composite:intersect;
 }
 .contact-hero.personalized-hero h1{
  font-size:clamp(28px,3.1vw,36px);
@@ -1652,16 +1669,20 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   padding:calc(var(--gym-inner-hero-header) + 16px) var(--pad) 20px;
   align-items:flex-start;
  }
+ .sub-hero.routine-hero,
+ .contact-hero.personalized-hero{
+  background-image:linear-gradient(180deg,rgba(8,8,10,.90),rgba(8,8,10,.54) 67%,rgba(8,8,10,.12)),var(--gym-banner-image);
+  background-position:center center,left center;
+  background-size:cover,250% auto;
+ }
  .sub-hero.routine-hero:before,
- .contact-hero.personalized-hero{
-  background-position:center center,right 0 bottom 6px;
-  background-size:cover,auto var(--gym-inner-hero-art-scale);
- }
- .sub-hero.routine-hero:before{
-  background-image:linear-gradient(180deg,rgba(8,8,10,.93) 0%,rgba(8,8,10,.91) 41%,rgba(8,8,10,.30) 78%,rgba(8,8,10,.10) 100%),url('/media/asesoria-integral-online%20%281%29.webp');
- }
- .contact-hero.personalized-hero{
-  background-image:linear-gradient(180deg,rgba(8,8,10,.93) 0%,rgba(8,8,10,.91) 41%,rgba(8,8,10,.30) 78%,rgba(8,8,10,.10) 100%),url('/media/planes-personalizados%20%281%29.webp');
+ .contact-hero.personalized-hero:before{
+  inset:auto 0 6px auto;
+  height:var(--gym-inner-hero-art-scale);
+  width:auto;
+  aspect-ratio:2048/682;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 28%,#000 83%,transparent 100%),linear-gradient(180deg,transparent 0%,#000 14%,#000 86%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,#000 28%,#000 83%,transparent 100%),linear-gradient(180deg,transparent 0%,#000 14%,#000 86%,transparent 100%);
  }
  .contact-hero.personalized-hero h1{
   font-size:clamp(26px,7.2vw,34px);
