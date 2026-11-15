@@ -2322,6 +2322,23 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 }
 /* GYM_TANDA_53_TITULO_ENTREGA_DOS_LINEAS_20261115
    Salto de línea explícito en HTML; no forzar nowrap en PC. */
+
+/* GYM_TANDA_54_ENCUADRE_COMPLETO_CONFIRMACION_20261115 */
+/* Solo confirmacion: evitar 'cover' en la capa fotografica.
+   El degradado sigue cubriendo todo el hero; la imagen mantiene
+   su proporcion y se ubica debajo del header, con pies visibles. */
+.sub-hero.confirmation-hero::before{
+ background-color:#09090b;
+ background-size:cover,auto 100%;
+ background-position:center center,right top 28px;
+ background-repeat:no-repeat;
+}
+@media(max-width:759px){
+ .sub-hero.confirmation-hero::before{
+  background-size:cover,auto 56%;
+  background-position:center center,right 0 bottom 14px;
+ }
+}
 </style>
 
 </head>
