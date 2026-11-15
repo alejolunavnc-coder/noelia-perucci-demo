@@ -2240,6 +2240,55 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  .section.white.checkout-section>.checkout-footer-wave-extension{height:181px}
  .section.white.checkout-section>.footer{padding:20px var(--pad) 28px}
 }
+
+/* GYM_TANDA_49_BANNERS_COMPRA_ENTREGA_CONTROL_20261114 */
+/* Tres imágenes WebP verificadas en media/. Solo fondos de los tres heroes.
+   Se conservan HTML, textos, alturas, botones y lógica comercial. */
+.sub-hero.checkout-hero::before{
+ background-image:
+   linear-gradient(90deg,rgba(8,8,11,.92) 0%,rgba(8,8,11,.72) 37%,rgba(8,8,11,.30) 70%,rgba(8,8,11,.10) 100%),
+   url('/media/banner_completa_tu_compra.webp');
+ background-size:cover;
+ background-position:center center;
+ background-repeat:no-repeat;
+}
+.sub-hero.confirmation-hero::before{
+ background-image:
+   linear-gradient(90deg,rgba(8,8,11,.92) 0%,rgba(8,8,11,.72) 37%,rgba(8,8,11,.30) 70%,rgba(8,8,11,.10) 100%),
+   url('/media/banner_asi_sera_la_entrega.webp');
+ background-size:cover;
+ background-position:center center;
+ background-repeat:no-repeat;
+}
+.monthly-hero{
+ background-color:#0b0b0f;
+ background-image:
+   linear-gradient(90deg,rgba(8,8,11,.92) 0%,rgba(8,8,11,.76) 41%,rgba(8,8,11,.36) 73%,rgba(8,8,11,.12) 100%),
+   url('/media/banner_control_mensual.webp');
+ background-size:cover;
+ background-position:center center;
+ background-repeat:no-repeat;
+}
+@media(max-width:759px){
+ .sub-hero.checkout-hero::before,
+ .sub-hero.confirmation-hero::before{
+  background-image:
+    linear-gradient(90deg,rgba(8,8,11,.91) 0%,rgba(8,8,11,.76) 55%,rgba(8,8,11,.40) 100%),
+    url('/media/banner_completa_tu_compra.webp');
+  background-position:center center,69% center;
+ }
+ .sub-hero.confirmation-hero::before{
+  background-image:
+    linear-gradient(90deg,rgba(8,8,11,.91) 0%,rgba(8,8,11,.76) 55%,rgba(8,8,11,.40) 100%),
+    url('/media/banner_asi_sera_la_entrega.webp');
+ }
+ .monthly-hero{
+  background-image:
+   linear-gradient(90deg,rgba(8,8,11,.93) 0%,rgba(8,8,11,.78) 55%,rgba(8,8,11,.46) 100%),
+   url('/media/banner_control_mensual.webp');
+  background-position:center center,69% center;
+ }
+}
 </style>
 
 </head>
