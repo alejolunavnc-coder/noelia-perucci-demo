@@ -2289,6 +2289,22 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   background-position:center center,69% center;
  }
 }
+
+/* GYM_TANDA_50_FIGURA_COMPLETA_CHECKOUT_20261115 */
+/* La capa oscura cubre todo el hero; la ilustración mantiene su proporción
+   y se ajusta al espacio visible debajo del header fijo. Solo checkout. */
+.sub-hero.checkout-hero::before{
+ background-color:#09090b;
+ background-size:cover,auto calc(100% - 60px);
+ background-position:center center,right 0 bottom 5px;
+ background-repeat:no-repeat;
+}
+@media(max-width:759px){
+ .sub-hero.checkout-hero::before{
+  background-size:cover,auto 56%;
+  background-position:center center,right 0 bottom 14px;
+ }
+}
 </style>
 
 </head>
