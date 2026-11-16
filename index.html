@@ -1694,13 +1694,14 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 @media(max-width:359px){
  .contact-hero.personalized-hero h1{font-size:26px}
 }
-/* GYM_TANDA_57_ESCALA_SOLO_RUTINA_20261115
-   Únicamente en PC: agrandar la capa gráfica del banner de rutinas.
-   Conserva el anclaje, el archivo, la máscara, el fondo, los textos
-   y las reglas móviles. No modificar la variable compartida. */
+/* GYM_TANDA_58_CORRECCION_ESCALA_RUTINA_20261116
+   Solo banner "ELEGÍ TU RUTINA" en escritorio.
+   Corrige la escala excesiva de la Tanda 57 sin tocar textos,
+   estructura, imagen original, máscara, fondos ni otras secciones. */
 @media (min-width:760px){
  .sub-hero.routine-hero::before{
-  height:121%;
+  height:104%;
+  inset:auto 3vw -16px auto;
  }
 }
 
