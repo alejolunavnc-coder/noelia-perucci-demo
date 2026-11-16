@@ -2376,6 +2376,37 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   width:calc(100% + max(0px, (100vw - 2 * var(--pad) - 1220px) / 2));
  }
 }
+/* GYM_TANDA_65_ALTURA_HEROS_INTERIORES_MOBILE_20261116
+   Referencia intocable: .plans-hero { min-height:min(85svh,770px) }.
+   Seis destinos solamente en celular; sin cambiar backgrounds, contenidos,
+   encuadres, padding, tipografia, home con video ni reglas PC.
+   box-sizing:border-box integra el padding en la medida exterior.
+   Excepcion en pantallas horizontalmente bajas: permitir crecer para no
+   recortar formularios/titulos (igualdad exacta no garantizada alli). */
+@media (max-width:759px){
+ .sub-hero.routine-hero,
+ .sub-hero.checkout-hero,
+ .sub-hero.confirmation-hero,
+ .monthly-hero,
+ .contact-hero:not(.personalized-hero),
+ .contact-hero.personalized-hero{
+  box-sizing:border-box;
+  height:min(85svh,770px);
+  min-height:min(85svh,770px);
+  max-height:none;
+ }
+}
+@media (max-width:759px) and (max-height:600px){
+ .sub-hero.routine-hero,
+ .sub-hero.checkout-hero,
+ .sub-hero.confirmation-hero,
+ .monthly-hero,
+ .contact-hero:not(.personalized-hero),
+ .contact-hero.personalized-hero{
+  height:auto;
+  min-height:min(85svh,770px);
+ }
+}
 </style>
 
 </head>
