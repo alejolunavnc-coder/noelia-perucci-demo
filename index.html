@@ -2359,6 +2359,23 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   margin-right:auto;
  }
 }
+/* GYM_TANDA_62_HERO_PRINCIPAL_20261116
+   Solo portada: eliminar la línea inferior sin quitar el texto ni la flecha.
+   En PC, alinear los textos y botones con el padding lateral de los otros banners.
+   Mantener la flecha en su coordenada horizontal original, compensando
+   el centrado previo del .wrap de máximo 1220px; no tocar video ni móvil. */
+.habit-hero .hero-end{
+ border-top-color:transparent;
+}
+@media (min-width:760px){
+ .habit-hero > .wrap{
+  margin-left:0;
+  margin-right:auto;
+ }
+ .habit-hero .hero-end{
+  width:calc(100% + max(0px, (100vw - 2 * var(--pad) - 1220px) / 2));
+ }
+}
 </style>
 
 </head>
