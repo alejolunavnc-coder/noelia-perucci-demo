@@ -2407,12 +2407,16 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   min-height:min(85svh,770px);
  }
 }
-/* GYM_TANDA_66_SEPARACION_TARJETAS_PLANES_MOBILE_20261116
-   Solo en celular: aumentar de 17px a 24px el espacio entre
-   PLAN 01 y PLAN 02. Sin alterar tarjetas, contenido ni version PC. */
+/* GYM_TANDA_66_CORRECCION_SEPARACION_REAL_MOBILE_20261116
+   Causa corregida: offer-grid solo era display:grid en PC,
+   por lo tanto row-gap no actuaba en celular.
+   Solo celular: una columna y espacio vertical visible de 32px.
+   No cambia estructura, tarjetas ni estilos de escritorio. */
 @media (max-width:759px){
  .section.white.plans-list .offer-grid{
-  row-gap:24px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  row-gap:32px;
  }
 }
 </style>
