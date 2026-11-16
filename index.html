@@ -1694,6 +1694,16 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 @media(max-width:359px){
  .contact-hero.personalized-hero h1{font-size:26px}
 }
+/* GYM_TANDA_57_ESCALA_SOLO_RUTINA_20261115
+   Únicamente en PC: agrandar la capa gráfica del banner de rutinas.
+   Conserva el anclaje, el archivo, la máscara, el fondo, los textos
+   y las reglas móviles. No modificar la variable compartida. */
+@media (min-width:760px){
+ .sub-hero.routine-hero::before{
+  height:121%;
+ }
+}
+
 /* FIN GYM_TANDA_28_UNIFICACION_HEROS */
 
 /* GYM_TANDA_30_FONDO_RUTINAS_IGUAL_A_PLANES_20261114 */
