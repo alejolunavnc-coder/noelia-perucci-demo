@@ -2482,6 +2482,18 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   overflow-wrap:break-word;
  }
 }
+/* GYM_TANDA_70_CONTACTO_IMAGEN_COMPLETA_MOBILE_20261117
+   Imagen subida verificada byte a byte. 'cover' recortaba los extremos
+   superior/inferior del arte vertical. Solo contacto en celular:
+   'contain' preserva el dibujo entero sin deformarlo, con fondo oscuro
+   y la misma capa de gradiente usada por los otros banners. */
+@media (max-width:759px){
+ .contact-hero:not(.personalized-hero){
+  background-size:cover,contain;
+  background-position:center center,center center;
+  background-repeat:no-repeat,no-repeat;
+ }
+}
 </style>
 
 </head>
