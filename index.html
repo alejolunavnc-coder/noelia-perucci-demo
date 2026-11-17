@@ -2456,6 +2456,19 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   content:none;
  }
 }
+/* GYM_TANDA_68_DESCRIPCION_RUTINA_MOBILE_20261117
+   Solo la descripcion de ELEGÍ TU RUTINA, sin modificar texto, rotulo,
+   titulo, imagen, altura, margenes ni otros banners.
+   El ancho responsivo limita la caja de texto a la zona izquierda
+   y permite saltos naturales de linea en pantallas angostas. */
+@media (max-width:759px){
+ .sub-hero.routine-hero > .wrap > p{
+  max-width:min(42vw, 220px);
+  box-sizing:border-box;
+  white-space:normal;
+  overflow-wrap:normal;
+ }
+}
 </style>
 
 </head>
