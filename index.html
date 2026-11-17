@@ -2469,6 +2469,19 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   overflow-wrap:normal;
  }
 }
+/* GYM_TANDA_69_CORRECCION_CONTACTO_TEXTO_MOBILE_20261117
+   Corrige el solapamiento observado en iPhone: restringe exclusivamente
+   el parrafo descriptivo de CONTACTO a la franja izquierda libre.
+   Respeta la imagen nueva, el titulo, el rotulo, la altura y todos
+   los demas banners; saltos naturales de linea, sin recortes. */
+@media (max-width:759px){
+ .contact-hero:not(.personalized-hero) > .wrap > p{
+  max-width:min(38vw, 160px);
+  box-sizing:border-box;
+  white-space:normal;
+  overflow-wrap:break-word;
+ }
+}
 </style>
 
 </head>
