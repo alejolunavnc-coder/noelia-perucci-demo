@@ -2510,6 +2510,50 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   white-space:normal;
  }
 }
+
+/* GYM_TANDA_74_FOOTER_INICIO_ONDA_REFERENCIA_20261119
+   Exclusivo del último bloque de Inicio. Usa la geometría SVG real del
+   footer de Entrenamientos (Tus planes), sin cambiar otros footers.
+   Onda y footer en flujo normal: el fondo bordó siempre acompaña la
+   altura real del footer, incluso con enlaces en dos filas. */
+.section.white.teaser{
+ padding-bottom:0;
+}
+.section.white.teaser>.home-footer-wave{
+ display:block;
+ position:relative;
+ z-index:1;
+ pointer-events:none;
+ width:calc(100% + 2 * var(--pad));
+ height:clamp(145px,18vw,245px);
+ margin:clamp(28px,3.6vw,54px) 0 -1px calc(-1 * var(--pad));
+ overflow:visible;
+}
+.section.white.teaser>.footer{
+ position:relative;
+ z-index:3;
+ display:block;
+ width:calc(100% + 2 * var(--pad));
+ margin:0 0 0 calc(-1 * var(--pad));
+ padding:24px var(--pad) 28px;
+ border:0;
+ outline:0;
+ box-shadow:none;
+ background:#280018;
+ color:#cdbbc8;
+}
+.section.white.teaser>.footer .brand{color:#fff}
+.section.white.teaser>.footer small{color:#b9a6b3}
+.section.white.teaser>.footer a{color:#d6c6d1}
+@media(max-width:759px){
+ .section.white.teaser>.home-footer-wave{
+  height:clamp(135px,35vw,205px);
+  margin-top:clamp(20px,5vw,38px);
+ }
+ .section.white.teaser>.footer{
+  padding:20px var(--pad) 28px;
+ }
+}
 </style>
 
 </head>
@@ -2695,7 +2739,7 @@ const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-th
 </div><div class="results-caption"><span>RESULTADO REAL · 07</span><span class="results-caption-dash" aria-hidden="true"></span></div></div>
 </div><div class="results-gallery-nav"><span class="results-gallery-index" aria-live="polite">01 / 07</span><div class="results-gallery-actions"><button class="results-prev" type="button" data-results-prev aria-label="Ver resultado anterior">← ANTERIOR</button><button class="results-next" type="button" data-results-next aria-label="Ver siguiente transformación">VER OTROS CAMBIOS <span aria-hidden="true">→</span></button></div></div></div>
 </div></section>
-<section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="/media/noelia_objetivo_plan_sombras_v2.jpg" alt="Noelia entrenando en el gimnasio" onerror="this.onerror=null;this.src='${asset('dumbbells.webp')}'"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>${noeliaIcon("upRight")}</span></div></div></div></section>${footer()}</div>`;
+<section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="/media/noelia_objetivo_plan_sombras_v2.jpg" alt="Noelia entrenando en el gimnasio" onerror="this.onerror=null;this.src='${asset('dumbbells.webp')}'"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>${noeliaIcon("upRight")}</span></div></div></div><svg class="home-footer-wave" viewBox="0 0 1440 390" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="home74-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#830342"/><stop offset=".28" stop-color="#690032"/><stop offset=".7" stop-color="#420022"/><stop offset="1" stop-color="#280018"/></linearGradient><linearGradient id="home74-edge" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fc1689"/><stop offset=".55" stop-color="#ff299f"/><stop offset="1" stop-color="#ed087c"/></linearGradient><filter id="home74-softglow" x="-12%" y="-230%" width="124%" height="560%"><feGaussianBlur stdDeviation="6"/></filter></defs><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222L1440 390H0Z" fill="url(#home74-fill)"/><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222" fill="none" stroke="#ed087c" stroke-width="12" stroke-opacity=".35" filter="url(#home74-softglow)"/><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222" fill="none" stroke="url(#home74-edge)" stroke-width="3" stroke-linecap="round"/></svg>${footer()}</section></div>`;
 const prices={2:50000,3:60000,4:80000,5:80000};
 const price=(n)=>'$'+prices[n].toLocaleString('es-AR');
 const levelNames={principiante:'Principiante',intermedio:'Intermedio',avanzado:'Avanzado'};
