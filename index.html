@@ -2598,10 +2598,10 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  }
 }
 
-/* GYM_TANDA_79_1_TUS_PLANES_MOBILE_20261120
-   Solo móvil: texto arriba, ilustración original íntegra debajo.
-   El WebP original 941x1672 no se recorta ni se deforma.
-   PC mantiene su fondo y layout de la Tanda 78. */
+/* GYM_TANDA_81_TUS_PLANES_MOBILE_COMPACTO_20261120
+   Solo móvil, sin cambiar textos ni WebP:
+   texto arriba, dibujo mas cerca, leve solapamiento permitido,
+   mascara del techo y suelo decorativos; PC intacta. */
 .plans-mobile-art{display:none}
 @media (max-width:759px){
  .plans-hero{
@@ -2611,11 +2611,10 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   justify-content:flex-start;
   min-height:0;
   height:auto;
-  padding:clamp(94px,22vw,110px) 0 0;
+  padding:88px 0 0;
   background:#0c0a10;
   overflow:hidden;
  }
- /* Retirar exclusivamente el fondo antiguo que usaba cover. */
  .plans-hero::before,
  .plans-hero::after{display:none}
  .plans-hero .wrap{
@@ -2628,47 +2627,38 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  }
  .plans-hero .eyebrow{
   font-size:clamp(10px,2.7vw,13px);
-  line-height:1.5;
+  line-height:1.45;
   letter-spacing:.16em;
   white-space:nowrap;
+  margin:0;
  }
  .plans-hero .eyebrow::after{display:none}
  .plans-hero h1{
   width:100%;
   max-width:100%;
-  margin:12px 0 0;
-  font-size:clamp(27px,8.4vw,43px);
-  line-height:1.03;
+  margin:10px 0 0;
+  font-size:clamp(27px,8.1vw,41px);
+  line-height:1.02;
   letter-spacing:-.067em;
   white-space:nowrap;
  }
  .plans-hero h1 br{display:none}
  .plans-hero p{
-  margin:14px 0 0;
+  margin:10px 0 0;
   max-width:100%;
-  font-size:clamp(15px,3.85vw,17px);
-  line-height:1.4;
+  font-size:clamp(15px,3.75vw,17px);
+  line-height:1.38;
   color:#f0e8ec;
  }
- /* Conservar una sola rayita original, debajo del subtítulo. */
  .plans-hero .wrap::after{
   content:"";
   display:block;
   width:50px;
   height:3px;
-  margin-top:14px;
+  margin-top:10px;
   background:var(--pink);
   border-radius:4px;
  }
- /* Imagen en su proporción nativa: no hay background-size:cover.
-    El margen negativo solapa solo el espacio oscuro original encima
-    del cabello; la capa de texto está por delante, sin tapar la figura. */
- /* GYM_TANDA_80_COMPACTAR_TUS_PLANES_MOBILE_20261120
-    El cabello empieza aproximadamente al 51% del ancho de la imagen:
-    retirar del flujo visual solo el techo decorativo (no la figura).
-    Relacion 941:1672 y archivo WebP absolutamente intactos.
-    La mascara tapa el techo que se superpondria a los textos; deja
-    visible todo el cabello, la barra, los discos y las zapatillas. */
  .plans-hero .plans-mobile-art{
   display:block;
   position:relative;
@@ -2676,10 +2666,27 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   flex:0 0 auto;
   width:100%;
   aspect-ratio:941 / 1672;
-  margin-top:-48.5vw;
+  margin-top:-61vw;
+  margin-bottom:-16vw;
   background:url('/media/banner_tus_planes_celular.webp') center center / contain no-repeat;
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0px,transparent 41vw,#000 46vw,#000 100%);
-  mask-image:linear-gradient(to bottom,transparent 0px,transparent 41vw,#000 46vw,#000 100%);
+  -webkit-mask-image:linear-gradient(
+   to bottom,
+   transparent 0,
+   transparent 49vw,
+   #000 52vw,
+   #000 calc(100% - 9vw),
+   rgba(0,0,0,.98) calc(100% - 5vw),
+   transparent 100%
+  );
+  mask-image:linear-gradient(
+   to bottom,
+   transparent 0,
+   transparent 49vw,
+   #000 52vw,
+   #000 calc(100% - 9vw),
+   rgba(0,0,0,.98) calc(100% - 5vw),
+   transparent 100%
+  );
   pointer-events:none;
  }
 }
