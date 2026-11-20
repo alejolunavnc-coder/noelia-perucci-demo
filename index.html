@@ -2690,6 +2690,33 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   pointer-events:none;
  }
 }
+
+/* GYM_TANDA_85_REDES_SOCIALES_FOOTER_20261120
+   Solo contenido nuevo del footer compartido y su distribución responsive.
+   Se conservan los fondos, ondas, enlaces y demás estilos existentes. */
+.footer .footer-inner{column-gap:clamp(12px,2vw,24px)}
+.footer .footer-socials{display:flex;flex-direction:column;gap:9px;flex:0 0 auto}
+.footer .footer-social{display:flex;align-items:center;gap:9px;min-height:32px;color:#e2d4df;text-decoration:none;white-space:nowrap}
+.footer .footer-social>svg{display:block;flex:0 0 20px;color:#f4a0cb}
+.footer .footer-social-copy{display:flex;flex-direction:column;gap:1px}
+.footer .footer-social-copy>small{color:#baa4b2;font:700 9px/1.3 var(--label);letter-spacing:.08em}
+.footer .footer-social-copy>span{color:#f6edf3;font-size:11px;line-height:1.4}
+.footer .footer-social:hover .footer-social-copy>span{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.footer .footer-social:focus-visible{outline:2px solid #f4a0cb;outline-offset:4px;border-radius:2px}
+@media(min-width:900px){
+ .footer .footer-inner{flex-wrap:nowrap}
+ .footer .footer-nav{min-width:0}
+}
+@media(max-width:899px){
+ .footer .footer-inner{row-gap:12px}
+ .footer .footer-socials{width:100%;flex-direction:row;flex-wrap:wrap;gap:12px 20px}
+ .footer .footer-social{min-width:0}
+}
+@media(max-width:359px){
+ .footer .footer-socials{gap:9px 12px}
+ .footer .footer-social{gap:5px}
+ .footer .footer-social-copy>span{font-size:10px}
+}
 </style>
 
 </head>
@@ -2784,7 +2811,7 @@ const asset=(name)=>name.startsWith('/media/')?name:(ASSET_DATA[name]||(['noelia
 const label=(text,pink=false)=>`<div class="eyebrow ${pink?'pink':''}">${text}</div>`;
 const noeliaIcon=(name)=>{const paths={upRight:'<path d="M7 17 17 7M8 7h9v9"/>',down:'<path d="M12 5v14m-7-7 7 7 7-7"/>',left:'<path d="M19 12H5m7-7-7 7 7 7"/>',check:'<path d="M20 6 9 17l-5-5"/>',close:'<path d="M18 6 6 18M6 6l12 12"/>',plus:'<path d="M12 5v14M5 12h14"/>'};return '<svg class="noelia-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+(paths[name]||'')+'</svg>'};
 const button=(text,action,cls='')=>`<button class="btn ${cls}" type="button" data-action="${action}"><span>${text}</span><span class="arr">${noeliaIcon("upRight")}</span></button>`;
-const footer=()=>`<footer class="footer"><div class="footer-inner"><div><div class="brand">NOELIA<span> PERUCCI</span></div><small>PERSONAL TRAINER · IFBB</small></div><nav class="footer-nav" aria-label="Navegación secundaria"><a href="#inicio" data-route="inicio">Inicio</a><a href="#entrenamientos" data-route="entrenamientos">Entrenamientos</a><a href="#control" data-route="control">Control mensual</a><a href="#contacto" data-route="contacto">Contacto</a></nav></div></footer>`;
+const footer=()=>`<footer class="footer"><div class="footer-inner"><div><div class="brand">NOELIA<span> PERUCCI</span></div><small>PERSONAL TRAINER · IFBB</small></div><nav class="footer-nav" aria-label="Navegación secundaria"><a href="#inicio" data-route="inicio">Inicio</a><a href="#entrenamientos" data-route="entrenamientos">Entrenamientos</a><a href="#control" data-route="control">Control mensual</a><a href="#contacto" data-route="contacto">Contacto</a></nav><div class="footer-socials" aria-label="Redes sociales"><a class="footer-social" href="https://www.instagram.com/noelia_perucci/" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Noelia Perucci: @noelia_perucci"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.9" cy="6.2" r="1" fill="currentColor" stroke="none"/></svg><span class="footer-social-copy"><small>INSTAGRAM</small><span>@noelia_perucci</span></span></a><a class="footer-social" href="https://www.youtube.com/@noelia_perucci/featured" target="_blank" rel="noopener noreferrer" aria-label="YouTube de Noelia Perucci: @noelia_perucci"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3z" fill="currentColor" stroke="none"/></svg><span class="footer-social-copy"><small>YOUTUBE</small><span>@noelia_perucci</span></span></a></div></div></footer>`;
 const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-theme="dark"><div class="hero-photo hero-video-frame" aria-hidden="true"><div class="hero-video-soft-back" style="background-image:url('${NOELIA_HERO_POSTER}')"></div><video id="noelia-hero-video" class="hero-background-video" poster="${matchMedia('(min-width:760px)').matches?NOELIA_OPCION_2_POSTER:NOELIA_HERO_POSTER}" autoplay muted loop playsinline preload="metadata" tabindex="-1"></video></div><div class="wrap">${label('EMPEZÁ EL CAMBIO DE TU VIDA HOY')}<h1>UN DÍA<br>A LA VEZ<span class="habit-period">.</span></h1><p>Las buenas costumbres llevan a concretar niveles que ni sabías que podías lograr. Prepárate para comenzar el cambio.</p><div class="habit-actions">${button('CONÓCEME','conoceme')}${button('PLANES','entrenamientos','outline')}</div><div class="hero-end"><span>CONSTANCIA · HÁBITOS · PROGRESO</span></div></div></section>
 <section class="section dark about noelia-feature-preview" data-theme="dark" id="noelia"><div class="wrap"><div class="section-index"><small>02 / QUIÉN ES BARBIEMONSTRUO</small><small>PERSONAL TRAINER</small></div>
 <div class="about-layout">
