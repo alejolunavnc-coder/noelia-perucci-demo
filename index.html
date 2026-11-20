@@ -2599,9 +2599,9 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 }
 
 /* GYM_TANDA_81_TUS_PLANES_MOBILE_COMPACTO_20261120
-   Solo móvil, sin cambiar textos ni WebP:
-   texto arriba, dibujo mas cerca, leve solapamiento permitido,
-   mascara del techo y suelo decorativos; PC intacta. */
+   Solo móvil: texto HTML y estilos tipográficos intactos.
+   Foto real en vez de ilustración; recorte inferior cerca de zapatillas.
+   PC intacta. */
 .plans-mobile-art{display:none}
 @media (max-width:759px){
  .plans-hero{
@@ -2610,7 +2610,7 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   align-items:stretch;
   justify-content:flex-start;
   min-height:0;
-  height:auto;
+  height:143vw;
   padding:88px 0 0;
   background:#0c0a10;
   overflow:hidden;
@@ -2661,32 +2661,16 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  }
  .plans-hero .plans-mobile-art{
   display:block;
-  position:relative;
+  position:absolute;
+  inset:0;
   z-index:1;
-  flex:0 0 auto;
   width:100%;
-  aspect-ratio:941 / 1672;
-  margin-top:-61vw;
-  margin-bottom:-26vw;
-  background:url('/media/banner_tus_planes_celular.webp') center center / contain no-repeat;
-  -webkit-mask-image:linear-gradient(
-   to bottom,
-   transparent 0,
-   transparent 49vw,
-   #000 52vw,
-   #000 calc(100% - 9vw),
-   rgba(0,0,0,.98) calc(100% - 5vw),
-   transparent 100%
-  );
-  mask-image:linear-gradient(
-   to bottom,
-   transparent 0,
-   transparent 49vw,
-   #000 52vw,
-   #000 calc(100% - 9vw),
-   rgba(0,0,0,.98) calc(100% - 5vw),
-   transparent 100%
-  );
+  height:100%;
+  margin:0;
+  aspect-ratio:auto;
+  background:url('/media/banner_sentadilla_celular.webp') center 19vw / 100% auto no-repeat;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 4vw),transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 4vw),transparent 100%);
   pointer-events:none;
  }
 }
