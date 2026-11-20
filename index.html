@@ -2562,26 +2562,32 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
    El background shorthand debe superar reglas historicas !important. */
 @media (min-width:760px){
  .plans-hero::before{
+  /* Tanda 87: foto vertical real recortada entre las referencias verdes.
+     Altura 218% y anclaje vertical 39% mantienen cabeza y zapatillas visibles.
+     Las capas negras quedan bajo el texto original, sin modificarlo. */
   background:
-   /* Fundido horizontal: cubrir el borde izquierdo de la foto sin moverla. */
    linear-gradient(90deg,
     #0c0a10 0%,
-    #0c0a10 36%,
-    rgba(12,10,16,.99) 41%,
-    rgba(12,10,16,.90) 45%,
-    rgba(12,10,16,.58) 51%,
-    rgba(12,10,16,.20) 58%,
-    rgba(12,10,16,0) 67%) center / 100% 100% no-repeat,
-   /* Fundido superior: misma altura que la imagen; despeja la cabeza. */
+    #0c0a10 23%,
+    rgba(12,10,16,.98) 35%,
+    rgba(12,10,16,.84) 47%,
+    rgba(12,10,16,.42) 60%,
+    rgba(12,10,16,.10) 72%,
+    rgba(12,10,16,0) 82%) center / 100% 100% no-repeat,
    linear-gradient(180deg,
-    #0c0a10 0%,
-    rgba(12,10,16,.98) 1%,
-    rgba(12,10,16,.58) 2.4%,
-    rgba(12,10,16,0) 4.5%) right bottom / 100% min(84%, 53vw) no-repeat,
-   url('/media/banner_tus_planes_pc.webp') right bottom / auto min(84%, 53vw) no-repeat
+    rgba(12,10,16,.45) 0%,
+    rgba(12,10,16,0) 12%,
+    rgba(12,10,16,0) 90%,
+    rgba(12,10,16,.18) 100%) center / 100% 100% no-repeat,
+   url('/media/banner_sentadilla_celular.webp') right 39% / auto 218% no-repeat
    !important;
   filter:none!important;
  }
+}
+/* En PC angosta se amplía la zona visible de la misma foto
+   para evitar cortar cabeza y zapatillas sin modificar la tipografía. */
+@media (min-width:760px) and (max-width:1099px){
+ .plans-hero::before{background-size:100% 100%,100% 100%,auto 195%!important}
 }
 @media (max-width:759px){
  .plans-hero::before{
