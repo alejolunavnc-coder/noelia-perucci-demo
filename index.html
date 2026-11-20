@@ -2563,7 +2563,7 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 @media (min-width:760px){
  .plans-hero::before{
   /* Tanda 87: foto vertical real recortada entre las referencias verdes.
-     Altura 218% y anclaje vertical 39% mantienen cabeza y zapatillas visibles.
+     Altura 180% y anclaje vertical 42% dan margen superior a la cabeza e inferior al calzado.
      Las capas negras quedan bajo el texto original, sin modificarlo. */
   background:
    linear-gradient(90deg,
@@ -2579,7 +2579,7 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
     rgba(12,10,16,0) 12%,
     rgba(12,10,16,0) 90%,
     rgba(12,10,16,.18) 100%) center / 100% 100% no-repeat,
-   url('/media/banner_sentadilla_celular.webp') right 39% / auto 218% no-repeat
+   url('/media/banner_sentadilla_celular.webp') right 42% / auto 180% no-repeat
    !important;
   filter:none!important;
  }
@@ -2587,7 +2587,7 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 /* En PC angosta se amplía la zona visible de la misma foto
    para evitar cortar cabeza y zapatillas sin modificar la tipografía. */
 @media (min-width:760px) and (max-width:1099px){
- .plans-hero::before{background-size:100% 100%,100% 100%,auto 195%!important}
+ .plans-hero::before{background-size:100% 100%,100% 100%,auto 170%!important}
 }
 @media (max-width:759px){
  .plans-hero::before{
