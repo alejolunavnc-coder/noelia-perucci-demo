@@ -2557,7 +2557,7 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 
 /* GYM_TANDA_76_BANNERS_TUS_PLANES_20261120
    Exclusivo del fondo de TUS PLANES. No cambiar textos, medidas ni HTML.
-   PC: imagen completa en altura a la derecha; degradado lateral para texto.
+   PC: archivo original completo, dimensionado sin recorte y situado por debajo del header; degradado lateral para texto.
    Celular: archivo vertical especifico, degradado inferior legible.
    El background shorthand debe superar reglas historicas !important. */
 @media (min-width:760px){
@@ -2569,7 +2569,7 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
     rgba(8,7,11,.26) 53%,
     rgba(8,7,11,.05) 80%,
     rgba(8,7,11,.06) 100%) center / 100% 100% no-repeat,
-   url('/media/banner_tus_planes_pc.webp') right center / auto 100% no-repeat
+   url('/media/banner_tus_planes_pc.webp') right bottom / auto min(84%, 53vw) no-repeat
    !important;
   filter:none!important;
  }
