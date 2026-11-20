@@ -2663,6 +2663,12 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  /* Imagen en su proporción nativa: no hay background-size:cover.
     El margen negativo solapa solo el espacio oscuro original encima
     del cabello; la capa de texto está por delante, sin tapar la figura. */
+ /* GYM_TANDA_80_COMPACTAR_TUS_PLANES_MOBILE_20261120
+    El cabello empieza aproximadamente al 51% del ancho de la imagen:
+    retirar del flujo visual solo el techo decorativo (no la figura).
+    Relacion 941:1672 y archivo WebP absolutamente intactos.
+    La mascara tapa el techo que se superpondria a los textos; deja
+    visible todo el cabello, la barra, los discos y las zapatillas. */
  .plans-hero .plans-mobile-art{
   display:block;
   position:relative;
@@ -2670,10 +2676,10 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
   flex:0 0 auto;
   width:100%;
   aspect-ratio:941 / 1672;
-  margin-top:clamp(-78px,-17vw,-52px);
-  background: url('/media/banner_tus_planes_celular.webp') center center / contain no-repeat;
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0px,#000 22px,#000 100%);
-  mask-image:linear-gradient(to bottom,transparent 0px,#000 22px,#000 100%);
+  margin-top:-48.5vw;
+  background:url('/media/banner_tus_planes_celular.webp') center center / contain no-repeat;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0px,transparent 41vw,#000 46vw,#000 100%);
+  mask-image:linear-gradient(to bottom,transparent 0px,transparent 41vw,#000 46vw,#000 100%);
   pointer-events:none;
  }
 }
