@@ -2563,12 +2563,21 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 @media (min-width:760px){
  .plans-hero::before{
   background:
+   /* Fundido horizontal: cubrir el borde izquierdo de la foto sin moverla. */
    linear-gradient(90deg,
-    rgba(8,7,11,.89) 0%,
-    rgba(8,7,11,.67) 27%,
-    rgba(8,7,11,.26) 53%,
-    rgba(8,7,11,.05) 80%,
-    rgba(8,7,11,.06) 100%) center / 100% 100% no-repeat,
+    #0c0a10 0%,
+    #0c0a10 36%,
+    rgba(12,10,16,.99) 41%,
+    rgba(12,10,16,.90) 45%,
+    rgba(12,10,16,.58) 51%,
+    rgba(12,10,16,.20) 58%,
+    rgba(12,10,16,0) 67%) center / 100% 100% no-repeat,
+   /* Fundido superior: misma altura que la imagen; despeja la cabeza. */
+   linear-gradient(180deg,
+    #0c0a10 0%,
+    rgba(12,10,16,.98) 1%,
+    rgba(12,10,16,.58) 2.4%,
+    rgba(12,10,16,0) 4.5%) right bottom / 100% min(84%, 53vw) no-repeat,
    url('/media/banner_tus_planes_pc.webp') right bottom / auto min(84%, 53vw) no-repeat
    !important;
   filter:none!important;
