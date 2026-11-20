@@ -2563,23 +2563,23 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 @media (min-width:760px){
  .plans-hero::before{
   /* Tanda 87: foto vertical real recortada entre las referencias verdes.
-     Altura 180% y anclaje vertical 42% dan margen superior a la cabeza e inferior al calzado.
+     Altura 180% y anclaje vertical 28% descienden la foto para recuperar cabeza y conservar calzado.
      Las capas negras quedan bajo el texto original, sin modificarlo. */
   background:
    linear-gradient(90deg,
     #0c0a10 0%,
-    #0c0a10 23%,
-    rgba(12,10,16,.98) 35%,
-    rgba(12,10,16,.84) 47%,
-    rgba(12,10,16,.42) 60%,
-    rgba(12,10,16,.10) 72%,
-    rgba(12,10,16,0) 82%) center / 100% 100% no-repeat,
+    #0c0a10 27%,
+    rgba(12,10,16,.99) 39%,
+    rgba(12,10,16,.89) 52%,
+    rgba(12,10,16,.62) 64%,
+    rgba(12,10,16,.24) 77%,
+    rgba(12,10,16,0) 90%) center / 100% 100% no-repeat,
    linear-gradient(180deg,
     rgba(12,10,16,.45) 0%,
     rgba(12,10,16,0) 12%,
     rgba(12,10,16,0) 90%,
     rgba(12,10,16,.18) 100%) center / 100% 100% no-repeat,
-   url('/media/banner_sentadilla_celular.webp') right 42% / auto 180% no-repeat
+   url('/media/banner_sentadilla_celular.webp') right 28% / auto 180% no-repeat
    !important;
   filter:none!important;
  }
