@@ -143,6 +143,51 @@ async function cloudinarySignature(parameters,secret) {
   const str=Object.entries(parameters).sort(([a],[b])=>a.localeCompare(b,"en")).map(([k,v])=>k+"="+v).join("&")+secret;
   return bytesHex(await crypto.subtle.digest("SHA-1",enc.encode(str)));
 }
+// Shared prices by days are stored in D1 site_content, without modifying PDF associations.
+async function getSavedPrices(env) {
+  if(!env.DB)throw Error("D1 no disponible");
+  const r=await env.DB.prepare(
+    "SELECT content_key,content_value FROM site_content WHERE content_key IN ('gym_price_days_2','gym_price_days_3','gym_price_days_4','gym_price_days_5')"
+  ).all();
+  const prices={...DEFAULT_PRICES};
+  for(const item of r.results||[]) {
+    const match=/^gym_price_days_([2-5])$/.exec(item.content_key);
+    const value=Number(item.content_value);
+    if(match&&Number.isSafeInteger(value)&&value>=1&&value<=10000000)prices[Number(match[1])]=value;
+  }
+  return prices;
+}
+async function publicPrices(env) {
+  if(!env.DB)return json({error:"Precios no disponibles temporalmente."},503);
+  const prices=await getSavedPrices(env);
+  return json({ok:true,prices});
+}
+async function savePrices(request,env) {
+  if(!env.DB)return json({error:"Base de datos no disponible."},503);
+  const data=await postedJson(request);
+  if(!data||!data.prices||typeof data.prices!=="object"||Array.isArray(data.prices))
+    return json({error:"Ingresá los cuatro precios."},400);
+  const prices={};
+  for(const day of [2,3,4,5]) {
+    const value=data.prices[day];
+    if(typeof value!=="number"||!Number.isSafeInteger(value)||value<1||value>10000000)
+      return json({error:"Precio inválido para "+day+" días. Usá un número entre $1 y $10.000.000."},400);
+    prices[day]=value;
+  }
+  const entries=[2,3,4,5].map(day=>env.DB.prepare(
+    "INSERT INTO site_content(content_key,content_value,kind,updated_at) VALUES(?,?,'text',datetime('now')) ON CONFLICT(content_key) DO UPDATE SET content_value=excluded.content_value,updated_at=datetime('now')"
+  ).bind("gym_price_days_"+day,String(prices[day])));
+  await env.DB.batch(entries);
+  return json({ok:true,prices:await getSavedPrices(env)});
+}
+async function adminOrders(env) {
+  if(!env.DB)return json({error:"Base de datos no disponible."},503);
+  const r=await env.DB.prepare(
+    "SELECT o.id,o.customer_email,o.amount_ars,o.status,o.provider,o.created_at,p.level,p.days_per_week AS days FROM orders o LEFT JOIN training_plans p ON p.id=o.plan_id ORDER BY o.created_at DESC LIMIT 100"
+  ).all();
+  return json({ok:true,orders:r.results||[]});
+}
+
 async function listRoutinePdfs(env) {
   if(!env.DB)return json({error:"Base de datos no disponible."},503);
   const result=await env.DB.prepare(
@@ -291,6 +336,15 @@ export default {
         if(method==="POST" && !validOrigin(request)) return json({error:"Origen no autorizado."},403);
         if(path==="/api/auth/login" && method==="POST") return login(request,env);
         if(path==="/api/auth/logout" && method==="POST") return logout(request,env);
+        if(path==="/api/prices" && method==="GET") return publicPrices(env);
+        if(path==="/api/admin/prices" && ["GET","POST"].includes(method)){
+          if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
+          return method==="GET"?publicPrices(env):savePrices(request,env);
+        }
+        if(path==="/api/admin/orders" && method==="GET"){
+          if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
+          return adminOrders(env);
+        }
         if(path==="/api/checkout/complete" && method==="POST") return completeCheckout(request,env);
         if(path==="/api/checkout/download" && method==="GET") return downloadCheckoutPdf(request,env);
         if(path==="/api/admin/routine-pdfs" && method==="GET"){
