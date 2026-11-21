@@ -177,6 +177,10 @@ async function savePrices(request,env) {
   const entries=[2,3,4,5].map(day=>env.DB.prepare(
     "INSERT INTO site_content(content_key,content_value,kind,updated_at) VALUES(?,?,'text',datetime('now')) ON CONFLICT(content_key) DO UPDATE SET content_value=excluded.content_value,updated_at=datetime('now')"
   ).bind("gym_price_days_"+day,String(prices[day])));
+  // Keep existing plan rows consistent with the public prices, without touching PDF assets.
+  for(const day of [2,3,4,5])entries.push(env.DB.prepare(
+    "UPDATE training_plans SET price_ars=?,updated_at=datetime('now') WHERE days_per_week=?"
+  ).bind(prices[day],day));
   await env.DB.batch(entries);
   return json({ok:true,prices:await getSavedPrices(env)});
 }
@@ -283,12 +287,13 @@ async function uploadRoutinePdf(request,env) {
   if(!cloudResponse.ok)return json({error:"Cloudinary rechazó la subida. Verificá la API Key y el API Secret en Cloudflare."},502);
   if(typeof cloud.public_id!=="string"||cloud.resource_type!=="raw"||cloud.type!=="authenticated")return json({error:"Respuesta inesperada de Cloudinary."},502);
   const assetId=crypto.randomUUID(),planId=level+"-"+days;
+  const activePrices=await getSavedPrices(env);
   try {
     await env.DB.batch([
       env.DB.prepare("INSERT INTO media_assets(id,cloudinary_public_id,resource_type,delivery_type,secure_url,original_filename,bytes,mime_type) VALUES(?,?,'raw','authenticated',NULL,?,?,'application/pdf')")
         .bind(assetId,cloud.public_id,file.name,file.size),
       env.DB.prepare("INSERT INTO training_plans(id,level,days_per_week,price_ars,pdf_asset_id) VALUES(?,?,?,?,?) ON CONFLICT(level,days_per_week) DO UPDATE SET pdf_asset_id=excluded.pdf_asset_id,updated_at=datetime('now')")
-        .bind(planId,level,days,DEFAULT_PRICES[days],assetId)
+        .bind(planId,level,days,activePrices[days],assetId)
     ]);
   }catch(error) {
     console.error("GYM Cloudinary uploaded but DB save failed",error?.message||"unknown");
