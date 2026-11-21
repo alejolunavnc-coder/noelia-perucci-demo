@@ -89,7 +89,7 @@ function validPassword(password) {
 function page(title, content, script) {
   return html('<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>' + title + ' | Noelia Perucci</title><style>*{box-sizing:border-box}body{margin:0;min-height:100dvh;background:#151419;color:white;font:16px system-ui,Arial;display:grid;place-items:center;padding:20px}main{width:min(100%,420px);background:#242028;padding:32px;border-radius:16px;border:1px solid #54434f}h1{font-size:27px;margin:0 0 8px}p{color:#d5c5ce;line-height:1.5}label{display:block;margin:18px 0 8px}input{display:block;width:100%;padding:12px;border-radius:9px;border:1px solid #bbb;background:white;color:#111;font-size:16px}button{width:100%;padding:14px;margin-top:24px;color:white;background:#d00073;border:none;border-radius:9px;font-weight:700;font-size:16px;cursor:pointer}button:disabled{opacity:.6}small{display:block;margin-top:18px;color:#d8a8c4}#notice{min-height:22px;color:#ffb5d6}</style></head><body><main>' + content + '<p id="notice" role="status"></p></main><script>' + script + '</script></body></html>');
 }
-const formScript = String.raw\`
+const formScript = String.raw`
 const form=document.querySelector('form'),button=document.querySelector('button'),notice=document.getElementById('notice');
 form.addEventListener('submit',async event=>{
  event.preventDefault();button.disabled=true;notice.textContent='Verificando…';
@@ -101,7 +101,7 @@ form.addEventListener('submit',async event=>{
   location.replace('/admin/');
  }catch(error){notice.textContent=error.message;button.disabled=false;}
 });
-\`;
+`;
 function loginPage() {
   return page("Ingresar", '<h1>Administración</h1><p>Ingresá a tu panel de Noelia Perucci.</p><form data-endpoint="/api/auth/login"><label for="email">Correo electrónico</label><input id="email" name="email" type="email" required autocomplete="username"><label for="password">Contraseña</label><input id="password" name="password" type="password" required autocomplete="current-password"><button type="submit">Ingresar</button></form>', formScript);
 }
