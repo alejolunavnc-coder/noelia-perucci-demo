@@ -48,27 +48,38 @@ function secureEquals(a,b) {
   for(let i=0;i<a.length;i++) diff|=a.charCodeAt(i)^b.charCodeAt(i);
   return diff===0;
 }
-async function sessionHash(secret, token) {
-  return sha256("gym-admin-session:v1:" + secret + ":" + token);
+async function hmacHex(secret, payload) {
+  const key=await crypto.subtle.importKey("raw",enc.encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
+  return bytesHex(await crypto.subtle.sign("HMAC",key,enc.encode("gym-admin-session:v2:"+payload)));
 }
-
+function secureEquals(a,b) {
+  if (a.length!==b.length) return false;
+  let diff=0;
+  for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^b.charCodeAt(i);
+  return diff===0;
+}
 function readCookie(request) {
-  const items = (request.headers.get("cookie") || "").split(";").map(c => c.trim());
-  const item = items.find(c => c.startsWith(COOKIE + "="));
-  const token = item?.slice(COOKIE.length + 1) || "";
-  return /^[a-f0-9]{64}$/.test(token) ? token : null;
+  const items=(request.headers.get("cookie")||"").split(";").map(c=>c.trim());
+  const item=items.find(c=>c.startsWith(COOKIE+"="));
+  return item ? item.slice(COOKIE.length+1) : null;
 }
-async function userFromRequest(request, env) {
+async function userFromRequest(request,env) {
   const secret=adminSecret(env);
-  if (!env.DB || !secret) return null;
+  if(!secret)return null;
   const token=readCookie(request);
-  if (!token) return null;
-  const hash=await sessionHash(secret,token);
-  return env.DB.prepare(
-    "SELECT u.id, u.role FROM admin_sessions s JOIN admin_users u ON u.id=s.user_id WHERE s.token_hash=? AND s.revoked_at IS NULL AND s.expires_at > datetime('now') AND u.disabled=0 LIMIT 1"
-  ).bind(hash).first();
+  if(!token || token.length>250)return null;
+  const match=/^v2\.(\d{10,13})\.([a-f0-9]{32})\.([a-f0-9]{64})$/.exec(token);
+  if(!match)return null;
+  const expires=Number(match[1]);
+  if(!Number.isSafeInteger(expires)||expires<Date.now()||expires>Date.now()+SESSION_AGE*1000)return null;
+  const payload="v2."+match[1]+"."+match[2];
+  const expected=await hmacHex(secret,payload);
+  return secureEquals(expected,match[3]) ? {id:"gym-admin",role:"admin"} : null;
 }
-
+async function issueSession(secret) {
+  const payload="v2."+(Date.now()+SESSION_AGE*1000)+"."+randomHex(16);
+  return payload+"."+await hmacHex(secret,payload);
+}
 async function postedJson(request) {
   if (!(request.headers.get("content-type") || "").toLowerCase().startsWith("application/json")) return null;
   const length = Number(request.headers.get("content-length") || 0);
@@ -101,56 +112,34 @@ form.addEventListener('submit',async event=>{
 function loginPage() {
   return page("Ingresar", '<h1>Administración</h1><p>Ingresá a tu panel de Noelia Perucci.</p><form data-endpoint="/api/auth/login"><label for="password">Contraseña</label><input id="password" name="password" type="password" required autocomplete="current-password" autofocus><button type="submit">Ingresar</button></form>', formScript);
 }
-async function issueSession(db, userId, secret) {
-  const token=randomHex(32);
-  const hash=await sessionHash(secret,token);
-  await db.prepare("INSERT INTO admin_sessions(id,user_id,token_hash,expires_at) VALUES(?,?,?,datetime('now','+7 days'))")
-    .bind(crypto.randomUUID(),userId,hash).run();
-  return token;
-}
 
-async function login(request, env) {
+async function login(request,env) {
   const secret=adminSecret(env);
-  if (!env.DB || !secret) return json({error:"Acceso no configurado en Cloudflare."},503);
+  if(!secret)return json({error:"El secreto ADMIN_SETUP_TOKEN no está disponible en este despliegue."},503);
   const data=await postedJson(request);
-  if (!data || typeof data.password!=="string" || data.password.length>512) {
-    return json({error:"Contraseña incorrecta."},401);
+  if(!data||typeof data.password!=="string"||data.password.length>512) {
+    return json({error:"Ingresá la contraseña configurada en Cloudflare."},400);
   }
-  // Verify the current Cloudflare secret before checking the failed-attempt limit.
-  // A correct new secret must not stay locked out because of older failed attempts.
   const valid=secureEquals(await sha256(data.password),await sha256(secret));
-  const ip=request.headers.get("cf-connecting-ip") || "unknown";
-  const key=await sha256("admin-login:"+ip);
-  if (!valid) {
+  if(!valid) {
+    // Invalid attempts are limited in D1. Valid credentials do not depend on D1 availability.
+    if(!env.DB)return json({error:"Protección de acceso temporalmente no disponible."},503);
+    const ip=request.headers.get("cf-connecting-ip")||"unknown";
+    const key=await sha256("admin-login:"+ip);
     const recent=await env.DB.prepare(
       "SELECT COUNT(*) AS total FROM admin_audit_log WHERE action='auth_failed' AND entity_id=? AND created_at >= datetime('now','-15 minutes')"
     ).bind(key).first();
-    if (recent.total>=8) {
-      return json({error:"Demasiados intentos. Intentá nuevamente en 15 minutos."},429,{"retry-after":"900"});
-    }
+    if(recent.total>=8)return json({error:"Demasiados intentos. Intentá nuevamente en 15 minutos."},429,{"retry-after":"900"});
     await env.DB.prepare("INSERT INTO admin_audit_log(id,action,entity_type,entity_id) VALUES(?,'auth_failed','login',?)")
       .bind(crypto.randomUUID(),key).run();
     return json({error:"Contraseña incorrecta."},401);
   }
-  // A single deterministic D1 identity is used for secret-based administration.
-  // Legacy setup accounts must never block sign-in with the active Cloudflare secret.
-  await env.DB.prepare(
-    "INSERT OR IGNORE INTO admin_users(id,email,password_hash) VALUES('gym-admin','gym-admin@internal.invalid','cloudflare-secret-managed')"
-  ).run();
-  const user=await env.DB.prepare("SELECT id FROM admin_users WHERE id='gym-admin' AND disabled=0 LIMIT 1").first();
-  if (!user) return json({error:"La cuenta de administración necesita revisión."},503);
-  const token=await issueSession(env.DB,user.id,secret);
+  const token=await issueSession(secret);
   return json({ok:true},200,{"set-cookie":cookie(token)});
 }
-async function logout(request,env) {
-  const token=readCookie(request),secret=adminSecret(env);
-  if(token && env.DB && secret) {
-    await env.DB.prepare("UPDATE admin_sessions SET revoked_at=datetime('now') WHERE token_hash=?")
-      .bind(await sessionHash(secret,token)).run();
-  }
+async function logout() {
   return json({ok:true},200,{"set-cookie":cookie("",0)});
 }
-
 export default {
   async fetch(request,env) {
     const url=new URL(request.url),path=url.pathname,method=request.method;
