@@ -131,6 +131,68 @@ async function login(request,env) {
   const token=await issueSession(secret);
   return json({ok:true},200,{"set-cookie":cookie(token)});
 }
+
+const LEVELS=new Set(["principiante","intermedio","avanzado"]);
+const DEFAULT_PRICES={2:50000,3:60000,4:80000,5:80000};
+function cloudinaryReady(env) {
+  return ["CLOUDINARY_CLOUD_NAME","CLOUDINARY_API_KEY","CLOUDINARY_API_SECRET"].every(k=>typeof env[k]==="string"&&env[k].length>0)
+    && /^[a-z0-9_-]+$/i.test(env.CLOUDINARY_CLOUD_NAME);
+}
+function validSlot(level,days) { return LEVELS.has(level)&&Number.isInteger(days)&&days>=2&&days<=5; }
+async function cloudinarySignature(parameters,secret) {
+  const str=Object.entries(parameters).sort(([a],[b])=>a.localeCompare(b,"en")).map(([k,v])=>k+"="+v).join("&")+secret;
+  return bytesHex(await crypto.subtle.digest("SHA-1",enc.encode(str)));
+}
+async function listRoutinePdfs(env) {
+  if(!env.DB)return json({error:"Base de datos no disponible."},503);
+  const result=await env.DB.prepare(
+    "SELECT p.level,p.days_per_week AS days,m.original_filename AS filename,m.bytes,m.created_at AS uploaded_at FROM training_plans p LEFT JOIN media_assets m ON m.id=p.pdf_asset_id WHERE p.pdf_asset_id IS NOT NULL ORDER BY p.level,p.days_per_week"
+  ).all();
+  return json({ok:true,files:result.results||[],cloudinaryConfigured:cloudinaryReady(env)});
+}
+async function uploadRoutinePdf(request,env) {
+  if(!env.DB)return json({error:"Base de datos no disponible."},503);
+  if(!cloudinaryReady(env))return json({error:"Faltan las variables de Cloudinary en Cloudflare."},503);
+  const size=Number(request.headers.get("content-length")||0);
+  if(size>21*1024*1024)return json({error:"Máximo permitido: PDF de 20 MB."},413);
+  if(!(request.headers.get("content-type")||"").toLowerCase().startsWith("multipart/form-data"))return json({error:"Formulario inválido."},415);
+  const data=await request.formData();
+  const level=data.get("level"),days=Number(data.get("days")),file=data.get("file");
+  if(!validSlot(level,days))return json({error:"Seleccioná un nivel y días válidos."},400);
+  if(!(file instanceof File)||file.size<5||file.size>20*1024*1024||!String(file.name).toLowerCase().endsWith(".pdf"))return json({error:"Elegí un PDF válido de hasta 20 MB."},400);
+  const header=new Uint8Array(await file.slice(0,5).arrayBuffer());
+  if(header[0]!==37||header[1]!==80||header[2]!==68||header[3]!==70||header[4]!==45)return json({error:"El archivo no tiene un formato PDF válido."},400);
+  const timestamp=Math.floor(Date.now()/1000),folder="gym/noelia-perucci/rutinas",publicId=crypto.randomUUID()+".pdf";
+  // Authenticated delivery prevents exposing paid routines as public Cloudinary URLs.
+  const params={folder,public_id:publicId,timestamp:String(timestamp),type:"authenticated"};
+  const signature=await cloudinarySignature(params,env.CLOUDINARY_API_SECRET);
+  const upload=new FormData();
+  upload.set("file",file,file.name);
+  upload.set("api_key",env.CLOUDINARY_API_KEY);
+  upload.set("signature",signature);
+  for(const [k,v] of Object.entries(params))upload.set(k,v);
+  let cloudResponse;
+  try {
+    cloudResponse=await fetch("https://api.cloudinary.com/v1_1/"+env.CLOUDINARY_CLOUD_NAME+"/raw/upload",{method:"POST",body:upload});
+  }catch(e){return json({error:"No se pudo conectar con Cloudinary."},502);}
+  const cloud=await cloudResponse.json().catch(()=>({}));
+  if(!cloudResponse.ok)return json({error:"Cloudinary rechazó la subida. Verificá la API Key y el API Secret en Cloudflare."},502);
+  if(typeof cloud.public_id!=="string"||cloud.resource_type!=="raw"||cloud.type!=="authenticated")return json({error:"Respuesta inesperada de Cloudinary."},502);
+  const assetId=crypto.randomUUID(),planId=level+"-"+days;
+  try {
+    await env.DB.batch([
+      env.DB.prepare("INSERT INTO media_assets(id,cloudinary_public_id,resource_type,delivery_type,secure_url,original_filename,bytes,mime_type) VALUES(?,?,'raw','authenticated',NULL,?,?,'application/pdf')")
+        .bind(assetId,cloud.public_id,file.name,file.size),
+      env.DB.prepare("INSERT INTO training_plans(id,level,days_per_week,price_ars,pdf_asset_id) VALUES(?,?,?,?,?) ON CONFLICT(level,days_per_week) DO UPDATE SET pdf_asset_id=excluded.pdf_asset_id,updated_at=datetime('now')")
+        .bind(planId,level,days,DEFAULT_PRICES[days],assetId)
+    ]);
+  }catch(error) {
+    console.error("GYM Cloudinary uploaded but DB save failed",error?.message||"unknown");
+    return json({error:"El archivo se subió, pero no se pudo registrar en D1. No vuelvas a subirlo hasta revisar el error."},500);
+  }
+  return json({ok:true,level,days,filename:file.name,bytes:file.size},201);
+}
+
 async function logout() {
   return json({ok:true},200,{"set-cookie":cookie("",0)});
 }
@@ -170,6 +232,14 @@ export default {
         if(method==="POST" && !validOrigin(request)) return json({error:"Origen no autorizado."},403);
         if(path==="/api/auth/login" && method==="POST") return login(request,env);
         if(path==="/api/auth/logout" && method==="POST") return logout(request,env);
+        if(path==="/api/admin/routine-pdfs" && method==="GET"){
+          if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
+          return listRoutinePdfs(env);
+        }
+        if(path==="/api/admin/routine-pdfs" && method==="POST"){
+          if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
+          return uploadRoutinePdf(request,env);
+        }
         return json({error:"Not found"},404);
       }
       return env.ASSETS.fetch(request);
