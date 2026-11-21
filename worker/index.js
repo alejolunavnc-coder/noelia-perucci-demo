@@ -52,12 +52,6 @@ async function hmacHex(secret, payload) {
   const key=await crypto.subtle.importKey("raw",enc.encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
   return bytesHex(await crypto.subtle.sign("HMAC",key,enc.encode("gym-admin-session:v2:"+payload)));
 }
-function secureEquals(a,b) {
-  if (a.length!==b.length) return false;
-  let diff=0;
-  for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^b.charCodeAt(i);
-  return diff===0;
-}
 function readCookie(request) {
   const items=(request.headers.get("cookie")||"").split(";").map(c=>c.trim());
   const item=items.find(c=>c.startsWith(COOKIE+"="));
