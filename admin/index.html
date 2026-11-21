@@ -43,12 +43,12 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
 </section>
 <section class="panel orders-panel" id="orders-panel" role="tabpanel" aria-labelledby="orders-tab" tabindex="0" hidden>
 <div class="orders-heading"><div class="heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h16l1 13H3L4 8Zm5 0V6a3 3 0 0 1 6 0v2"/></svg></div><div><h1>Pedidos</h1><p>Listado de compras realizadas en la tienda.</p></div></div>
-<div class="card orders-table-wrap"><table class="orders-table"><thead><tr><th>Pedido</th><th>Correo</th><th>Rutina</th><th>Importe</th><th>Pago</th><th>Entrega</th><th>Fecha</th><th aria-label="Acciones"></th></tr></thead><tbody id="orders-body"><tr><td colspan="8" class="empty"><strong>Todavía no hay pedidos registrados</strong>La tienda sigue en modo demostración. Los pedidos reales aparecerán cuando se conecten los pagos y la base de datos.</td></tr></tbody></table></div>
+<div class="card orders-table-wrap"><table class="orders-table"><thead><tr><th>Pedido</th><th>Correo</th><th>Rutina</th><th>Importe</th><th>Pago</th><th>Entrega</th><th>Fecha</th><th aria-label="Acciones"></th></tr></thead><tbody id="orders-body"><tr><td colspan="8" class="empty"><strong>Todavía no hay pedidos registrados</strong></td></tr></tbody></table></div>
 </section>
 </main>
 </div>
 <input type="file" id="pdf-picker" accept=".pdf,application/pdf" hidden>
-<div class="preview-note" role="status">Los PDF se guardan en Cloudinary. Los precios todavía no se guardan.</div>
+
 <div id="notice" class="notice" role="status" hidden></div>
 <script>
 (function(){
@@ -74,38 +74,10 @@ function updateCell(key){
  btn.addEventListener('click',()=>{selected=key;picker.value='';picker.click()});
  entry.append(line,btn);
  if(file){
-  const test=document.createElement('button');test.type='button';test.className='pdf-btn replace';test.textContent='Compra de prueba';
-  test.style.cssText='height:29px;font-size:11px;padding:0 7px;';
-  test.setAttribute('aria-label','Simular compra y descargar PDF de '+entry.dataset.label);
-  test.addEventListener('click',()=>testPurchase(key,test));
-  entry.append(test);
   entry.title=file.filename+' ('+Math.round(file.bytes/1024)+' KB)';
  }
 }
 for(const [slug,label] of levels){table.append(cell(label,'level'));for(const d of days){const key=slug+'-'+d;const el=cell('','pdf-entry');el.dataset.variant=key;el.dataset.label=label+', '+d+' días';table.append(el);updateCell(key)}}
-async function testPurchase(key,button){
- const [level,days]=key.split('-');
- button.disabled=true;button.textContent='Probando…';
- status.textContent='Compra de prueba: verificando entrega desde Cloudinary…';
- try{
-  const res=await fetch('/api/admin/test-purchase?'+new URLSearchParams({level,days}),{credentials:'same-origin',cache:'no-store'});
-  if(!res.ok){
-   const data=await res.json().catch(()=>({}));
-   throw Error(data.error||'No se pudo descargar el PDF.');
-  }
-  const blob=await res.blob();
-  if(blob.size<5)throw Error('El archivo descargado está vacío.');
-  const header=await blob.slice(0,5).text();
-  if(header!=='%PDF-')throw Error('La descarga no contiene un PDF válido.');
-  const link=document.createElement('a'),downloadUrl=URL.createObjectURL(blob);
-  link.href=downloadUrl;link.download='rutina-'+level+'-'+days+'-dias-prueba.pdf';
-  document.body.append(link);link.click();link.remove();
-  setTimeout(()=>URL.revokeObjectURL(downloadUrl),30000);
-  status.textContent='Compra simbólica verificada: el PDF se descargó correctamente.';
-  msg('¡Prueba exitosa! PDF descargado sin cobro.');
- }catch(error){status.textContent=error.message;msg(error.message)}
- finally{button.disabled=false;button.textContent='Compra de prueba'}
-}
 async function loadFiles(){
  try{
   const res=await fetch('/api/admin/routine-pdfs',{credentials:'same-origin',cache:'no-store'});
@@ -114,7 +86,7 @@ async function loadFiles(){
   saved.clear();
   for(const file of data.files||[])saved.set(file.level+'-'+file.days,file);
   for(const [slug] of levels)for(const d of days)updateCell(slug+'-'+d);
-  status.textContent=data.cloudinaryConfigured?'PDF conectados con Cloudinary. Los precios todavía no se guardan.':'Faltan las variables de Cloudinary en Cloudflare.';
+  status.textContent=data.cloudinaryConfigured?'PDF conectados con Cloudinary.':'Faltan las variables de Cloudinary en Cloudflare.';
  }catch(error){status.textContent=error.message;msg(error.message)}
 }
 picker.addEventListener('change',async()=>{
@@ -135,7 +107,7 @@ picker.addEventListener('change',async()=>{
  finally{busy.delete(key);updateCell(key)}
 });
 for(const input of document.querySelectorAll('[data-days]')){
- input.addEventListener('input',()=>{status.textContent='Los cambios de precios todavía no se guardan.'});
+ input.addEventListener('input',()=>{status.textContent='Cambios de precios pendientes de guardar.'});
  input.addEventListener('blur',()=>{const raw=input.value.replace(/\./g,'').replace(/\D/g,'');if(raw){input.value=Number(raw).toLocaleString('es-AR')}else{msg('El precio no puede estar vacío.')}});
 }
 loadFiles();
