@@ -80,9 +80,6 @@ function validOrigin(request) {
   const origin = request.headers.get("origin");
   return origin === new URL(request.url).origin;
 }
-function validEmail(email) {
-  return typeof email === "string" && email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
 function validPassword(password) {
   return typeof password === "string" && password.length >= 12 && password.length <= 128;
 }
@@ -106,7 +103,7 @@ function loginPage() {
   return page("Ingresar", '<h1>Administración</h1><p>Ingresá a tu panel de Noelia Perucci.</p><form data-endpoint="/api/auth/login"><label for="password">Contraseña</label><input id="password" name="password" type="password" required autocomplete="current-password" autofocus><button type="submit">Ingresar</button></form>', formScript);
 }
 function setupPage() {
-  return page("Crear administrador", '<h1>Crear acceso inicial</h1><p>Esta pantalla funciona una sola vez. Configurá primero ADMIN_SETUP_TOKEN como secreto de Cloudflare.</p><form data-endpoint="/api/auth/setup"><label for="email">Correo del administrador</label><input id="email" name="email" type="email" required autocomplete="username"><label for="password">Contraseña (12 caracteres mínimo)</label><input id="password" name="password" type="password" minlength="12" required autocomplete="new-password"><label for="token">Código secreto de configuración</label><input id="token" name="token" type="password" required autocomplete="off"><button type="submit">Crear administrador</button></form>', formScript);
+  return page("Crear administrador", '<h1>Crear acceso inicial</h1><p>Esta pantalla funciona una sola vez. Configurá primero ADMIN_SETUP_TOKEN como secreto de Cloudflare.</p><form data-endpoint="/api/auth/setup"><label for="password">Contraseña (12 caracteres mínimo)</label><input id="password" name="password" type="password" minlength="12" required autocomplete="new-password"><label for="token">Código secreto de configuración</label><input id="token" name="token" type="password" required autocomplete="off"><button type="submit">Crear administrador</button></form>', formScript);
 }
 async function issueSession(db, userId) {
   const token = randomHex(32);
@@ -117,12 +114,12 @@ async function issueSession(db, userId) {
 async function setup(request, env) {
   if (!env.DB || typeof env.ADMIN_SETUP_TOKEN !== "string" || env.ADMIN_SETUP_TOKEN.length < 32) return json({error:"Configuración no habilitada."},503);
   const data = await postedJson(request);
-  if (!data || !validEmail(data.email) || !validPassword(data.password) || typeof data.token !== "string") return json({error:"Revisá los datos (contraseña mínima de 12 caracteres)."},400);
+  if (!data || !validPassword(data.password) || typeof data.token !== "string") return json({error:"Revisá los datos (contraseña mínima de 12 caracteres)."},400);
   const count = await env.DB.prepare("SELECT COUNT(*) AS total FROM admin_users").first();
   if (count.total > 0) return json({error:"Ya existe un administrador."},409);
   const expected = await sha256(env.ADMIN_SETUP_TOKEN), actual = await sha256(data.token);
   if (expected !== actual) return json({error:"Código de configuración incorrecto."},403);
-  const id=crypto.randomUUID(), email=data.email.trim().toLowerCase(), hash=await passwordHash(data.password);
+  const id=crypto.randomUUID(), email="admin@gym.invalid", hash=await passwordHash(data.password);
   const result=await env.DB.prepare("INSERT INTO admin_users(id,email,password_hash) SELECT ?,?,? WHERE NOT EXISTS(SELECT 1 FROM admin_users)").bind(id,email,hash).run();
   if (result.meta?.changes !== 1) return json({error:"Ya existe un administrador."},409);
   const token=await issueSession(env.DB,id);
