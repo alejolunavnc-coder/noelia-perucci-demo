@@ -66,7 +66,7 @@ for(const input of document.querySelectorAll('[data-days]')){input.addEventListe
 const tabs=[document.getElementById('products-tab'),document.getElementById('orders-tab')];
 function activate(index){tabs.forEach((b,i)=>{const on=i===index;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1;document.getElementById(i?'orders-panel':'products-panel').hidden=!on});}
 tabs.forEach((b,i)=>{b.addEventListener('click',()=>activate(i));b.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'||e.key==='Home'||e.key==='End'){e.preventDefault();const next=e.key==='Home'?0:e.key==='End'?1:e.key==='ArrowRight'?(i+1)%2:(i+1)%2;activate(next);tabs[next].focus()}})});
-document.getElementById('logout').addEventListener('click',()=>msg('La autenticación se implementará con el backend. Esta vista todavía es pública y solo de diseño.'));
+document.getElementById('logout').addEventListener('click',async()=>{try{await fetch('/api/auth/logout',{method:'POST',credentials:'same-origin'});}finally{location.replace('/admin/login/');}});
 })();
 </script>
 </body>
