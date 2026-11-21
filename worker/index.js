@@ -135,7 +135,7 @@ async function login(request, env) {
   // A single deterministic D1 identity is used for secret-based administration.
   // Legacy setup accounts must never block sign-in with the active Cloudflare secret.
   await env.DB.prepare(
-    "INSERT OR IGNORE INTO admin_users(id,email,password_hash) VALUES('gym-admin','admin@gym.invalid','cloudflare-secret-managed')"
+    "INSERT OR IGNORE INTO admin_users(id,email,password_hash) VALUES('gym-admin','gym-admin@internal.invalid','cloudflare-secret-managed')"
   ).run();
   const user=await env.DB.prepare("SELECT id FROM admin_users WHERE id='gym-admin' AND disabled=0 LIMIT 1").first();
   if (!user) return json({error:"La cuenta de administración necesita revisión."},503);
