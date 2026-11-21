@@ -6,3 +6,4 @@ _headers
 .gitignore
 .git/
 .wrangler/
+worker/
