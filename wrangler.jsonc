@@ -19,5 +19,8 @@
       "database_id": "99544401-8ea6-42ea-8b82-d3618a73f87a",
       "migrations_dir": "migrations"
     }
-  ]
+  ],
+  "vars": {
+    "CLOUDINARY_CLOUD_NAME": "equm866o"
+  }
 }
