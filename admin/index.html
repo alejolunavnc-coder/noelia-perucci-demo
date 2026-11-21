@@ -111,8 +111,65 @@ for(const input of document.querySelectorAll('[data-days]')){
  input.addEventListener('blur',()=>{const raw=input.value.replace(/\./g,'').replace(/\D/g,'');if(raw){input.value=Number(raw).toLocaleString('es-AR')}else{msg('El precio no puede estar vacío.')}});
 }
 loadFiles();
+
+const priceSave=document.getElementById('save'),priceFields=Array.from(document.querySelectorAll('[data-days]'));
+let savedPriceValues=null;
+function readPriceValues(){
+ const out={};
+ for(const el of priceFields){const digits=el.value.replace(/\D/g,'');const value=Number(digits);
+  if(!digits||!Number.isSafeInteger(value)||value<1||value>10000000)throw Error('Precio inválido para '+el.dataset.days+' días.');
+  out[el.dataset.days]=value;
+ }
+ return out;
+}
+function updatePriceSave(){
+ if(!savedPriceValues)return;
+ try{const next=readPriceValues();priceSave.disabled=Object.keys(next).every(k=>next[k]===savedPriceValues[k]);}
+ catch{priceSave.disabled=false;}
+}
+async function loadSavedPrices(){
+ try{const res=await fetch('/api/admin/prices',{credentials:'same-origin',cache:'no-store'}),data=await res.json();
+  if(!res.ok)throw Error(data.error||'No se pudieron cargar los precios.');
+  savedPriceValues=data.prices;
+  for(const field of priceFields)field.value=Number(savedPriceValues[field.dataset.days]).toLocaleString('es-AR');
+  priceSave.disabled=true;status.textContent='Precios cargados desde D1.';
+ }catch(e){priceSave.disabled=true;status.textContent=e.message;msg(e.message)}
+}
+priceSave.addEventListener('click',async()=>{
+ let prices;try{prices=readPriceValues()}catch(e){msg(e.message);return;}
+ priceSave.disabled=true;status.textContent='Guardando precios…';
+ try{const res=await fetch('/api/admin/prices',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({prices})});
+  const data=await res.json();if(!res.ok)throw Error(data.error||'No se pudieron guardar los precios.');
+  savedPriceValues=data.prices;status.textContent='Precios guardados y publicados.';msg('Precios guardados correctamente.');
+ }catch(e){status.textContent=e.message;msg(e.message)}
+ finally{updatePriceSave()}
+});
+for(const field of priceFields){field.addEventListener('input',updatePriceSave);field.addEventListener('blur',updatePriceSave)}
+loadSavedPrices();
+
+async function loadRealOrders(){
+ const body=document.getElementById('orders-body');
+ try{
+  const res=await fetch('/api/admin/orders',{credentials:'same-origin',cache:'no-store'});
+  const data=await res.json();
+  if(!res.ok)throw Error(data.error||'No se pudieron cargar los pedidos.');
+  body.replaceChildren();
+  if(!data.orders.length){
+   const row=body.insertRow(),cell=row.insertCell();cell.colSpan=8;cell.className='empty';cell.textContent='No hay pedidos registrados.';
+   return;
+  }
+  for(const order of data.orders){
+   const row=body.insertRow();
+   const values=[order.id,order.customer_email,order.level?order.level+' · '+order.days+' días':'Rutina',Number(order.amount_ars).toLocaleString('es-AR'),order.status,order.status==='approved'?'Por entregar':'Pendiente',order.created_at||'',order.provider||''];
+   for(const value of values)row.insertCell().textContent=String(value);
+  }
+ }catch(error){
+  body.replaceChildren();const row=body.insertRow(),cell=row.insertCell();cell.colSpan=8;cell.className='empty';cell.textContent=error.message;
+ }
+}
+loadRealOrders();
 const tabs=[document.getElementById('products-tab'),document.getElementById('orders-tab')];
-function activate(index){tabs.forEach((b,i)=>{const on=i===index;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1;document.getElementById(i?'orders-panel':'products-panel').hidden=!on});}
+function activate(index){if(index===1)loadRealOrders();tabs.forEach((b,i)=>{const on=i===index;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1;document.getElementById(i?'orders-panel':'products-panel').hidden=!on});}
 tabs.forEach((b,i)=>{b.addEventListener('click',()=>activate(i));b.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'||e.key==='Home'||e.key==='End'){e.preventDefault();const next=e.key==='Home'?0:e.key==='End'?1:e.key==='ArrowRight'?(i+1)%2:(i+1)%2;activate(next);tabs[next].focus()}})});
 document.getElementById('logout').addEventListener('click',async()=>{try{await fetch('/api/auth/logout',{method:'POST',credentials:'same-origin'});}finally{location.replace('/admin/login/');}});
 })();

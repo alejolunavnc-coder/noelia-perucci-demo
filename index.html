@@ -2902,6 +2902,9 @@ const home=()=>`<div class="page-enter"><section class="hero habit-hero" data-th
 </div></section>
 <section class="section white teaser" data-theme="light"><div class="wrap teaser-grid"><div class="reveal">${label('03 / ENTRENAMIENTOS',true)}<h2>TU OBJETIVO.<br>UN PLAN<br>CON SENTIDO.</h2><p>Elegí una rutina por nivel y días, o pedí un plan personalizado con atención directa de Noelia.</p>${button('EXPLORAR ENTRENAMIENTOS','entrenamientos','darkbtn')}</div><div class="teaser-image reveal"><img src="/media/noelia_objetivo_plan_sombras_v2.jpg" alt="Noelia entrenando en el gimnasio" onerror="this.onerror=null;this.src='${asset('dumbbells.webp')}'"><div class="photo-caption"><span>ENTRENAMIENTO PERSONALIZADO</span><span>${noeliaIcon("upRight")}</span></div></div></div><svg class="home-footer-wave" viewBox="0 0 1440 390" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="home74-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#830342"/><stop offset=".28" stop-color="#690032"/><stop offset=".7" stop-color="#420022"/><stop offset="1" stop-color="#280018"/></linearGradient><linearGradient id="home74-edge" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fc1689"/><stop offset=".55" stop-color="#ff299f"/><stop offset="1" stop-color="#ed087c"/></linearGradient><filter id="home74-softglow" x="-12%" y="-230%" width="124%" height="560%"><feGaussianBlur stdDeviation="6"/></filter></defs><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222L1440 390H0Z" fill="url(#home74-fill)"/><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222" fill="none" stroke="#ed087c" stroke-width="12" stroke-opacity=".35" filter="url(#home74-softglow)"/><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222" fill="none" stroke="url(#home74-edge)" stroke-width="3" stroke-linecap="round"/></svg>${footer()}</section></div>`;
 const prices={2:50000,3:60000,4:80000,5:80000};
+let pricesAvailable=false;
+const lowestPrice=()=>Math.min(...Object.values(prices));
+const lowestDay=()=>Object.keys(prices).find(k=>prices[k]===lowestPrice());
 const price=(n)=>'$'+prices[n].toLocaleString('es-AR');
 const levelNames={principiante:'Principiante',intermedio:'Intermedio',avanzado:'Avanzado'};
 let chosenLevel='principiante',chosenDays=3,checkoutEmail='';
@@ -2910,7 +2913,7 @@ const offers=[
 {id:'integral',number:'01',title:'ASESORÍA<br>INTEGRAL ONLINE',desc:'Rutinas ya preparadas para lograr tu desempeño y objetivos de forma online.',img:'noelia_asesoria_integral_online.webp',price:'DESDE $50.000',features:['Rutinas por nivel: principiante, intermedio o avanzado','Elegí 2, 3, 4 o 5 días por semana','Solo entrenamiento, sin plan alimentario','Control mensual opcional al renovar el plan'],cta:'ELEGIR MI RUTINA',action:'rutina'},
 {id:'personalizado',number:'02',title:'PLANES<br>PERSONALIZADOS',desc:'Planes personalizados acordes a tu objetivo.',img:'noelia_planes_personalizados.webp',price:'$100.000',features:['Evaluación y planificación individual','Entrenamiento y nutrición acorde a objetivos','Seguimiento según las condiciones acordadas'],cta:'CONSULTAR POR WHATSAPP',action:'personalizado'}
 ];
-const offer=(x)=>`<article class="offer reveal"><div class="offer-image"><img src="${asset(x.img)}" alt="Fotografía de entrenamiento"><span class="figure-num">PLAN ${x.number}</span></div><div class="offer-info">${label(x.id==='integral'?'RUTINAS DIGITALES / DESDE $50.000':'ATENCIÓN PERSONALIZADA',true)}<h3 class="offer-title">${x.title}</h3><p>${x.desc}</p><div class="offer-price">${x.price}</div><div class="feature-list">${x.features.map((f,i)=>`<div class="feature"><small>${String(i+1).padStart(2,'0')}</small><span>${f}</span></div>`).join('')}</div>${button(x.cta,x.action,'darkbtn')}</div></article>`;
+const offer=(x)=>`<article class="offer reveal"><div class="offer-image"><img src="${asset(x.img)}" alt="Fotografía de entrenamiento"><span class="figure-num">PLAN ${x.number}</span></div><div class="offer-info">${label(x.id==='integral'?'RUTINAS DIGITALES / DESDE '+price(lowestDay()):'ATENCIÓN PERSONALIZADA',true)}<h3 class="offer-title">${x.title}</h3><p>${x.desc}</p><div class="offer-price">${x.id==="integral"?"DESDE "+price(lowestDay()):x.price}</div><div class="feature-list">${x.features.map((f,i)=>`<div class="feature"><small>${String(i+1).padStart(2,'0')}</small><span>${f}</span></div>`).join('')}</div>${button(x.cta,x.action,'darkbtn')}</div></article>`;
 const trainings=()=>`<div class="page-enter"><section class="plans-hero" data-theme="dark"><div class="wrap">${label('02 / ENTRENAMIENTOS')}<h1>TUS <br>PLANES<span class="plans-period">.</span></h1><p>Dos formas de entrenar. Elegí la que se adapta a vos.</p></div><div class="plans-mobile-art" aria-hidden="true"></div></section><section class="section white plans-list" data-theme="light"><div class="wrap"><div class="plans-intro">${label('ENTRENAMIENTO ONLINE',true)}<h2>ELEGÍ CÓMO ENTRENAR.</h2><p class="topcopy">Rutinas ya preparadas o una propuesta personalizada.</p></div><div class="offer-grid">${offers.map(offer).join('')}</div></div></section><section class="section smoke process process-redesign" data-theme="light"><svg class="process-wave" viewBox="0 0 1440 390" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="pr-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#830342"/><stop offset=".28" stop-color="#690032"/><stop offset=".7" stop-color="#420022"/><stop offset="1" stop-color="#280018"/></linearGradient><linearGradient id="pr-edge" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fc1689"/><stop offset=".55" stop-color="#ff299f"/><stop offset="1" stop-color="#ed087c"/></linearGradient><filter id="pr-softglow" x="-12%" y="-230%" width="124%" height="560%"><feGaussianBlur stdDeviation="6"/></filter></defs><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222L1440 390H0Z" fill="url(#pr-fill)"/><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222" fill="none" stroke="#ed087c" stroke-width="12" stroke-opacity=".35" filter="url(#pr-softglow)"/><path d="M0 310C205 247 330 257 505 300S808 380 1032 350 1295 251 1440 222" fill="none" stroke="url(#pr-edge)" stroke-width="3" stroke-linecap="round"/></svg><div class="wrap process-content">${label('UN PROCESO SIMPLE',true)}<h2>ASÍ FUNCIONA<span class="process-title-dot">.</span></h2><div class="process-steps">${[['01','ELEGÍ','Seleccioná tu nivel y cantidad de días.'],['02','REVISÁ','Conocé el precio de tu rutina antes de comprar.'],['03','DESCARGÁ','Después de un pago aprobado, recibís tu PDF sin depender de una consulta.'],['04','AL RENOVAR','Si querés, podés solicitar un control mensual. Noelia lo revisa y responde por correo.']].map(x=>`<div class="process-row"><span class="process-number"><code>${x[0]}</code></span><div class="process-row-copy"><h3>${x[1]}</h3><p>${x[2]}</p></div></div>`).join('')}</div><div class="process-actions">${button('ELEGIR RUTINA','rutina','darkbtn')}${button('CÓMO FUNCIONA EL CONTROL MENSUAL','control','lightoutline')}</div></div><div class="process-wave-extension" aria-hidden="true"></div>${footer()}</section></div>`;
 const levelChoice=()=>Object.keys(levelNames).map(l=>`<button type="button" class="choice level-choice ${chosenLevel===l?'is-selected':''}" data-level="${l}" aria-pressed="${chosenLevel===l}"><span class="choice-main">${levelNames[l]}</span><span class="choice-indicator" aria-hidden="true"></span></button>`).join('');
 const dayChoice=()=>[2,3,4,5].map(d=>`<button type="button" class="day-choice ${chosenDays===d?'is-selected':''}" data-days="${d}" aria-pressed="${chosenDays===d}"><b>${d}</b><small>DÍAS</small></button>`).join('');
@@ -3155,6 +3158,7 @@ document.addEventListener('submit',async e=>{
  if(e.target.id==='checkout-form'){
   e.preventDefault();const form=e.target;if(!form.reportValidity())return;
   const button=document.getElementById('checkout-submit'),status=document.getElementById('checkout-status');
+  if(!pricesAvailable){status.textContent='Los precios no están disponibles. Recargá la página.';return;}
   checkoutEmail=String(new FormData(form).get('email')||'').trim().slice(0,140);
   if(button.disabled)return;
   button.disabled=true;status.textContent='Procesando tu solicitud…';
@@ -3250,6 +3254,43 @@ document.addEventListener('click',e=>{
  }
 });
 document.addEventListener('click',async e=>{if(e.target.closest('#copy-control-message')){const msg=document.getElementById('monthly-check-preview')?.textContent||'';try{await navigator.clipboard.writeText(msg);notify('Mensaje copiado. Adjuntá tus fotos desde tu correo.')}catch{notify('Seleccioná el texto y copialo manualmente.')}return;}if(e.target.closest('#copy-message')){const msg=document.getElementById('message-preview')?.textContent||'';try{await navigator.clipboard.writeText(msg);notify('Texto copiado')}catch{notify('Seleccioná el texto para copiarlo')}}});
-document.getElementById('openMenu').addEventListener('click',()=>setMenu(true));document.getElementById('closeMenu').addEventListener('click',()=>setMenu(false));document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});window.addEventListener('hashchange',()=>render(decodeURIComponent(location.hash.slice(1))));window.addEventListener('scroll',scrollTheme,{passive:true});render(decodeURIComponent(location.hash.slice(1)||'inicio'));
+
+async function loadLivePrices(){
+ try{
+  const res=await fetch('/api/prices',{cache:'no-store'}),data=await res.json();
+  if(!res.ok||!data.prices)throw Error('Precios no disponibles');
+  const fresh={};
+  for(const day of [2,3,4,5]){
+   const value=data.prices[day];
+   if(!Number.isSafeInteger(value)||value<1||value>10000000)throw Error('Precios inválidos');
+   fresh[day]=value;
+  }
+  Object.assign(prices,fresh);pricesAvailable=true;
+  if(current==='rutina')syncRoutine();
+  if(current==='pago'){
+   const total=main.querySelector('.checkout-price'),buttonLabel=main.querySelector('#checkout-submit span');
+   if(total)total.textContent=price(chosenDays)+' ARS';
+   if(buttonLabel)buttonLabel.textContent='COMPRAR · '+price(chosenDays);
+  }
+  if(current==='confirmacion'){
+   const total=main.querySelector('.checkout-price');if(total)total.textContent=price(chosenDays)+' ARS';
+  }
+  if(current==='entrenamientos'){
+   const card=main.querySelector('.offer');
+   if(card){
+    const value='DESDE '+price(lowestDay()),priceEl=card.querySelector('.offer-price');
+    if(priceEl)priceEl.textContent=value;
+    const labelEl=card.querySelector('.selector-label');if(labelEl)labelEl.textContent='RUTINAS DIGITALES / '+value;
+   }
+  }
+ }catch(error){
+  pricesAvailable=false;
+  const status=main.querySelector('#checkout-status');
+  if(status)status.textContent='No se pudieron cargar los precios. Recargá la página.';
+ }
+}
+window.addEventListener('focus',loadLivePrices);
+window.addEventListener('hashchange',loadLivePrices);
+document.getElementById('openMenu').addEventListener('click',()=>setMenu(true));document.getElementById('closeMenu').addEventListener('click',()=>setMenu(false));document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});window.addEventListener('hashchange',()=>render(decodeURIComponent(location.hash.slice(1))));window.addEventListener('scroll',scrollTheme,{passive:true});render(decodeURIComponent(location.hash.slice(1)||'inicio'));loadLivePrices();
 
 </script></body></html>
