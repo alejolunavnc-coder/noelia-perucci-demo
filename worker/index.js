@@ -116,25 +116,30 @@ async function login(request, env) {
   if (!data || typeof data.password!=="string" || data.password.length>512) {
     return json({error:"Contraseña incorrecta."},401);
   }
+  // Verify the current Cloudflare secret before checking the failed-attempt limit.
+  // A correct new secret must not stay locked out because of older failed attempts.
+  const valid=secureEquals(await sha256(data.password),await sha256(secret));
   const ip=request.headers.get("cf-connecting-ip") || "unknown";
   const key=await sha256("admin-login:"+ip);
-  const recent=await env.DB.prepare(
-    "SELECT COUNT(*) AS total FROM admin_audit_log WHERE action='auth_failed' AND entity_id=? AND created_at >= datetime('now','-15 minutes')"
-  ).bind(key).first();
-  if (recent.total>=8) return json({error:"Demasiados intentos. Intentá nuevamente en 15 minutos."},429,{"retry-after":"900"});
-  // Compare fixed-length hashes to avoid leaking information through string timing.
-  if (!secureEquals(await sha256(data.password),await sha256(secret))) {
+  if (!valid) {
+    const recent=await env.DB.prepare(
+      "SELECT COUNT(*) AS total FROM admin_audit_log WHERE action='auth_failed' AND entity_id=? AND created_at >= datetime('now','-15 minutes')"
+    ).bind(key).first();
+    if (recent.total>=8) {
+      return json({error:"Demasiados intentos. Intentá nuevamente en 15 minutos."},429,{"retry-after":"900"});
+    }
     await env.DB.prepare("INSERT INTO admin_audit_log(id,action,entity_type,entity_id) VALUES(?,'auth_failed','login',?)")
       .bind(crypto.randomUUID(),key).run();
     return json({error:"Contraseña incorrecta."},401);
   }
-  // D1 stores only an internal user identifier, never a second password.
+  // A single deterministic D1 identity is used for secret-based administration.
+  // Legacy setup accounts must never block sign-in with the active Cloudflare secret.
   await env.DB.prepare(
     "INSERT OR IGNORE INTO admin_users(id,email,password_hash) VALUES('gym-admin','admin@gym.invalid','cloudflare-secret-managed')"
   ).run();
-  const users=await env.DB.prepare("SELECT id FROM admin_users WHERE disabled=0 LIMIT 2").all();
-  if (users.results.length!==1) return json({error:"La cuenta de administración necesita revisión."},503);
-  const token=await issueSession(env.DB,users.results[0].id,secret);
+  const user=await env.DB.prepare("SELECT id FROM admin_users WHERE id='gym-admin' AND disabled=0 LIMIT 1").first();
+  if (!user) return json({error:"La cuenta de administración necesita revisión."},503);
+  const token=await issueSession(env.DB,user.id,secret);
   return json({ok:true},200,{"set-cookie":cookie(token)});
 }
 async function logout(request,env) {
