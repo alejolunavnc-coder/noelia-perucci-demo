@@ -150,6 +150,40 @@ async function listRoutinePdfs(env) {
   ).all();
   return json({ok:true,files:result.results||[],cloudinaryConfigured:cloudinaryReady(env)});
 }
+async function simulatePdfPurchase(request,env) {
+  if(!env.DB || !cloudinaryReady(env))return json({error:"Falta configurar D1 o Cloudinary."},503);
+  const url=new URL(request.url),level=url.searchParams.get("level"),days=Number(url.searchParams.get("days"));
+  if(!validSlot(level,days))return json({error:"Elegí una rutina válida."},400);
+  const row=await env.DB.prepare(
+    "SELECT m.cloudinary_public_id,m.original_filename,m.delivery_type FROM training_plans p JOIN media_assets m ON m.id=p.pdf_asset_id WHERE p.level=? AND p.days_per_week=? AND p.active=1 AND m.resource_type='raw' LIMIT 1"
+  ).bind(level,days).first();
+  if(!row)return json({error:"No existe un PDF cargado para esa combinación."},404);
+  if(row.delivery_type!=="authenticated" || !/^[a-zA-Z0-9_/-]+\.pdf$/.test(row.cloudinary_public_id)) {
+    return json({error:"El archivo no tiene un formato de entrega protegido compatible."},409);
+  }
+  const timestamp=Math.floor(Date.now()/1000),expires_at=timestamp+120;
+  const params={expires_at:String(expires_at),format:"pdf",public_id:row.cloudinary_public_id,timestamp:String(timestamp),type:"authenticated"};
+  const signature=await cloudinarySignature(params,env.CLOUDINARY_API_SECRET);
+  const query=new URLSearchParams({...params,api_key:env.CLOUDINARY_API_KEY,signature});
+  const endpoint="https://api.cloudinary.com/v1_1/"+env.CLOUDINARY_CLOUD_NAME+"/raw/download?"+query.toString();
+  let remote;
+  try{remote=await fetch(endpoint,{headers:{accept:"application/pdf"},redirect:"manual"});}
+  catch(error){return json({error:"No se pudo consultar el PDF en Cloudinary."},502);}
+  if(!remote.ok)return json({error:"Cloudinary no permitió recuperar el PDF (HTTP "+remote.status+"). Revisar permisos de entrega."},502);
+  const type=(remote.headers.get("content-type")||"").toLowerCase();
+  if(type && !type.includes("pdf") && !type.includes("octet-stream"))return json({error:"Cloudinary devolvió un archivo inesperado."},502);
+  const filename="rutina-"+level+"-"+days+"-dias.pdf";
+  return new Response(remote.body,{status:200,headers:{
+    "content-type":"application/pdf",
+    "content-disposition":'attachment; filename="'+filename+'"',
+    "cache-control":"private, no-store",
+    "x-content-type-options":"nosniff",
+    "x-frame-options":"DENY",
+    "referrer-policy":"no-referrer"
+  }});
+}
+// This is an administrator-only download test. No real order or payment is recorded.
+
 async function uploadRoutinePdf(request,env) {
   if(!env.DB)return json({error:"Base de datos no disponible."},503);
   if(!cloudinaryReady(env))return json({error:"Faltan las variables de Cloudinary en Cloudflare."},503);
@@ -232,6 +266,10 @@ export default {
         if(method==="POST" && !validOrigin(request)) return json({error:"Origen no autorizado."},403);
         if(path==="/api/auth/login" && method==="POST") return login(request,env);
         if(path==="/api/auth/logout" && method==="POST") return logout(request,env);
+        if(path==="/api/admin/test-purchase" && method==="GET"){
+          if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
+          return simulatePdfPurchase(request,env);
+        }
         if(path==="/api/admin/routine-pdfs" && method==="GET"){
           if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
           return listRoutinePdfs(env);
