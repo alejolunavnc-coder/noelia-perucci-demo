@@ -73,9 +73,39 @@ function updateCell(key){
  btn.setAttribute('aria-label',(file?'Reemplazar':'Subir')+' PDF de '+entry.dataset.label);
  btn.addEventListener('click',()=>{selected=key;picker.value='';picker.click()});
  entry.append(line,btn);
- if(file)entry.title=file.filename+' ('+Math.round(file.bytes/1024)+' KB)';
+ if(file){
+  const test=document.createElement('button');test.type='button';test.className='pdf-btn replace';test.textContent='Compra de prueba';
+  test.style.cssText='height:29px;font-size:11px;padding:0 7px;';
+  test.setAttribute('aria-label','Simular compra y descargar PDF de '+entry.dataset.label);
+  test.addEventListener('click',()=>testPurchase(key,test));
+  entry.append(test);
+  entry.title=file.filename+' ('+Math.round(file.bytes/1024)+' KB)';
+ }
 }
 for(const [slug,label] of levels){table.append(cell(label,'level'));for(const d of days){const key=slug+'-'+d;const el=cell('','pdf-entry');el.dataset.variant=key;el.dataset.label=label+', '+d+' días';table.append(el);updateCell(key)}}
+async function testPurchase(key,button){
+ const [level,days]=key.split('-');
+ button.disabled=true;button.textContent='Probando…';
+ status.textContent='Compra de prueba: verificando entrega desde Cloudinary…';
+ try{
+  const res=await fetch('/api/admin/test-purchase?'+new URLSearchParams({level,days}),{credentials:'same-origin',cache:'no-store'});
+  if(!res.ok){
+   const data=await res.json().catch(()=>({}));
+   throw Error(data.error||'No se pudo descargar el PDF.');
+  }
+  const blob=await res.blob();
+  if(blob.size<5)throw Error('El archivo descargado está vacío.');
+  const header=await blob.slice(0,5).text();
+  if(header!=='%PDF-')throw Error('La descarga no contiene un PDF válido.');
+  const link=document.createElement('a'),downloadUrl=URL.createObjectURL(blob);
+  link.href=downloadUrl;link.download='rutina-'+level+'-'+days+'-dias-prueba.pdf';
+  document.body.append(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(downloadUrl),30000);
+  status.textContent='Compra simbólica verificada: el PDF se descargó correctamente.';
+  msg('¡Prueba exitosa! PDF descargado sin cobro.');
+ }catch(error){status.textContent=error.message;msg(error.message)}
+ finally{button.disabled=false;button.textContent='Compra de prueba'}
+}
 async function loadFiles(){
  try{
   const res=await fetch('/api/admin/routine-pdfs',{credentials:'same-origin',cache:'no-store'});
