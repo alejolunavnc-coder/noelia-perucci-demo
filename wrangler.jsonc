@@ -9,5 +9,13 @@
       "/api/*"
     ]
   },
-  "main": "./worker/index.js"
+  "main": "./worker/index.js",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "noelia-perucci-db",
+      "database_id": "99544401-8ea6-42ea-8b82-d3618a73f87a",
+      "migrations_dir": "migrations"
+    }
+  ]
 }
