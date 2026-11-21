@@ -146,8 +146,30 @@ priceSave.addEventListener('click',async()=>{
 });
 for(const field of priceFields){field.addEventListener('input',updatePriceSave);field.addEventListener('blur',updatePriceSave)}
 loadSavedPrices();
+
+async function loadRealOrders(){
+ const body=document.getElementById('orders-body');
+ try{
+  const res=await fetch('/api/admin/orders',{credentials:'same-origin',cache:'no-store'});
+  const data=await res.json();
+  if(!res.ok)throw Error(data.error||'No se pudieron cargar los pedidos.');
+  body.replaceChildren();
+  if(!data.orders.length){
+   const row=body.insertRow(),cell=row.insertCell();cell.colSpan=8;cell.className='empty';cell.textContent='No hay pedidos registrados.';
+   return;
+  }
+  for(const order of data.orders){
+   const row=body.insertRow();
+   const values=[order.id,order.customer_email,order.level?order.level+' · '+order.days+' días':'Rutina',Number(order.amount_ars).toLocaleString('es-AR'),order.status,order.status==='approved'?'Por entregar':'Pendiente',order.created_at||'',order.provider||''];
+   for(const value of values)row.insertCell().textContent=String(value);
+  }
+ }catch(error){
+  body.replaceChildren();const row=body.insertRow(),cell=row.insertCell();cell.colSpan=8;cell.className='empty';cell.textContent=error.message;
+ }
+}
+loadRealOrders();
 const tabs=[document.getElementById('products-tab'),document.getElementById('orders-tab')];
-function activate(index){tabs.forEach((b,i)=>{const on=i===index;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1;document.getElementById(i?'orders-panel':'products-panel').hidden=!on});}
+function activate(index){if(index===1)loadRealOrders();tabs.forEach((b,i)=>{const on=i===index;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1;document.getElementById(i?'orders-panel':'products-panel').hidden=!on});}
 tabs.forEach((b,i)=>{b.addEventListener('click',()=>activate(i));b.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'||e.key==='Home'||e.key==='End'){e.preventDefault();const next=e.key==='Home'?0:e.key==='End'?1:e.key==='ArrowRight'?(i+1)%2:(i+1)%2;activate(next);tabs[next].focus()}})});
 document.getElementById('logout').addEventListener('click',async()=>{try{await fetch('/api/auth/logout',{method:'POST',credentials:'same-origin'});}finally{location.replace('/admin/login/');}});
 })();
