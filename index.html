@@ -2709,12 +2709,18 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
  .footer .footer-social{gap:5px}
  .footer .footer-social-copy>span{font-size:10px}
 }
+/* GYM — Acceso al administrador: exclusivamente icono de candado en el header */
+.gym-admin-access{width:41px;height:41px;flex:none;display:flex;align-items:center;justify-content:center;color:inherit;background:#ffffff13;border:1px solid #ffffff40;border-radius:50%;text-decoration:none;transition:background .2s,transform .2s}
+.gym-admin-access:hover{background:#ffffff25;transform:translateY(-1px)}
+.gym-admin-access:focus-visible{outline:3px solid #d00073;outline-offset:3px}
+.header.light .gym-admin-access{background:#e8e5e0;border-color:#cac4bc}
+@media(max-width:759px){.header-side{gap:8px}.gym-admin-access{width:39px;height:39px}.gym-admin-access svg{width:19px;height:19px}}
 </style>
 
 </head>
 <body>
 <div class="scroll-progress" aria-hidden="true"></div>
-<header id="header" class="header"><a class="brand" href="#inicio" data-route="inicio" aria-label="Noelia Perucci - Inicio">NOELIA<span> PERUCCI</span></a><div class="header-side"><button id="openMenu" class="menu-circle" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"><i></i><i></i></button></div></header>
+<header id="header" class="header"><a class="brand" href="#inicio" data-route="inicio" aria-label="Noelia Perucci - Inicio">NOELIA<span> PERUCCI</span></a><div class="header-side"><a class="gym-admin-access" href="/admin/login/" aria-label="Panel de administración" title="Administración"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><path d="M12 14.5v2"/></svg></a><button id="openMenu" class="menu-circle" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"><i></i><i></i></button></div></header>
 <aside class="menu" id="menu" aria-hidden="true" inert><div class="menu-head"><div class="brand">NOELIA<span> PERUCCI</span></div><button id="closeMenu" class="close-menu">CERRAR <b class="close-icon"><svg class="noelia-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg></b></button></div><div class="menu-content"><span class="eyebrow">EXPLORAR</span><nav class="menu-links" aria-label="Navegación principal"><a href="#inicio" data-route="inicio"><small>01</small>INICIO</a><a href="#entrenamientos" data-route="entrenamientos"><small>02</small>ENTRENAMIENTOS</a><a href="#contacto" data-route="contacto"><small>03</small>CONTACTO</a></nav></div><div class="menu-bottom"><div>PERSONAL TRAINER · IFBB</div></div></aside>
 <main id="main"></main>
 

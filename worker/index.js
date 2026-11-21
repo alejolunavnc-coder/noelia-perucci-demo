@@ -103,7 +103,7 @@ form.addEventListener('submit',async event=>{
 });
 `;
 function loginPage() {
-  return page("Ingresar", '<h1>Administración</h1><p>Ingresá a tu panel de Noelia Perucci.</p><form data-endpoint="/api/auth/login"><label for="email">Correo electrónico</label><input id="email" name="email" type="email" required autocomplete="username"><label for="password">Contraseña</label><input id="password" name="password" type="password" required autocomplete="current-password"><button type="submit">Ingresar</button></form>', formScript);
+  return page("Ingresar", '<h1>Administración</h1><p>Ingresá a tu panel de Noelia Perucci.</p><form data-endpoint="/api/auth/login"><label for="password">Contraseña</label><input id="password" name="password" type="password" required autocomplete="current-password" autofocus><button type="submit">Ingresar</button></form>', formScript);
 }
 function setupPage() {
   return page("Crear administrador", '<h1>Crear acceso inicial</h1><p>Esta pantalla funciona una sola vez. Configurá primero ADMIN_SETUP_TOKEN como secreto de Cloudflare.</p><form data-endpoint="/api/auth/setup"><label for="email">Correo del administrador</label><input id="email" name="email" type="email" required autocomplete="username"><label for="password">Contraseña (12 caracteres mínimo)</label><input id="password" name="password" type="password" minlength="12" required autocomplete="new-password"><label for="token">Código secreto de configuración</label><input id="token" name="token" type="password" required autocomplete="off"><button type="submit">Crear administrador</button></form>', formScript);
@@ -131,18 +131,18 @@ async function setup(request, env) {
 async function login(request, env) {
   if (!env.DB) return json({error:"Base de datos no disponible."},503);
   const data = await postedJson(request);
-  if (!data || typeof data.email !== "string" || typeof data.password !== "string") return json({error:"Datos incorrectos."},400);
-  const email=data.email.trim().toLowerCase();
-  if (!validEmail(email) || data.password.length > 128) return json({error:"Credenciales incorrectas."},401);
+  if (!data || typeof data.password !== "string" || data.password.length > 128) return json({error:"Credenciales incorrectas."},401);
   const ip = request.headers.get("cf-connecting-ip") || "unknown";
-  const key = await sha256(email + ":" + ip);
-  const recent=await env.DB.prepare("SELECT COUNT(*) AS total FROM admin_audit_log WHERE action='auth_failed' AND entity_id=? AND created_at >= datetime('now','-15 minutes')").bind(key).first();
+  const key = await sha256("admin-login:" + ip);
+  const recent = await env.DB.prepare("SELECT COUNT(*) AS total FROM admin_audit_log WHERE action='auth_failed' AND entity_id=? AND created_at >= datetime('now','-15 minutes')").bind(key).first();
   if (recent.total >= 8) return json({error:"Demasiados intentos. Probá nuevamente más tarde."},429,{"retry-after":"900"});
-  const user=await env.DB.prepare("SELECT id,password_hash FROM admin_users WHERE email=? AND disabled=0 LIMIT 1").bind(email).first();
-  const good=user && await verifyPassword(data.password,user.password_hash);
-  if(!good){
+  const users = await env.DB.prepare("SELECT id,password_hash FROM admin_users WHERE disabled=0 LIMIT 2").all();
+  // Password-only login is safe only for this single-administrator installation.
+  if (users.results.length !== 1) return json({error:"El acceso requiere configurar un único administrador."},503);
+  const user=users.results[0];
+  if (!(await verifyPassword(data.password,user.password_hash))) {
     await env.DB.prepare("INSERT INTO admin_audit_log(id,action,entity_type,entity_id) VALUES(?,'auth_failed','login',?)").bind(crypto.randomUUID(),key).run();
-    return json({error:"Credenciales incorrectas."},401);
+    return json({error:"Contraseña incorrecta."},401);
   }
   const token=await issueSession(env.DB,user.id);
   return json({ok:true},200,{"set-cookie":cookie(token)});
@@ -162,7 +162,11 @@ export default {
       if(path==="/admin") return redirect("/admin/");
       if(path==="/admin/login" || path==="/admin/login/") {
         if(method!=="GET") return json({error:"Método no permitido."},405);
-        return await userFromRequest(request,env) ? redirect("/admin/") : loginPage();
+        if(await userFromRequest(request,env)) return redirect("/admin/");
+        if(!env.DB) return json({error:"Base de datos no disponible."},503);
+        const count=await env.DB.prepare("SELECT COUNT(*) AS total FROM admin_users").first();
+        if(count.total===0 && env.ADMIN_SETUP_TOKEN) return redirect("/admin/setup/");
+        return loginPage();
       }
       if(path==="/admin/setup" || path==="/admin/setup/") {
         if(method!=="GET") return json({error:"Método no permitido."},405);
