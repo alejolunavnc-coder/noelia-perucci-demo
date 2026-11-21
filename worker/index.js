@@ -39,7 +39,7 @@ function randomHex(len) {
   return Array.from(arr, b => b.toString(16).padStart(2, "0")).join("");
 }
 function adminSecret(env) {
-  return typeof env.ADMIN_SETUP_TOKEN === "string" && env.ADMIN_SETUP_TOKEN.length >= 32
+  return typeof env.ADMIN_SETUP_TOKEN === "string" && env.ADMIN_SETUP_TOKEN.length > 0
     ? env.ADMIN_SETUP_TOKEN : null;
 }
 function secureEquals(a,b) {
@@ -152,6 +152,9 @@ export default {
     try{
       if(path==="/api/health" && method==="GET"){
         return json({ok:true,service:"gym",databaseConfigured:Boolean(env.DB)});
+      }
+      if(path==="/api/auth/status" && method==="GET"){
+        return json({databaseConfigured:Boolean(env.DB),passwordConfigured:Boolean(adminSecret(env))});
       }
       if(path==="/admin") return redirect("/admin/");
       if(path==="/admin/login" || path==="/admin/login/") {
