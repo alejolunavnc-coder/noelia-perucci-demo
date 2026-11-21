@@ -36,7 +36,7 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
 <label class="price-row"><span class="day-label">5 días</span><span class="money-input"><span>$</span><input aria-label="Precio para 5 días" data-days="5" inputmode="numeric" pattern="[0-9.]+" value="80.000" maxlength="12"></span></label>
 </div></div>
 <div class="pdf-area"><h2 class="section-title">Archivos de rutinas <small>(12 combinaciones)</small></h2><div id="pdf-table" class="pdf-table" role="group" aria-label="Archivos PDF por nivel y cantidad de días"></div>
-<div class="save-line"><span class="save-status" id="save-status" aria-live="polite">Vista previa: todavía no hay almacenamiento conectado.</span><button class="save" id="save" type="button" disabled>▣ &nbsp;Guardar cambios</button></div>
+<div class="save-line"><span class="save-status" id="save-status" aria-live="polite">Conectando con Cloudinary…</span><button class="save" id="save" type="button" disabled>▣ &nbsp;Guardar cambios</button></div>
 </div></div>
 </article>
 <article class="card personal-card"><div class="heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="19" rx="2"/><path d="M9 3V2h6v1M9 9h6M9 13h6M9 17h4"/></svg></div><div><div class="product-name-row"><h2 class="product-name">Planes personalizados</h2><span class="pill soft">Por consulta</span></div><p class="product-description">Servicio individualizado. No tiene precio fijo ni entrega automática de PDF. La consulta se acuerda directamente con Noelia.</p></div></article>
@@ -48,21 +48,67 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
 </main>
 </div>
 <input type="file" id="pdf-picker" accept=".pdf,application/pdf" hidden>
-<div class="preview-note" role="status">Vista de diseño sin acceso privado ni guardado: no usar para gestionar ventas reales.</div>
+<div class="preview-note" role="status">Los PDF se guardan en Cloudinary. Los precios todavía no se guardan.</div>
 <div id="notice" class="notice" role="status" hidden></div>
 <script>
 (function(){
 'use strict';
 const levels=[['principiante','Principiante'],['intermedio','Intermedio'],['avanzado','Avanzado']],days=[2,3,4,5];
 const table=document.getElementById('pdf-table'),picker=document.getElementById('pdf-picker'),status=document.getElementById('save-status'),notice=document.getElementById('notice');
-let selected=null;const drafts=new Map();
-function msg(s){notice.textContent=s;notice.hidden=false;clearTimeout(msg.t);msg.t=setTimeout(()=>notice.hidden=true,4500)}
+let selected=null;
+const saved=new Map(),busy=new Set();
+function msg(s){notice.textContent=s;notice.hidden=false;clearTimeout(msg.t);msg.t=setTimeout(()=>notice.hidden=true,6000)}
 function cell(text,classes){const el=document.createElement('div');el.className='pdf-cell '+classes;el.textContent=text;return el}
 table.append(cell('Nivel','pdf-th'));for(const d of days)table.append(cell(d+' días','pdf-th'));
-function updateCell(key){const entry=table.querySelector('[data-variant="'+key+'"]');if(!entry)return;const file=drafts.get(key);entry.replaceChildren();const line=document.createElement('span');line.className='pdf-state'+(file?' pending':'');const icon=document.createElement('span');icon.className='state-symbol';icon.textContent=file?'✓':'−';line.append(icon,document.createTextNode(file?'PDF seleccionado':'Sin PDF'));const btn=document.createElement('button');btn.type='button';btn.className='pdf-btn'+(file?' replace':'');btn.textContent=file?'Reemplazar PDF':'Subir PDF';btn.setAttribute('aria-label',(file?'Reemplazar':'Subir')+' PDF de '+entry.dataset.label);btn.addEventListener('click',()=>{selected=key;picker.value='';picker.click()});entry.append(line,btn);if(file)entry.title=file.name+' ('+Math.round(file.size/1024)+' KB)';}
+function updateCell(key){
+ const entry=table.querySelector('[data-variant="'+key+'"]');if(!entry)return;
+ const file=saved.get(key),uploading=busy.has(key);
+ entry.replaceChildren();
+ const line=document.createElement('span');line.className='pdf-state'+(file?' loaded':uploading?' pending':'');
+ const icon=document.createElement('span');icon.className='state-symbol';icon.textContent=file?'✓':uploading?'…':'−';
+ line.append(icon,document.createTextNode(uploading?'Subiendo…':file?'PDF cargado':'Sin PDF'));
+ const btn=document.createElement('button');btn.type='button';btn.className='pdf-btn'+(file?' replace':'');
+ btn.textContent=uploading?'Subiendo…':file?'Reemplazar PDF':'Subir PDF';
+ btn.disabled=uploading;
+ btn.setAttribute('aria-label',(file?'Reemplazar':'Subir')+' PDF de '+entry.dataset.label);
+ btn.addEventListener('click',()=>{selected=key;picker.value='';picker.click()});
+ entry.append(line,btn);
+ if(file)entry.title=file.filename+' ('+Math.round(file.bytes/1024)+' KB)';
+}
 for(const [slug,label] of levels){table.append(cell(label,'level'));for(const d of days){const key=slug+'-'+d;const el=cell('','pdf-entry');el.dataset.variant=key;el.dataset.label=label+', '+d+' días';table.append(el);updateCell(key)}}
-picker.addEventListener('change',()=>{if(!selected||!picker.files||!picker.files[0])return;const f=picker.files[0];if(!f.name.toLowerCase().endsWith('.pdf')||f.type&&f.type!=='application/pdf'){msg('Elegí un archivo PDF válido.');return}if(f.size===0||f.size>20*1024*1024){msg('El PDF debe tener entre 1 byte y 20 MB.');return}drafts.set(selected,f);updateCell(selected);status.textContent='Archivo seleccionado solo en este navegador; falta conectar el guardado seguro.';msg('PDF seleccionado: '+f.name+'. Todavía no se subió al servidor.')});
-for(const input of document.querySelectorAll('[data-days]')){input.addEventListener('input',()=>{status.textContent='Precios editados solo en pantalla. El guardado estará disponible al conectar D1.'});input.addEventListener('blur',()=>{const raw=input.value.replace(/\./g,'').replace(/\D/g,'');if(raw){input.value=Number(raw).toLocaleString('es-AR')}else{msg('El precio no puede estar vacío.')}})}
+async function loadFiles(){
+ try{
+  const res=await fetch('/api/admin/routine-pdfs',{credentials:'same-origin',cache:'no-store'});
+  const data=await res.json();
+  if(!res.ok)throw Error(data.error||'No se pudieron consultar los PDF.');
+  saved.clear();
+  for(const file of data.files||[])saved.set(file.level+'-'+file.days,file);
+  for(const [slug] of levels)for(const d of days)updateCell(slug+'-'+d);
+  status.textContent=data.cloudinaryConfigured?'PDF conectados con Cloudinary. Los precios todavía no se guardan.':'Faltan las variables de Cloudinary en Cloudflare.';
+ }catch(error){status.textContent=error.message;msg(error.message)}
+}
+picker.addEventListener('change',async()=>{
+ if(!selected||!picker.files||!picker.files[0])return;
+ const key=selected,f=picker.files[0],pieces=key.split('-'),level=pieces[0],days=pieces[1];
+ if(!f.name.toLowerCase().endsWith('.pdf')||(f.type&&f.type!=='application/pdf')){msg('Elegí un archivo PDF válido.');return}
+ if(f.size<5||f.size>20*1024*1024){msg('El PDF debe tener entre 5 bytes y 20 MB.');return}
+ busy.add(key);updateCell(key);status.textContent='Subiendo PDF a Cloudinary…';
+ try{
+  const form=new FormData();form.set('file',f);form.set('level',level);form.set('days',days);
+  const res=await fetch('/api/admin/routine-pdfs',{method:'POST',body:form,credentials:'same-origin'});
+  const data=await res.json();
+  if(!res.ok)throw Error(data.error||'No se pudo subir el PDF.');
+  saved.set(key,{filename:data.filename,bytes:data.bytes});
+  status.textContent='PDF guardado correctamente en Cloudinary y D1.';
+  msg('PDF guardado: '+f.name);
+ }catch(error){status.textContent=error.message;msg(error.message)}
+ finally{busy.delete(key);updateCell(key)}
+});
+for(const input of document.querySelectorAll('[data-days]')){
+ input.addEventListener('input',()=>{status.textContent='Los cambios de precios todavía no se guardan.'});
+ input.addEventListener('blur',()=>{const raw=input.value.replace(/\./g,'').replace(/\D/g,'');if(raw){input.value=Number(raw).toLocaleString('es-AR')}else{msg('El precio no puede estar vacío.')}});
+}
+loadFiles();
 const tabs=[document.getElementById('products-tab'),document.getElementById('orders-tab')];
 function activate(index){tabs.forEach((b,i)=>{const on=i===index;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1;document.getElementById(i?'orders-panel':'products-panel').hidden=!on});}
 tabs.forEach((b,i)=>{b.addEventListener('click',()=>activate(i));b.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'||e.key==='Home'||e.key==='End'){e.preventDefault();const next=e.key==='Home'?0:e.key==='End'?1:e.key==='ArrowRight'?(i+1)%2:(i+1)%2;activate(next);tabs[next].focus()}})});
