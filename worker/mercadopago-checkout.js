@@ -1,6 +1,7 @@
 // GYM Checkout Pro — OAuth seller isolation, server-side payment verification.
 // No client supplied prices, seller IDs, or return statuses are trusted.
 import {mpAccessToken} from './mercadopago-oauth.js';
+import {queueDelivery} from './transactional-email.js';
 const output=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'no-referrer'}});
 const levels=new Set(['principiante','intermedio','avanzado']);
 const validEmail=s=>typeof s==='string'&&s.length<=140&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
@@ -84,13 +85,14 @@ async function reconcileOrder(env,mpOrderId,orderHint){
  }
  if(!status)return false;
  // An approved order is never downgraded due to stale pending/failed events.
- if(row.order_status==='approved'&&['pending','in_process','rejected','cancelled'].includes(status))return true;
+ if(row.order_status==='approved'&&['pending','in_process','rejected','cancelled'].includes(status)){await queueDelivery(env,row.id);return true;}
  await env.DB.batch([
   env.DB.prepare("UPDATE gym_mp_payment_intents SET payment_id=?,status=? WHERE order_id=? AND seller_id=?")
    .bind(String(mpOrderId),status,row.id,account.sellerId),
   env.DB.prepare("UPDATE orders SET status=?,provider_payment_id=?,updated_at=datetime('now') WHERE id=?")
    .bind(status,String(mpOrderId),row.id)
  ]);
+ if(status==='approved')await queueDelivery(env,row.id);
  return true;
 }
 export async function syncPendingOrders(env){
@@ -120,6 +122,13 @@ const hmac=async(secret,payload)=>{
  const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
  return [...new Uint8Array(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode('gym-paid-pdf:v1:'+payload)))].map(n=>n.toString(16).padStart(2,'0')).join('');
 };
+export async function issueDownloadToken(env,order){
+ if(!env.CLOUDINARY_API_SECRET||!order?.provider_payment_id||!orderPatternCheck(order.id))throw Error('invalid_order_grant');
+ const expire=Date.now()+30*60*1000,nonce=crypto.randomUUID().replaceAll('-');
+ const payload=[order.id,expire,nonce,order.provider_payment_id].join('.');
+ return 'paid.'+order.id+'.'+expire+'.'+nonce+'.'+await hmac(env.CLOUDINARY_API_SECRET,payload);
+}
+const orderPatternCheck=s=>uuid.test(String(s||''));
 export async function paymentStatus(request,env){
  const q=new URL(request.url).searchParams,orderId=q.get('order')||'';
  if(!uuid.test(orderId))return output({error:'Número de compra inválido.'},400);
@@ -128,9 +137,7 @@ export async function paymentStatus(request,env){
  if(row){const latest=await env.DB.prepare("SELECT status,provider_payment_id FROM orders WHERE id=?").bind(orderId).first();if(latest){row.status=latest.status;row.provider_payment_id=latest.provider_payment_id;}}
  if(!row)return output({error:'Compra no encontrada.'},404);
  if(row.status!=='approved'||!row.provider_payment_id)return output({ok:true,status:row.status,approved:false,orderId});
- const expire=Date.now()+30*60*1000,nonce=crypto.randomUUID().replaceAll('-','');
- const payload=[orderId,expire,nonce,row.provider_payment_id].join('.');
- const token='paid.'+orderId+'.'+expire+'.'+nonce+'.'+await hmac(env.CLOUDINARY_API_SECRET,payload);
+ const token=await issueDownloadToken(env,row);
  const [level,days]=row.plan_id.split('-');
  return output({ok:true,status:'approved',approved:true,orderId,level,days:Number(days),downloadToken:token});
 }
