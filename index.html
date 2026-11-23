@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- NOELIA PERUCCI V5 — PROPUESTA PREMIUM (NO PAGOS REALES) -->
+<!-- NOELIA PERUCCI — CHECKOUT PRO DE MERCADO PAGO, DESCARGA CONTRA PAGO VERIFICADO -->
 <!-- NOELIA V4.3 - REVISION DE NOELIA DEL 28-10-2026 -->
 <!-- NOELIA_V42_MONTHLY_RENEWAL -->
 <!-- NOELIA_V41_CLOUDFLARE_RECONNECT_TEST_2026_10_27 -->
@@ -3163,10 +3163,15 @@ document.addEventListener('submit',async e=>{
   if(button.disabled)return;
   button.disabled=true;status.textContent='Procesando tu solicitud…';
   try{
-    const res=await fetch('/api/checkout/complete',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:checkoutEmail,level:chosenLevel,days:chosenDays})});
+    status.textContent='Conectando con Mercado Pago…';
+    const res=await fetch('/api/checkout/start',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:checkoutEmail,level:chosenLevel,days:chosenDays})});
     const result=await res.json();
-    if(!res.ok)throw Error(result.error||'No se pudo completar la solicitud.');
-    downloadGrant=result.downloadToken;downloadSelection={level:result.level,days:result.days};goto('confirmacion');
+    if(!res.ok)throw Error(result.error||'No se pudo iniciar el pago.');
+    const gateway=new URL(result.checkoutUrl);
+    if(gateway.protocol!=='https:'||!/(^|\\.)mercadopago\\.com(\\.ar)?$/.test(gateway.hostname))throw Error('La URL de pago no es válida.');
+    sessionStorage.setItem('gym_pending_order',result.orderId);
+    status.textContent='Abriendo el sitio seguro de Mercado Pago…';
+    location.assign(gateway.href);
   }catch(error){status.textContent=error.message;button.disabled=false;}
   return;
  }
@@ -3289,8 +3294,58 @@ async function loadLivePrices(){
   if(status)status.textContent='No se pudieron cargar los precios. Recargá la página.';
  }
 }
+// El regreso desde Mercado Pago no acredita el pago: consulta al servidor y MP.
+async function reconcileCheckoutReturn(){
+ const params=new URLSearchParams(location.search);
+ const incoming=params.get('gym_order');
+ const previous=sessionStorage.getItem('gym_pending_order');
+ const orderId=incoming||previous;
+ if(!orderId||!/^[a-f0-9-]{36}$/i.test(orderId))return;
+ const paymentId=params.get('payment_id')||params.get('collection_id')||'';
+ const resultType=params.get('gym_result')||'';
+ if(incoming){
+  sessionStorage.setItem('gym_pending_order',incoming);
+  history.replaceState(null,'',location.pathname+'#pago');
+  if(current!=='pago')goto('pago');
+ }
+ const setStatus=message=>{
+  const el=document.getElementById('checkout-status');
+  if(el)el.textContent=message;
+ };
+ if(resultType==='failure'){
+  setStatus('El pago no se completó. Podés intentarlo nuevamente.');
+  sessionStorage.removeItem('gym_pending_order');
+  return;
+ }
+ for(let attempt=0;attempt<15;attempt++){
+  try{
+   const qs=new URLSearchParams({order:orderId});
+   if(paymentId&&/^\\d{1,28}$/.test(paymentId))qs.set('payment_id',paymentId);
+   const res=await fetch('/api/checkout/status?'+qs,{cache:'no-store'});
+   const data=await res.json();
+   if(!res.ok)throw Error(data.error||'No se pudo verificar la compra.');
+   if(data.approved&&data.downloadToken){
+    downloadGrant=data.downloadToken;
+    downloadSelection={level:data.level,days:data.days};
+    chosenLevel=data.level;chosenDays=data.days;
+    sessionStorage.removeItem('gym_pending_order');
+    goto('confirmacion');
+    return;
+   }
+   if(['rejected','cancelled','refunded','charged_back'].includes(data.status)){
+    sessionStorage.removeItem('gym_pending_order');
+    setStatus('El pago no fue aprobado. Podés intentarlo nuevamente.');
+    return;
+   }
+   setStatus('Esperando la confirmación del pago de Mercado Pago…');
+  }catch(error){setStatus(error.message);}
+  if(attempt<14)await new Promise(resolve=>setTimeout(resolve,4000));
+ }
+ setStatus('El pago todavía está pendiente. Si ya pagaste, volvé a abrir esta página para consultar su estado.');
+}
+
 window.addEventListener('focus',loadLivePrices);
 window.addEventListener('hashchange',loadLivePrices);
-document.getElementById('openMenu').addEventListener('click',()=>setMenu(true));document.getElementById('closeMenu').addEventListener('click',()=>setMenu(false));document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});window.addEventListener('hashchange',()=>render(decodeURIComponent(location.hash.slice(1))));window.addEventListener('scroll',scrollTheme,{passive:true});render(decodeURIComponent(location.hash.slice(1)||'inicio'));loadLivePrices();
+document.getElementById('openMenu').addEventListener('click',()=>setMenu(true));document.getElementById('closeMenu').addEventListener('click',()=>setMenu(false));document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});window.addEventListener('hashchange',()=>render(decodeURIComponent(location.hash.slice(1))));window.addEventListener('scroll',scrollTheme,{passive:true});render(decodeURIComponent(location.hash.slice(1)||'inicio'));loadLivePrices();reconcileCheckoutReturn();
 
 </script></body></html>
