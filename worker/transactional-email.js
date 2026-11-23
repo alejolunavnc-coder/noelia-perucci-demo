@@ -10,7 +10,7 @@ const digest=async value=>hex(await crypto.subtle.digest('SHA-256',encoder.encod
 const bytesUrl=arr=>btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const site='https://peruccinoelia.com.ar';
-const configured=env=>typeof env.RESEND_API_KEY==='string'&&env.RESEND_API_KEY.startsWith('re_')&&typeof env.GYM_MAIL_FROM==='string'&&/@(?:[a-z0-9-]+\.)+\w{2,}$/.test(env.GYM_MAIL_FROM);
+const configured=env=>typeof env.RESEND_API_KEY==='string'&&env.RESEND_API_KEY.startsWith('re_')&&typeof env.GYM_MAIL_FROM==='string'&&/^[^\s@]+@(?:[a-z0-9-]+\.)+[a-z]{2,}$/i.test(env.GYM_MAIL_FROM);
 export const mailReady=env=>configured(env);
 async function newLink(env,orderId){
  const raw=bytesUrl(crypto.getRandomValues(new Uint8Array(32)));
@@ -24,7 +24,7 @@ async function sendMail(env,to,subject,html,text,idempotencyKey){
  const r=await fetch('https://api.resend.com/emails',{
   method:'POST',
   headers:{authorization:'Bearer '+env.RESEND_API_KEY,'content-type':'application/json','Idempotency-Key':idempotencyKey},
-  body:JSON.stringify({from:env.GYM_MAIL_FROM,to:[to],subject,html,text})
+  body:JSON.stringify({from:'Noelia Perucci <'+env.GYM_MAIL_FROM+'>',to:[to],subject,html,text})
  });
  const result=await r.json().catch(()=>({}));
  if(!r.ok||typeof result.id!=='string'){
