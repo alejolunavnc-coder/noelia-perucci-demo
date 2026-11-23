@@ -1,5 +1,6 @@
 import {mpStatus,mpStart,mpCallback,mpDisconnect} from './mercadopago-oauth.js';
-import {startPayment,paymentStatus,paymentWebhook,verifyPaidDownload,syncPendingOrders} from './mercadopago-checkout.js';
+import {startPayment,paymentStatus,paymentWebhook,verifyPaidDownload,syncPendingOrders,issueDownloadToken} from './mercadopago-checkout.js';
+import {mailReady,processDeliveryQueue,syncPastPurchases,recoverRequest,redeemRecovery,deliveryStatus,cleanupDelivery} from './transactional-email.js';
 // GYM: password-only admin access, validating the existing Cloudflare secret.
 // ADMIN_SETUP_TOKEN remains encrypted in Cloudflare; no account setup is required.
 const COOKIE = "__Host-gym_session";
@@ -189,6 +190,7 @@ async function savePrices(request,env) {
 async function adminOrders(env) {
   if(!env.DB)return json({error:"Base de datos no disponible."},503);
   await syncPendingOrders(env).catch(error=>console.error('GYM admin payment sync failed',error?.message||'unknown'));
+  await syncPastPurchases(env).catch(error=>console.error('GYM past-purchase email queue failed',error?.message||'unknown'));
   const r=await env.DB.prepare(
     "SELECT o.id,o.customer_email,o.amount_ars,o.status,o.provider,o.created_at,p.level,p.days_per_week AS days FROM orders o LEFT JOIN training_plans p ON p.id=o.plan_id ORDER BY o.created_at DESC LIMIT 100"
   ).all();
@@ -304,13 +306,14 @@ async function logout() {
   return json({ok:true},200,{"set-cookie":cookie("",0)});
 }
 export default {
-  async fetch(request,env) {
+  async fetch(request,env,ctx) {
     const url=new URL(request.url),path=url.pathname,method=request.method;
     try{
       if(path==="/api/health" && method==="GET"){
         return json({ok:true,service:"gym",databaseConfigured:Boolean(env.DB)});
       }
       if(path==="/api/mp/oauth/callback" && method==="GET") return mpCallback(env,url);
+      if(path==="/api/checkout/recover" && method==="GET")return redeemRecovery(request,env,issueDownloadToken);
       if(path==="/api/auth/status" && method==="GET"){
         return json({databaseConfigured:Boolean(env.DB),passwordConfigured:Boolean(adminSecret(env))});
       }
@@ -341,9 +344,30 @@ export default {
         if(path==="/api/auth/login" && method==="POST") return login(request,env);
         if(path==="/api/auth/logout" && method==="POST") return logout(request,env);
         if(path==="/api/prices" && method==="GET") return publicPrices(env);
-        if(path==="/api/mp/webhook" && method==="POST")return paymentWebhook(request,env);
+        if(path==="/api/checkout/mail-status" && method==="GET")return json({configured:mailReady(env)});
+        if(path==="/api/checkout/recover-request" && method==="POST")return recoverRequest(request,env,postedJson);
+        if(path==="/api/admin/delivery-status" && method==="GET"){
+          if(!await userFromRequest(request,env))return json({error:"Sesión vencida."},401);
+          return deliveryStatus(env);
+        }
+        if(path==="/api/admin/delivery-retry" && method==="POST"){
+          if(!await userFromRequest(request,env))return json({error:"Sesión vencida."},401);
+          await syncPastPurchases(env);
+          const report=await processDeliveryQueue(env);
+          return json({ok:true,report});
+        }
+
+        if(path==="/api/mp/webhook" && method==="POST"){
+          const response=await paymentWebhook(request,env);
+          if(ctx?.waitUntil)ctx.waitUntil(processDeliveryQueue(env).catch(e=>console.error('GYM email delivery failed',e?.message)));
+          return response;
+        }
         if(path==="/api/checkout/start" && method==="POST")return startPayment(request,env,getSavedPrices,planPdf,postedJson);
-        if(path==="/api/checkout/status" && method==="GET")return paymentStatus(request,env);
+        if(path==="/api/checkout/status" && method==="GET"){
+          const response=await paymentStatus(request,env);
+          if(ctx?.waitUntil)ctx.waitUntil(processDeliveryQueue(env).catch(e=>console.error('GYM email delivery failed',e?.message)));
+          return response;
+        }
 
         if(path==="/api/admin/mp/status" && method==="GET"){
           if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
@@ -383,5 +407,13 @@ export default {
       console.error("GYM Worker request failed",err?.message || "unknown");
       return json({error:"Error de servidor."},500);
     }
+  },
+  async scheduled(_event,env,ctx){
+    // Every 10 minutes: reconcile payment status and deliver pending emails.
+    if(!env.DB)return;
+    await syncPendingOrders(env).catch(e=>console.error('GYM scheduled MP sync error',e?.message));
+    await syncPastPurchases(env).catch(e=>console.error('GYM scheduled mail queue error',e?.message));
+    await processDeliveryQueue(env).catch(e=>console.error('GYM scheduled mail send error',e?.message));
+    await cleanupDelivery(env).catch(e=>console.error('GYM scheduled cleanup error',e?.message));
   }
 };
