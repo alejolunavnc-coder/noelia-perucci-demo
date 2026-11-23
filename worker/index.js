@@ -1,4 +1,5 @@
 import {mpStatus,mpStart,mpCallback,mpDisconnect} from './mercadopago-oauth.js';
+import {startPayment,paymentStatus,paymentWebhook,verifyPaidDownload} from './mercadopago-checkout.js';
 // GYM: password-only admin access, validating the existing Cloudflare secret.
 // ADMIN_SETUP_TOKEN remains encrypted in Cloudflare; no account setup is required.
 const COOKIE = "__Host-gym_session";
@@ -226,14 +227,9 @@ async function completeCheckout(request,env) {
 }
 async function downloadCheckoutPdf(request,env) {
   if(!env.DB||!cloudinaryReady(env))return json({error:"La descarga no está disponible."},503);
-  const token=new URL(request.url).searchParams.get("token")||"";
-  const match=/^(principiante|intermedio|avanzado)\.([2-5])\.(\d{13})\.([a-f0-9]{32})\.([a-f0-9]{64})$/.exec(token);
-  if(!match)return json({error:"El acceso al PDF no es válido."},403);
-  const [,level,daysStr,expires,nonce,signature]=match;
-  const expiry=Number(expires),days=Number(daysStr);
-  if(expiry<Date.now()||expiry>Date.now()+30*60*1000)return json({error:"El enlace de descarga venció. Volvé a seleccionar tu rutina."},403);
-  const expected=await checkoutToken(env.CLOUDINARY_API_SECRET,[level,daysStr,expires,nonce].join("."));
-  if(!secureEquals(expected,signature))return json({error:"Acceso no autorizado."},403);
+  const verified=await verifyPaidDownload(request,env);
+  if(!verified)return json({error:"No existe un pago aprobado que autorice esta descarga."},403);
+  const {level,days}=verified;
   const asset=await planPdf(env,level,days);
   if(!asset||asset.delivery_type!=="authenticated"||!/^[a-zA-Z0-9_/-]+\.pdf$/.test(asset.cloudinary_public_id)){
     return json({error:"No encontramos el PDF de esta rutina."},404);
@@ -340,10 +336,14 @@ export default {
       }
       if(path.startsWith("/api/")) {
         if(!["GET","POST"].includes(method)) return json({error:"Método no permitido."},405);
-        if(method==="POST" && !validOrigin(request)) return json({error:"Origen no autorizado."},403);
+        if(method==="POST" && path!=="/api/mp/webhook" && !validOrigin(request)) return json({error:"Origen no autorizado."},403);
         if(path==="/api/auth/login" && method==="POST") return login(request,env);
         if(path==="/api/auth/logout" && method==="POST") return logout(request,env);
         if(path==="/api/prices" && method==="GET") return publicPrices(env);
+        if(path==="/api/mp/webhook" && method==="POST")return paymentWebhook(request,env);
+        if(path==="/api/checkout/start" && method==="POST")return startPayment(request,env,getSavedPrices,planPdf,postedJson);
+        if(path==="/api/checkout/status" && method==="GET")return paymentStatus(request,env);
+
         if(path==="/api/admin/mp/status" && method==="GET"){
           if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
           return mpStatus(env);
@@ -364,10 +364,9 @@ export default {
           if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
           return adminOrders(env);
         }
-        // Paid downloads must only be enabled with verified, order-bound authorization.
-        // The legacy demo endpoint previously issued free tokens; it is disabled.
-        if(path==="/api/checkout/complete" && method==="POST") return json({error:"Compras temporalmente deshabilitadas. Estamos conectando Mercado Pago."},503);
-        if(path==="/api/checkout/download" && method==="GET") return json({error:"Descarga no disponible sin pago verificado."},403);
+        // Do not restore the old unpaid checkout/complete endpoint.
+        if(path==="/api/checkout/complete" && method==="POST")return json({error:"Usá el checkout seguro de Mercado Pago."},410);
+        if(path==="/api/checkout/download" && method==="GET")return downloadCheckoutPdf(request,env);
         if(path==="/api/admin/routine-pdfs" && method==="GET"){
           if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
           return listRoutinePdfs(env);
