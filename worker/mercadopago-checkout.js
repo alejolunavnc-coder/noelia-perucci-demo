@@ -93,6 +93,15 @@ async function reconcileOrder(env,mpOrderId,orderHint){
  ]);
  return true;
 }
+export async function syncPendingOrders(env){
+ if(!env.DB)return 0;
+ const rows=await env.DB.prepare("SELECT preference_id FROM gym_mp_payment_intents WHERE preference_id IS NOT NULL AND status IN ('created','pending','in_process') ORDER BY created_at DESC LIMIT 12").all();
+ let checked=0;
+ for(const row of rows.results||[]){
+  try{if(await reconcileOrder(env,row.preference_id))checked++;}catch(e){console.error('GYM order reconciliation error',e.message);}
+ }
+ return checked;
+}
 export async function paymentWebhook(request,env){
  // Untrusted notification is only a trigger; the order is verified via Mercado Pago API.
  const url=new URL(request.url);
