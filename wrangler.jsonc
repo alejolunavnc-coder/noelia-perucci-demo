@@ -21,6 +21,12 @@
     }
   ],
   "vars": {
-    "CLOUDINARY_CLOUD_NAME": "equm866o"
+    "CLOUDINARY_CLOUD_NAME": "equm866o",
+    "GYM_MAIL_FROM": "rutinas@peruccinoelia.com.ar"
+  },
+  "triggers": {
+    "crons": [
+      "*/10 * * * *"
+    ]
   }
 }
