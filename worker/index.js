@@ -1,3 +1,4 @@
+import {mpStatus,mpStart,mpCallback,mpDisconnect} from './mercadopago-oauth.js';
 // GYM: password-only admin access, validating the existing Cloudflare secret.
 // ADMIN_SETUP_TOKEN remains encrypted in Cloudflare; no account setup is required.
 const COOKIE = "__Host-gym_session";
@@ -312,6 +313,7 @@ export default {
       if(path==="/api/health" && method==="GET"){
         return json({ok:true,service:"gym",databaseConfigured:Boolean(env.DB)});
       }
+      if(path==="/api/mp/oauth/callback" && method==="GET") return mpCallback(env,url);
       if(path==="/api/auth/status" && method==="GET"){
         return json({databaseConfigured:Boolean(env.DB),passwordConfigured:Boolean(adminSecret(env))});
       }
@@ -342,6 +344,18 @@ export default {
         if(path==="/api/auth/login" && method==="POST") return login(request,env);
         if(path==="/api/auth/logout" && method==="POST") return logout(request,env);
         if(path==="/api/prices" && method==="GET") return publicPrices(env);
+        if(path==="/api/admin/mp/status" && method==="GET"){
+          if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
+          return mpStatus(env);
+        }
+        if(path==="/api/admin/mp/start" && method==="POST"){
+          if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
+          return mpStart(env);
+        }
+        if(path==="/api/admin/mp/disconnect" && method==="POST"){
+          if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
+          return mpDisconnect(env);
+        }
         if(path==="/api/admin/prices" && ["GET","POST"].includes(method)){
           if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
           return method==="GET"?publicPrices(env):savePrices(request,env);
