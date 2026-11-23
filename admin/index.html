@@ -18,6 +18,14 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
 @media (max-width:1099px){.app{min-height:100dvh}.topbar{height:auto;min-height:76px}.brand-sub{display:none}main{overflow:visible}.panel{overflow:visible}.product-grid{grid-template-columns:1fr}.prices{padding:0 0 18px;border-right:0;border-bottom:1px solid var(--stroke)}.price-list{grid-template-columns:repeat(2,minmax(0,1fr))}.pdf-area{overflow-x:auto}.pdf-table{min-width:700px}.save-line{flex-wrap:wrap}.orders-table-wrap{overflow-x:auto}.orders-table{min-width:1000px}.orders-panel{padding-top:0}}
 @media (max-width:620px){.topbar{padding:16px;gap:8px}.brandline{gap:12px}.brand-sep{display:none}.brand{font-size:17px}.logout{padding:0 11px;font-size:0;min-height:40px}.logout svg{width:22px;height:22px}main{padding:12px 13px 25px;gap:14px}.tabs{height:54px}.tab{width:50%;font-size:16px;gap:8px;padding:0 6px}.tab svg{width:20px}.products-card{padding:16px;gap:14px}.product-heading{gap:12px}.heading-icon{width:52px;height:52px}.heading-icon svg{width:27px;height:27px}.product-name{font-size:20px}.product-description{font-size:12px}.pill{font-size:11px;padding:5px 10px}.price-list{grid-template-columns:1fr}.price-row{grid-template-columns:95px 1fr}.day-label,.money-input{min-height:44px;height:44px;font-size:15px}.money-input input{font-size:15px}.personal-card{padding:15px;gap:12px}.personal-card .heading-icon{height:50px;width:50px}.personal-card .product-name{font-size:19px}.save{width:100%;min-width:0}.save-status{max-width:none}.orders-heading h1{font-size:30px}.orders-heading p{font-size:14px}.orders-heading{gap:12px}.orders-table-wrap{padding:6px}.preview-note{border-radius:12px}}
 @media(prefers-reduced-motion:no-preference){button{transition:background .15s,color .15s,border-color .15s}}
+
+/* Mercado Pago: vinculación segura; no habilita cobros. */
+.mp-card{padding:20px 25px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.mp-card h2{font-size:21px;margin:0 0 5px}.mp-card p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
+.mp-actions{display:flex;gap:10px;flex-wrap:wrap}.mp-actions button{background:var(--pink);color:#fff;border:0;border-radius:8px;padding:12px 15px;font-weight:700}
+.mp-actions button.secondary{background:#fff;border:1px solid #b8b1bd;color:#241e28}
+.mp-actions button:disabled{opacity:.5;cursor:not-allowed}.mp-card .mp-feedback{font-size:13px;color:#6a4057;margin-top:8px}
+@media(max-width:620px){.mp-card{padding:17px}.mp-actions{width:100%}.mp-actions button{flex:1}}
 </style>
 </head>
 <body>
@@ -40,6 +48,7 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
 </div></div>
 </article>
 <article class="card personal-card"><div class="heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="19" rx="2"/><path d="M9 3V2h6v1M9 9h6M9 13h6M9 17h4"/></svg></div><div><div class="product-name-row"><h2 class="product-name">Planes personalizados</h2><span class="pill soft">Por consulta</span></div><p class="product-description">Servicio individualizado. No tiene precio fijo ni entrega automática de PDF. La consulta se acuerda directamente con Noelia.</p></div></article>
+<article class="card mp-card" aria-labelledby="mp-title"><div><h2 id="mp-title">Mercado Pago</h2><p id="mp-status">Consultando el estado de la vinculación…</p><p class="mp-feedback" id="mp-feedback" role="status" aria-live="polite">Los cobros seguirán desactivados hasta completar las pruebas de compra.</p></div><div class="mp-actions"><button type="button" id="mp-link" disabled>VINCULAR MERCADO PAGO</button><button type="button" id="mp-refresh" class="secondary">Actualizar estado</button><button type="button" id="mp-unlink" class="secondary" hidden>Desvincular</button></div></article>
 </section>
 <section class="panel orders-panel" id="orders-panel" role="tabpanel" aria-labelledby="orders-tab" tabindex="0" hidden>
 <div class="orders-heading"><div class="heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h16l1 13H3L4 8Zm5 0V6a3 3 0 0 1 6 0v2"/></svg></div><div><h1>Pedidos</h1><p>Listado de compras realizadas en la tienda.</p></div></div>
@@ -146,6 +155,63 @@ priceSave.addEventListener('click',async()=>{
 });
 for(const field of priceFields){field.addEventListener('input',updatePriceSave);field.addEventListener('blur',updatePriceSave)}
 loadSavedPrices();
+
+
+const mpStatusEl=document.getElementById('mp-status'),mpFeedback=document.getElementById('mp-feedback');
+const mpLink=document.getElementById('mp-link'),mpRefresh=document.getElementById('mp-refresh'),mpUnlink=document.getElementById('mp-unlink');
+async function refreshMpStatus(){
+ mpLink.disabled=true;mpRefresh.disabled=true;mpUnlink.disabled=true;
+ try{
+  const response=await fetch('/api/admin/mp/status',{credentials:'same-origin',cache:'no-store'});
+  const data=await response.json();
+  if(!response.ok)throw Error(data.error||'No se pudo consultar Mercado Pago');
+  if(!data.configured){
+   mpStatusEl.textContent='Pendiente de configurar la aplicación WebCreator en Cloudflare.';
+   mpFeedback.textContent='No se cobrarán pagos hasta completar la configuración.';
+   mpLink.hidden=false;mpUnlink.hidden=true;return;
+  }
+  if(data.connected){
+   mpStatusEl.textContent='Cuenta vinculada correctamente (ID '+data.sellerId+').';
+   mpFeedback.textContent='Cuenta autorizada. Los pagos comerciales todavía no están habilitados.';
+   mpLink.hidden=true;mpUnlink.hidden=false;
+  }else{
+   mpStatusEl.textContent='Todavía no hay una cuenta Mercado Pago vinculada.';
+   mpFeedback.textContent='Vinculá la cuenta donde Noelia quiere recibir sus pagos.';
+   mpLink.hidden=false;mpLink.disabled=false;mpUnlink.hidden=true;
+  }
+ }catch(error){
+  mpStatusEl.textContent='No se pudo verificar el estado.';
+  mpFeedback.textContent=error.message;
+ }finally{mpRefresh.disabled=false;if(!mpUnlink.hidden)mpUnlink.disabled=false;}
+}
+mpRefresh.addEventListener('click',refreshMpStatus);
+mpLink.addEventListener('click',async()=>{
+ mpLink.disabled=true;mpFeedback.textContent='Preparando autorización segura…';
+ try{
+  const response=await fetch('/api/admin/mp/start',{method:'POST',credentials:'same-origin'});
+  const data=await response.json();if(!response.ok||!data.url)throw Error(data.error||'No se pudo iniciar la vinculación');
+  const dest=new URL(data.url);
+  if(dest.protocol!=='https:'||dest.hostname!=='auth.mercadopago.com')throw Error('Destino de autorización no válido');
+  window.location.assign(dest.href);
+ }catch(error){mpFeedback.textContent=error.message;mpLink.disabled=false;}
+});
+mpUnlink.addEventListener('click',async()=>{
+ if(!confirm('¿Desvincular la cuenta de Mercado Pago? No se borrarán pedidos ni pagos anteriores.'))return;
+ mpUnlink.disabled=true;
+ try{
+  const response=await fetch('/api/admin/mp/disconnect',{method:'POST',credentials:'same-origin'});
+  const data=await response.json();
+  if(!response.ok)throw Error(data.error||'No se pudo desvincular');
+  msg('Cuenta desvinculada');await refreshMpStatus();
+ }catch(error){mpFeedback.textContent=error.message;mpUnlink.disabled=false;}
+});
+const mpReturn=new URLSearchParams(location.search).get('mp');
+if(mpReturn){
+ const label={connected:'Cuenta de Mercado Pago vinculada',config:'Faltan configurar credenciales',invalid:'Autorización inválida',expired:'Autorización vencida','switch-blocked':'Hay otra cuenta vinculada; primero desvinculala',error:'No se pudo completar la autorización'};
+ mpFeedback.textContent=label[mpReturn]||'Resultado de autorización: '+mpReturn.slice(0,40);
+ history.replaceState(null,'',location.pathname+location.hash);
+}
+refreshMpStatus();
 
 async function loadRealOrders(){
  const body=document.getElementById('orders-body');
