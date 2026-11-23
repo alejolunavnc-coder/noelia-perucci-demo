@@ -1,5 +1,5 @@
 import {mpStatus,mpStart,mpCallback,mpDisconnect} from './mercadopago-oauth.js';
-import {startPayment,paymentStatus,paymentWebhook,verifyPaidDownload} from './mercadopago-checkout.js';
+import {startPayment,paymentStatus,paymentWebhook,verifyPaidDownload,syncPendingOrders} from './mercadopago-checkout.js';
 // GYM: password-only admin access, validating the existing Cloudflare secret.
 // ADMIN_SETUP_TOKEN remains encrypted in Cloudflare; no account setup is required.
 const COOKIE = "__Host-gym_session";
@@ -188,6 +188,7 @@ async function savePrices(request,env) {
 }
 async function adminOrders(env) {
   if(!env.DB)return json({error:"Base de datos no disponible."},503);
+  await syncPendingOrders(env).catch(error=>console.error('GYM admin payment sync failed',error?.message||'unknown'));
   const r=await env.DB.prepare(
     "SELECT o.id,o.customer_email,o.amount_ars,o.status,o.provider,o.created_at,p.level,p.days_per_week AS days FROM orders o LEFT JOIN training_plans p ON p.id=o.plan_id ORDER BY o.created_at DESC LIMIT 100"
   ).all();
