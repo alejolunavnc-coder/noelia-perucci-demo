@@ -364,8 +364,10 @@ export default {
           if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
           return adminOrders(env);
         }
-        if(path==="/api/checkout/complete" && method==="POST") return completeCheckout(request,env);
-        if(path==="/api/checkout/download" && method==="GET") return downloadCheckoutPdf(request,env);
+        // Paid downloads must only be enabled with verified, order-bound authorization.
+        // The legacy demo endpoint previously issued free tokens; it is disabled.
+        if(path==="/api/checkout/complete" && method==="POST") return json({error:"Compras temporalmente deshabilitadas. Estamos conectando Mercado Pago."},503);
+        if(path==="/api/checkout/download" && method==="GET") return json({error:"Descarga no disponible sin pago verificado."},403);
         if(path==="/api/admin/routine-pdfs" && method==="GET"){
           if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
           return listRoutinePdfs(env);
