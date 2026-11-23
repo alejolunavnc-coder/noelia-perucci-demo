@@ -3168,7 +3168,7 @@ document.addEventListener('submit',async e=>{
     const result=await res.json();
     if(!res.ok)throw Error(result.error||'No se pudo iniciar el pago.');
     const gateway=new URL(result.checkoutUrl);
-    if(gateway.protocol!=='https:'||!/(^|\\.)mercadopago\\.com(\\.ar)?$/.test(gateway.hostname))throw Error('La URL de pago no es válida.');
+    if(gateway.protocol!=='https:'||!/(^|\\.)mercadopago\.com(\.ar)?$/.test(gateway.hostname))throw Error('La URL de pago no es válida.');
     sessionStorage.setItem('gym_pending_order',result.orderId);
     status.textContent='Abriendo el sitio seguro de Mercado Pago…';
     location.assign(gateway.href);
@@ -3320,7 +3320,7 @@ async function reconcileCheckoutReturn(){
  for(let attempt=0;attempt<15;attempt++){
   try{
    const qs=new URLSearchParams({order:orderId});
-   if(paymentId&&/^\\d{1,28}$/.test(paymentId))qs.set('payment_id',paymentId);
+   if(paymentId&&/^\d{1,28}$/.test(paymentId))qs.set('payment_id',paymentId);
    const res=await fetch('/api/checkout/status?'+qs,{cache:'no-store'});
    const data=await res.json();
    if(!res.ok)throw Error(data.error||'No se pudo verificar la compra.');
