@@ -43,12 +43,13 @@ async function sendPurchase(env,row,purpose='purchase'){
  const button='DESCARGAR MI RUTINA';
  const html='<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'+
   '<body style="margin:0;padding:32px 16px;background:#f4f2ee;font-family:Arial,sans-serif;color:#191619"><table role="presentation" style="width:100%;max-width:550px;margin:0 auto;border-collapse:collapse;background:#fff"><tr><td style="background:#161216;padding:24px;color:#fff;font-size:23px;font-weight:800">NOELIA PERUCCI</td></tr><tr><td style="padding:32px">'+
-  '<h1 style="font-size:25px;line-height:1.2;margin:0 0 18px">'+header+'</h1><p style="line-height:1.6">Tu rutina <b>'+esc(label)+'</b> está disponible para descargar.</p>'+
+  '<h1 style="font-size:25px;line-height:1.2;margin:0 0 18px">'+header+'</h1><p style="line-height:1.6">Tu rutina <b>'+esc(label)+'</b> está disponible para descargar.</p>'+ 
+  '<p style="line-height:1.6;font-weight:600">Gracias por confiar. Haremos un gran equipo.</p>'+
   '<p style="line-height:1.6">Podés guardarla cuando quieras usando este enlace privado:</p>'+
   '<p style="margin:30px 0"><a href="'+esc(link)+'" style="display:inline-block;background:#cf006d;color:#fff;text-decoration:none;font-weight:bold;padding:16px 24px;border-radius:7px">'+button+'</a></p>'+
   '<p style="font-size:13px;color:#555;line-height:1.5">Este enlace tiene validez de 30 días. No lo compartas. Si vence, pedí uno nuevo desde la web.</p>'+
   '<p style="font-size:12px;color:#777;line-height:1.5">Pedido: '+esc(row.id)+'<br>Si no realizaste esta compra, podés ignorar este mensaje.</p></td></tr></table></body></html>';
- const text=header+'\n\nRutina: '+label+'\n\nDescargar: '+link+'\n\nEnlace privado, válido 30 días.\nPedido: '+row.id;
+ const text=header+'\n\nTu rutina '+label+' está disponible para descargar.\nGracias por confiar. Haremos un gran equipo.\n\nDescargar: '+link+'\n\nEnlace privado, válido 30 días.\nPedido: '+row.id;
  // Unique per attempt, so intentionally requesting a replacement link always sends a new email.
  return sendMail(env,row.customer_email,subject,html,text,'gym-'+purpose+'-'+crypto.randomUUID());
 }
