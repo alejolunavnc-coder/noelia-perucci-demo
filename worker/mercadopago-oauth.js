@@ -86,12 +86,19 @@ export async function mpAccessToken(env){
  }
  return {token:pair.access,sellerId:row.seller_id};
 }
-export async function mpDisconnect(env){
+export async function mpDisconnect(env,request){
  if(!ready(env))return out({error:"mp_not_configured"},503);
  try{
-  const open=await env.DB.prepare("SELECT COUNT(*) AS n FROM gym_mp_payment_intents WHERE status IN ('created','pending','in_process')").first();
-  if(Number(open?.n||0)>0)return out({error:"pending_payments"},409);
-  await env.DB.prepare("DELETE FROM gym_mp_connections WHERE id=1").run();
-  return out({ok:true});
- }catch{return out({error:"schema_unavailable"},503);}
+  const row=await env.DB.prepare("SELECT seller_id FROM gym_mp_connections WHERE id=1").first();
+  if(!row)return out({ok:true,disconnected:true,alreadyDisconnected:true});
+  const open=await env.DB.prepare("SELECT COUNT(*) AS n FROM gym_mp_payment_intents WHERE seller_id=? AND status IN ('created','pending','in_process')").bind(row.seller_id).first();
+  const pendingCount=Number(open?.n||0);
+  let confirmPending=false;
+  if(pendingCount){
+   try{const payload=await request.json();confirmPending=payload?.confirmPending===true&&payload?.sellerId===row.seller_id;}catch{}
+   if(!confirmPending)return out({error:"pending_payments",pendingCount,sellerId:row.seller_id,message:"Hay "+pendingCount+" pagos anteriores pendientes. Si desvinculás igualmente, no se podrán verificar automáticamente mientras esta cuenta no esté vinculada."},409);
+  }
+  const result=await env.DB.prepare("DELETE FROM gym_mp_connections WHERE id=1 AND seller_id=?").bind(row.seller_id).run();
+  return out({ok:true,disconnected:true,pendingCount,changed:result.meta?.changes||0});
+ }catch(e){console.error("GYM MP disconnect:",e?.message);return out({error:"disconnect_failed"},503);}
 }
