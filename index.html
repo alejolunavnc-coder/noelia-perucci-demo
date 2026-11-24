@@ -2822,7 +2822,9 @@ function noeliaMountMedia(){
    hero.addEventListener("error",()=>{
     noeliaMediaUrl("desktop").then(src=>{if(!hero.isConnected)return;hero.src=src;startHeroIfVisible();}).catch(()=>{});
    },{once:true});
-   hero.src="/media/noelia-hero-desktop-v1.mp4";
+   hero.src=hero.canPlayType('video/webm; codecs="vp9"')
+    ? "/media/noelia-hero-desktop-v2.webm"
+    : "/media/noelia-hero-desktop-v1.mp4";
    startHeroIfVisible();
   }
  }
