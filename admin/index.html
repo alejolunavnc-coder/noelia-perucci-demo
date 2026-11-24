@@ -291,7 +291,7 @@ async function refreshMpStatus(){
   }
   if(data.connected){
    mpStatusEl.textContent='Cuenta vinculada correctamente (ID '+data.sellerId+').';
-   mpFeedback.textContent='Cuenta autorizada. Los pagos comerciales todavía no están habilitados.';
+   mpFeedback.textContent='';
    mpLink.hidden=true;mpUnlink.hidden=false;
   }else{
    mpStatusEl.textContent='Todavía no hay una cuenta Mercado Pago vinculada.';
