@@ -26,6 +26,11 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
 .mp-actions button.secondary{background:#fff;border:1px solid #b8b1bd;color:#241e28}
 .mp-actions button:disabled{opacity:.5;cursor:not-allowed}.mp-card .mp-feedback{font-size:13px;color:#6a4057;margin-top:8px}
 @media(max-width:620px){.mp-card{padding:17px}.mp-actions{width:100%}.mp-actions button{flex:1}}
+.pdf-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:9px}
+.pdf-heading .section-title{margin-bottom:0}
+.pdf-export-button{font-size:12px;font-weight:700;line-height:1.3;border:1px solid #c9bec6;color:#675562;background:transparent;border-radius:8px;padding:9px 12px;white-space:nowrap;transition:background .15s,border-color .15s}
+.pdf-export-button:hover{background:#f7eef3;border-color:#b096a8}
+.pdf-export-button:focus-visible{outline:3px solid #cf006d;outline-offset:2px}
 </style>
 </head>
 <body>
@@ -43,7 +48,7 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
 <label class="price-row"><span class="day-label">4 días</span><span class="money-input"><span>$</span><input aria-label="Precio para 4 días" data-days="4" inputmode="numeric" pattern="[0-9.]+" value="80.000" maxlength="12"></span></label>
 <label class="price-row"><span class="day-label">5 días</span><span class="money-input"><span>$</span><input aria-label="Precio para 5 días" data-days="5" inputmode="numeric" pattern="[0-9.]+" value="80.000" maxlength="12"></span></label>
 </div></div>
-<div class="pdf-area"><h2 class="section-title">Archivos de rutinas <small>(12 combinaciones)</small></h2><div id="pdf-table" class="pdf-table" role="group" aria-label="Archivos PDF por nivel y cantidad de días"></div>
+<div class="pdf-area"><div class="pdf-heading"><h2 class="section-title">Archivos de rutinas <small>(12 combinaciones)</small></h2><button type="button" class="pdf-export-button" id="pdf-export-button" title="Descargar copia de los 12 PDF guardados">Descargar todos los PDF</button></div><div id="pdf-table" class="pdf-table" role="group" aria-label="Archivos PDF por nivel y cantidad de días"></div>
 <div class="save-line"><span class="save-status" id="save-status" aria-live="polite">Conectando con Cloudinary…</span><button class="save" id="save" type="button" disabled>▣ &nbsp;Guardar cambios</button></div>
 </div></div>
 </article>
@@ -67,6 +72,7 @@ const levels=[['principiante','Principiante'],['intermedio','Intermedio'],['avan
 const table=document.getElementById('pdf-table'),picker=document.getElementById('pdf-picker'),status=document.getElementById('save-status'),notice=document.getElementById('notice');
 let selected=null;
 const saved=new Map(),busy=new Set();
+document.getElementById('pdf-export-button').addEventListener('click',()=>{status.textContent='Preparando respaldo ZIP de las 12 rutinas…';window.location.assign('/api/admin/routine-pdfs/export');});
 function msg(s){notice.textContent=s;notice.hidden=false;clearTimeout(msg.t);msg.t=setTimeout(()=>notice.hidden=true,6000)}
 function cell(text,classes){const el=document.createElement('div');el.className='pdf-cell '+classes;el.textContent=text;return el}
 table.append(cell('Nivel','pdf-th'));for(const d of days)table.append(cell(d+' días','pdf-th'));
