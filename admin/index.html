@@ -31,9 +31,29 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
 .pdf-export-button{font-size:12px;font-weight:700;line-height:1.3;border:1px solid #c9bec6;color:#675562;background:transparent;border-radius:8px;padding:9px 12px;white-space:nowrap;transition:background .15s,border-color .15s}
 .pdf-export-button:hover{background:#f7eef3;border-color:#b096a8}
 .pdf-export-button:focus-visible{outline:3px solid #cf006d;outline-offset:2px}
+
+/* Vista celular: el administrador se utiliza únicamente desde una computadora. */
+.mobile-desktop-notice{display:none}
+@media(max-width:767px){
+ html,body{min-height:100%;background:#151419}
+ .app{display:none!important}
+ .mobile-desktop-notice{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;color:#fff;text-align:center}
+ .mobile-desktop-notice .mobile-notice-symbol{width:72px;height:72px;border:1px solid rgba(255,255,255,.22);border-radius:20px;display:grid;place-items:center;color:#f09dc5;background:rgba(208,0,115,.09);margin-bottom:25px}
+ .mobile-desktop-notice .mobile-notice-symbol svg{width:36px;height:36px}
+ .mobile-desktop-notice h1{font-size:clamp(23px,6.5vw,30px);line-height:1.2;letter-spacing:-.035em;font-weight:750;max-width:340px;margin:0}
+ .mobile-desktop-notice p{font-size:15px;color:#c9c1cc;margin:14px 0 0;line-height:1.5}
+ .mobile-desktop-notice .mobile-notice-brand{margin-top:55px;color:#c9c1cc;font-size:13px;font-weight:600;letter-spacing:.04em}
+ .mobile-desktop-notice .mobile-notice-brand a{color:#fff;text-decoration:none}
+}
 </style>
 </head>
 <body>
+<section class="mobile-desktop-notice" aria-labelledby="mobile-notice-title">
+ <div class="mobile-notice-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+ <h1 id="mobile-notice-title">El administrador se abre desde una computadora.</h1>
+ <p>Ingresá desde tu PC para gestionar la página.</p>
+ <div class="mobile-notice-brand"><a href="https://webcreator.ar/" rel="noopener noreferrer">WebCreator.ar</a></div>
+</section>
 <div class="app">
 <header class="topbar"><div class="brandline"><span class="brand">NOELIA PERUCCI</span><span class="brand-sep" aria-hidden="true"></span><span class="brand-sub">Panel de administración</span></div><button id="logout" class="logout" type="button" aria-label="Cerrar sesión"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4m6-4 4-4-4-4m4 4H9"/></svg>Cerrar sesión</button></header>
 <main>
