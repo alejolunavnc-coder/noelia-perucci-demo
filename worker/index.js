@@ -380,7 +380,7 @@ export default {
         }
         if(path==="/api/admin/mp/disconnect" && method==="POST"){
           if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
-          return mpDisconnect(env);
+          return mpDisconnect(env,request);
         }
         if(path==="/api/admin/prices" && ["GET","POST"].includes(method)){
           if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
