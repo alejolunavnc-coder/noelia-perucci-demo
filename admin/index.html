@@ -203,14 +203,27 @@ mpLink.addEventListener('click',async()=>{
  }catch(error){mpFeedback.textContent=error.message;mpLink.disabled=false;}
 });
 mpUnlink.addEventListener('click',async()=>{
- if(!confirm('¿Desvincular la cuenta de Mercado Pago? No se borrarán pedidos ni pagos anteriores.'))return;
- mpUnlink.disabled=true;
+ if(!confirm('¿Desvincular la cuenta actual de Mercado Pago? Las compras aprobadas y los pedidos anteriores se conservarán.'))return;
+ mpUnlink.disabled=true;mpFeedback.textContent='Desvinculando Mercado Pago…';
  try{
-  const response=await fetch('/api/admin/mp/disconnect',{method:'POST',credentials:'same-origin'});
-  const data=await response.json();
-  if(!response.ok)throw Error(data.error||'No se pudo desvincular');
-  msg('Cuenta desvinculada');await refreshMpStatus();
- }catch(error){mpFeedback.textContent=error.message;mpUnlink.disabled=false;}
+  let response=await fetch('/api/admin/mp/disconnect',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:'{}'});
+  let data=await response.json().catch(()=>({}));
+  if(response.status===409&&data.error==='pending_payments'){
+   const count=Number(data.pendingCount)||0;
+   const warning='Hay '+count+' intentos de pago sin finalizar. Si continuás, no podremos verificar esos pagos automáticamente hasta volver a vincular la cuenta anterior. Los pagos ya aprobados y el historial se conservan. ¿Desvincular igualmente?';
+   if(!confirm(warning)){mpFeedback.textContent='Desvinculación cancelada. La cuenta sigue vinculada.';return;}
+   response=await fetch('/api/admin/mp/disconnect',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({confirmPending:true,sellerId:data.sellerId})});
+   data=await response.json().catch(()=>({}));
+  }
+  if(!response.ok||!data.ok)throw Error(data.message||(data.error==='pending_payments'?'Todavía hay pagos pendientes.':data.error)||'No se pudo desvincular.');
+  mpFeedback.textContent='Cuenta desvinculada. Ya podés vincular el Mercado Pago de Noelia.';
+  await refreshMpStatus();
+  msg('Mercado Pago desvinculado correctamente.');
+ }catch(error){
+  mpFeedback.textContent='No se pudo desvincular: '+error.message;
+  await refreshMpStatus();
+  mpFeedback.textContent='No se pudo desvincular: '+error.message;
+ }finally{mpUnlink.disabled=false;}
 });
 const mpReturn=new URLSearchParams(location.search).get('mp');
 if(mpReturn){
