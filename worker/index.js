@@ -1,4 +1,5 @@
 import {mpStatus,mpStart,mpCallback,mpDisconnect} from './mercadopago-oauth.js';
+import {adminExportRoutines} from './routine-export.js';
 import {startPayment,paymentStatus,paymentWebhook,verifyPaidDownload,syncPendingOrders,issueDownloadToken} from './mercadopago-checkout.js';
 import {mailReady,processDeliveryQueue,syncPastPurchases,recoverRequest,redeemRecovery,deliveryStatus,cleanupDelivery} from './transactional-email.js';
 // GYM: password-only admin access, validating the existing Cloudflare secret.
@@ -392,6 +393,10 @@ export default {
         // Do not restore the old unpaid checkout/complete endpoint.
         if(path==="/api/checkout/complete" && method==="POST")return json({error:"Usá el checkout seguro de Mercado Pago."},410);
         if(path==="/api/checkout/download" && method==="GET")return downloadCheckoutPdf(request,env);
+        if(path==="/api/admin/routine-pdfs/export" && method==="GET"){
+          if(!await userFromRequest(request,env))return json({error:"Acceso restringido al administrador."},401);
+          return adminExportRoutines(env);
+        }
         if(path==="/api/admin/routine-pdfs" && method==="GET"){
           if(!await userFromRequest(request,env))return json({error:"Sesión vencida. Volvé a ingresar."},401);
           return listRoutinePdfs(env);
