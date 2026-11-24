@@ -8,3 +8,12 @@
 
 https://noelia-perucci-demo.alejolunavnc.workers.dev/*
   X-Robots-Tag: noindex, nofollow
+
+/media/noelia-background-*
+  Cache-Control: public, max-age=31536000, immutable
+
+/media/noelia-npc-2024-v1.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/media/noelia-hero-desktop-v1.mp4
+  Cache-Control: public, max-age=31536000, immutable
