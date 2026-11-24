@@ -246,7 +246,8 @@ async function loadRealOrders(){
   }
   for(const order of data.orders){
    const row=body.insertRow();
-   const values=[order.id,order.customer_email,order.level?order.level+' · '+order.days+' días':'Rutina',Number(order.amount_ars).toLocaleString('es-AR'),order.status,order.status==='approved'?'Por entregar':'Pendiente',order.created_at||'',order.provider||''];
+   const delivery=order.email_status==='sent'?'Correo enviado':order.status!=='approved'?'Pendiente de pago':order.email_status==='sending'?'Enviando correo':order.email_status==='queued'?'Correo pendiente':order.email_status==='failed'?'Reintentando correo':'Correo por preparar';
+   const values=[order.id,order.customer_email,order.level?order.level+' · '+order.days+' días':'Rutina',Number(order.amount_ars).toLocaleString('es-AR'),order.status==='approved'?'Aprobado':order.status==='pending'?'Pendiente':order.status,delivery,order.created_at||'',order.provider||''];
    for(const value of values)row.insertCell().textContent=String(value);
   }
  }catch(error){
