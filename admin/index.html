@@ -45,6 +45,9 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
  .mobile-desktop-notice .mobile-notice-brand{margin-top:55px;color:#c9c1cc;font-size:13px;font-weight:600;letter-spacing:.04em}
  .mobile-desktop-notice .mobile-notice-brand a{color:#fff;text-decoration:none}
 }
+
+.orders-total{margin-left:auto;min-width:125px;text-align:right;white-space:nowrap;font-size:clamp(24px,2.5vw,38px);font-weight:750;line-height:1.15;letter-spacing:-.035em;font-variant-numeric:tabular-nums;color:var(--ink)}
+@media(max-width:1099px){.orders-total{font-size:28px}}
 </style>
 </head>
 <body>
@@ -77,7 +80,7 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
 
 </section>
 <section class="panel orders-panel" id="orders-panel" role="tabpanel" aria-labelledby="orders-tab" tabindex="0" hidden>
-<div class="orders-heading"><div class="heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h16l1 13H3L4 8Zm5 0V6a3 3 0 0 1 6 0v2"/></svg></div><div><h1>Pedidos</h1><p>Listado de compras realizadas en la tienda.</p></div></div>
+<div class="orders-heading"><div class="heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h16l1 13H3L4 8Zm5 0V6a3 3 0 0 1 6 0v2"/></svg></div><div><h1>Pedidos</h1><p>Listado de compras realizadas en la tienda.</p></div><div class="orders-total" id="orders-total" aria-live="polite" aria-label="Total vendido desde el comienzo de las ventas reales">$ 0</div></div>
 <div class="card orders-table-wrap"><table class="orders-table"><thead><tr><th>Pedido</th><th>Correo</th><th>Rutina</th><th>Importe</th><th>Pago</th><th>Entrega</th><th>Fecha</th><th aria-label="Acciones"></th></tr></thead><tbody id="orders-body"><tr><td colspan="8" class="empty"><strong>Todavía no hay pedidos registrados</strong></td></tr></tbody></table></div>
 </section>
 </main>
@@ -259,6 +262,8 @@ async function loadRealOrders(){
   const res=await fetch('/api/admin/orders',{credentials:'same-origin',cache:'no-store'});
   const data=await res.json();
   if(!res.ok)throw Error(data.error||'No se pudieron cargar los pedidos.');
+  const total=Number(data.totalSoldArs);
+  document.getElementById('orders-total').textContent='$ '+(Number.isFinite(total)&&total>=0?Math.round(total).toLocaleString('es-AR'):'0');
   body.replaceChildren();
   if(!data.orders.length){
    const row=body.insertRow(),cell=row.insertCell();cell.colSpan=8;cell.className='empty';cell.textContent='No hay pedidos registrados.';
