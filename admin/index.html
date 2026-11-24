@@ -295,7 +295,7 @@ async function refreshMpStatus(){
    mpLink.hidden=true;mpUnlink.hidden=false;
   }else{
    mpStatusEl.textContent='Todavía no hay una cuenta Mercado Pago vinculada.';
-   mpFeedback.textContent='Vinculá la cuenta donde Noelia quiere recibir sus pagos.';
+   mpFeedback.textContent='';
    mpLink.hidden=false;mpLink.disabled=false;mpUnlink.hidden=true;
   }
  }catch(error){
