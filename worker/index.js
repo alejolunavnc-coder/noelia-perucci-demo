@@ -195,7 +195,16 @@ async function adminOrders(env) {
   const r=await env.DB.prepare(
     "SELECT o.id,o.customer_email,o.amount_ars,o.status,o.provider,o.created_at,p.level,p.days_per_week AS days,e.status AS email_status,e.sent_at AS email_sent_at FROM orders o LEFT JOIN training_plans p ON p.id=o.plan_id LEFT JOIN gym_delivery_emails e ON e.order_id=o.id ORDER BY o.created_at DESC LIMIT 100"
   ).all();
-  return json({ok:true,orders:r.results||[]});
+  // Total vendido desde la apertura comercial: excluir compras históricas de prueba.
+  // Se cuentan únicamente operaciones aprobadas (no intentos pendientes ni reintegros).
+  const sales=await env.DB.prepare(
+    "SELECT COALESCE(SUM(o.amount_ars),0) AS total FROM orders o "+
+    "JOIN gym_mp_payment_intents i ON i.order_id=o.id "+
+    "WHERE o.status='approved' AND o.provider='mercadopago' AND i.status='approved' "+
+    "AND CAST(strftime('%s',o.created_at) AS INTEGER)>"+
+    "COALESCE((SELECT CAST(content_value AS INTEGER) FROM site_content WHERE content_key='gym_sales_counter_start_unix'),CAST(strftime('%s','now') AS INTEGER))"
+  ).first();
+  return json({ok:true,orders:r.results||[],totalSoldArs:Number(sales?.total||0)});
 }
 
 async function listRoutinePdfs(env) {
