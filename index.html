@@ -3241,7 +3241,7 @@ document.addEventListener('submit',async e=>{
   button.disabled=true;status.textContent='Procesando tu solicitud…';
   try{
     status.textContent='Conectando con Mercado Pago…';
-    const res=await fetch('/api/checkout/start',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:checkoutEmail,level:chosenLevel,days:chosenDays})});
+    const res=await fetch('/api/checkout/start',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(form.dataset.product==='personalizado'?{email:checkoutEmail,product:'personalizado'}:{email:checkoutEmail,level:chosenLevel,days:chosenDays})});
     const result=await res.json();
     if(!res.ok)throw Error(result.error||'No se pudo iniciar el pago.');
     const gateway=new URL(result.checkoutUrl);
@@ -3347,8 +3347,13 @@ async function loadLivePrices(){
    if(!Number.isSafeInteger(value)||value<1||value>10000000)throw Error('Precios inválidos');
    fresh[day]=value;
   }
+  const personalized=Number(data.personalizedPrice);
+  if(!Number.isSafeInteger(personalized)||personalized<1||personalized>10000000)throw Error('Precio personalizado inválido');
+  personalizedPrice=personalized;
   Object.assign(prices,fresh);pricesAvailable=true;
   if(current==='rutina')syncRoutine();
+  if(current==='personalizado'){const el=main.querySelector('#personalized-contact-price');if(el)el.textContent='$'+personalizedPrice.toLocaleString('es-AR')+' ARS';}
+  if(current==='pago-personalizado'){const el=main.querySelector('.checkout-price'),btn=main.querySelector('#checkout-submit span');if(el)el.textContent='$'+personalizedPrice.toLocaleString('es-AR')+' ARS';if(btn)btn.textContent='COMPRAR · $'+personalizedPrice.toLocaleString('es-AR');}
   if(current==='pago'){
    const total=main.querySelector('.checkout-price'),buttonLabel=main.querySelector('#checkout-submit span');
    if(total)total.textContent=price(chosenDays)+' ARS';
@@ -3360,6 +3365,8 @@ async function loadLivePrices(){
   if(current==='entrenamientos'){
    const card=main.querySelector('.offer');
    if(card){
+    const personalizedCard=main.querySelectorAll('.offer')[1];
+    if(personalizedCard){const el=personalizedCard.querySelector('.offer-price');if(el)el.textContent='$'+personalizedPrice.toLocaleString('es-AR');}
     const value='DESDE '+price(lowestDay()),priceEl=card.querySelector('.offer-price');
     if(priceEl)priceEl.textContent=value;
     const labelEl=card.querySelector('.selector-label');if(labelEl)labelEl.textContent='RUTINAS DIGITALES / '+value;
@@ -3382,8 +3389,9 @@ async function reconcileCheckoutReturn(){
  const resultType=params.get('gym_result')||'';
  if(incoming){
   sessionStorage.setItem('gym_pending_order',incoming);
-  history.replaceState(null,'',location.pathname+'#pago');
-  if(current!=='pago')goto('pago');
+  const returnRoute=location.hash==='#pago-personalizado'?'pago-personalizado':'pago';
+  history.replaceState(null,'',location.pathname+'#'+returnRoute);
+  if(current!==returnRoute)goto(returnRoute);
  }
  const setStatus=message=>{
   const el=document.getElementById('checkout-status');
@@ -3401,6 +3409,12 @@ async function reconcileCheckoutReturn(){
    const res=await fetch('/api/checkout/status?'+qs,{cache:'no-store'});
    const data=await res.json();
    if(!res.ok)throw Error(data.error||'No se pudo verificar la compra.');
+   if(data.approved&&data.product==='personalizado'){
+    personalizedOrderId=data.orderId;
+    sessionStorage.removeItem('gym_pending_order');
+    goto('confirmacion-personalizado');
+    return;
+   }
    if(data.approved&&data.downloadToken){
     downloadGrant=data.downloadToken;
     downloadSelection={level:data.level,days:data.days};
