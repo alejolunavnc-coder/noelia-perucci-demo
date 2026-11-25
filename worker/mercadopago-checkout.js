@@ -19,33 +19,36 @@ async function mpFetch(token,path,options={}){
 function allowedUrl(u){
  try{const x=new URL(u);return x.protocol==='https:'&&(/(^|\.)mercadopago\.com(\.ar)?$/.test(x.hostname)||x.hostname==='sandbox.mercadopago.com');}catch{return false;}
 }
-export async function startPayment(request,env,getPrices,planPdf,postedJson){
+export async function startPayment(request,env,getPrices,planPdf,postedJson,getPersonalizedPrice){
  if(!env.DB)return output({error:'Base de datos no disponible.'},503);
  const data=await postedJson(request);
+ const personalized=data?.product==='personalizado';
  const level=data?.level,days=data?.days,email=String(data?.email||'').trim().toLowerCase();
- if(!levels.has(level)||!Number.isInteger(days)||days<2||days>5||!validEmail(email))
-   return output({error:'Revisá la rutina y el correo electrónico.'},400);
+ if(!validEmail(email)||(!personalized&&(!levels.has(level)||!Number.isInteger(days)||days<2||days>5)))
+   return output({error:'Revisá el servicio y el correo electrónico.'},400);
  const account=await mpAccessToken(env).catch(()=>null);
  if(!account)return output({error:'Mercado Pago no está disponible. Consultá con el administrador.'},503);
- const pdf=await planPdf(env,level,days);
- if(!pdf||pdf.delivery_type!=='authenticated')return output({error:'Esta rutina todavía no tiene su PDF disponible.'},409);
- const prices=await getPrices(env),amount=prices[days];
+ if(!personalized){
+  const pdf=await planPdf(env,level,days);
+  if(!pdf||pdf.delivery_type!=='authenticated')return output({error:'Esta rutina todavía no tiene su PDF disponible.'},409);
+ }
+ const amount=personalized?await getPersonalizedPrice(env):(await getPrices(env))[days];
  if(!Number.isSafeInteger(amount)||amount<1||amount>10000000)return output({error:'Precio inválido.'},409);
- const id=crypto.randomUUID(),planId=level+'-'+days;
+ const id=crypto.randomUUID(),planId=personalized?'personalizado':level+'-'+days;
  await env.DB.batch([
   env.DB.prepare("INSERT INTO orders(id,plan_id,customer_email,amount_ars,status,provider) VALUES(?,?,?,?,'pending','mercadopago')").bind(id,planId,email,amount),
   env.DB.prepare("INSERT INTO gym_mp_payment_intents(id,seller_id,order_id,status,amount_cents) VALUES(?,?,?,'created',?)").bind(id,account.sellerId,id,amount*100)
  ]);
  const url=new URL(request.url),origin=url.origin;
  // The URL is created on this host, never from user-controlled headers.
- const landing=kind=>origin+'/?gym_order='+encodeURIComponent(id)+'&gym_result='+kind+'#pago';
+ const landing=kind=>origin+'/?gym_order='+encodeURIComponent(id)+'&gym_result='+kind+'#'+(personalized?'pago-personalizado':'pago');
  const total=amount.toFixed(2);
  const order={
   type:'online',processing_mode:'manual',capture_mode:'automatic_async',
   total_amount:total,external_reference:id,
-  description:'Rutina digital Noelia Perucci',
+  description:personalized?'Plan de entrenamiento personalizado Noelia Perucci':'Rutina digital Noelia Perucci',
   payer:{email},
-  items:[{title:'Rutina digital '+level+' - '+days+' días',quantity:1,unit_price:total,external_code:planId}],
+  items:[{title:personalized?'Plan de entrenamiento personalizado':'Rutina digital '+level+' - '+days+' días',quantity:1,unit_price:total,external_code:planId}],
   config:{statement_descriptor:'NOELIA PERUCCI',
    online:{success_url:landing('success'),failure_url:landing('failure'),pending_url:landing('pending'),auto_return:'approved',retries:{allowed:false}}}
  };
@@ -137,6 +140,7 @@ export async function paymentStatus(request,env){
  if(row){const latest=await env.DB.prepare("SELECT status,provider_payment_id FROM orders WHERE id=?").bind(orderId).first();if(latest){row.status=latest.status;row.provider_payment_id=latest.provider_payment_id;}}
  if(!row)return output({error:'Compra no encontrada.'},404);
  if(row.status!=='approved'||!row.provider_payment_id)return output({ok:true,status:row.status,approved:false,orderId});
+ if(row.plan_id==='personalizado')return output({ok:true,status:'approved',approved:true,orderId,product:'personalizado',amountArs:row.amount_ars});
  const token=await issueDownloadToken(env,row);
  const [level,days]=row.plan_id.split('-');
  return output({ok:true,status:'approved',approved:true,orderId,level,days:Number(days),downloadToken:token});
