@@ -43,11 +43,11 @@ async function sendPersonalizedConfirmation(env,row,purpose='purchase'){
  '<p style="line-height:1.6"><b>Número de compra:</b> '+esc(row.id)+'</p>'+
  '<p style="font-weight:600;margin-top:28px">Gracias por confiar. Haremos un gran equipo.</p>'+
  '<p style="font-size:12px;color:#777">Si no realizaste esta compra, podés ignorar este mensaje.</p></td></tr></table></body></html>';
- const text=heading+'\\n\\n'+note+'\\n\\nNúmero de compra: '+row.id+'\\n\\nGracias por confiar. Haremos un gran equipo.';
+ const text=heading+'\n\n'+note+'\n\nNúmero de compra: '+row.id+'\n\nGracias por confiar. Haremos un gran equipo.';
  return sendMail(env,row.customer_email,subject,html,text,'gym-personalized-'+purpose+'-'+crypto.randomUUID());
 }
 async function sendPurchase(env,row,purpose='purchase'){
- if(row.plan_id==='personalizado')return sendPersonalizedConfirmation(env,row,purpose);
+ if(row.product_type==='personalizado')return sendPersonalizedConfirmation(env,row,purpose);
  const level=row.plan_id.split('-')[0],days=row.plan_id.split('-')[1];
  const names={principiante:'Principiante',intermedio:'Intermedio',avanzado:'Avanzado'};
  const label=(names[level]||'Entrenamiento')+' · '+days+' días';
@@ -82,7 +82,7 @@ export async function processDeliveryQueue(env){
   const claimed=await env.DB.prepare("UPDATE gym_delivery_emails SET status='sending',lease_until=?,attempts=attempts+1 WHERE order_id=? AND ((status IN ('queued','failed') AND next_attempt_at<=?) OR (status='sending' AND lease_until<?)) AND attempts<8").bind(now+120000,item.order_id,now,now).run();
   if(claimed.meta?.changes!==1)continue;
   try{
-   const order=await env.DB.prepare("SELECT id,plan_id,customer_email FROM orders WHERE id=? AND status='approved' AND provider_payment_id IS NOT NULL").bind(item.order_id).first();
+   const order=await env.DB.prepare("SELECT id,plan_id,product_type,customer_email FROM orders WHERE id=? AND status='approved' AND provider_payment_id IS NOT NULL").bind(item.order_id).first();
    if(!order)throw Error('not_approved');
    const providerId=await sendPurchase(env,order);
    await env.DB.prepare("UPDATE gym_delivery_emails SET status='sent',sent_at=?,lease_until=0,provider_message_id=?,last_error=NULL WHERE order_id=?")
@@ -115,7 +115,7 @@ export async function recoverRequest(request,env,parseJson){
  ]);
  if(Number(ec?.n||0)>=3||Number(ic?.n||0)>=8)return response({error:'Demasiadas solicitudes. Volvé a intentarlo en 15 minutos.'},429);
  await env.DB.prepare('INSERT INTO gym_recovery_requests(id,email_hash,ip_hash,created_at) VALUES(?,?,?,?)').bind(crypto.randomUUID(),emailHash,ipHash,Date.now()).run();
- const orders=await env.DB.prepare("SELECT id,plan_id,customer_email FROM orders WHERE customer_email=? AND status='approved' AND provider='mercadopago' AND provider_payment_id IS NOT NULL ORDER BY created_at DESC LIMIT 5").bind(email).all();
+ const orders=await env.DB.prepare("SELECT id,plan_id,product_type,customer_email FROM orders WHERE customer_email=? AND status='approved' AND provider='mercadopago' AND provider_payment_id IS NOT NULL ORDER BY created_at DESC LIMIT 5").bind(email).all();
  // Generic response to prevent email/order enumeration.
  for(const order of orders.results||[]){
   try{await sendPurchase(env,order,'recover');}
@@ -128,9 +128,9 @@ export async function redeemRecovery(request,env,createGrant){
  const raw=new URL(request.url).searchParams.get('token')||'';
  if(!/^[A-Za-z0-9_-]{40,50}$/.test(raw))return response({error:'El enlace no es válido.'},403);
  const hash=await digest(raw);
- const row=await env.DB.prepare("SELECT o.id,o.plan_id,o.provider_payment_id FROM gym_delivery_links l JOIN orders o ON o.id=l.order_id WHERE l.token_hash=? AND l.expires_at>? AND o.status='approved' AND o.provider='mercadopago' AND o.provider_payment_id IS NOT NULL").bind(hash,Date.now()).first();
+ const row=await env.DB.prepare("SELECT o.id,o.plan_id,o.product_type,o.provider_payment_id FROM gym_delivery_links l JOIN orders o ON o.id=l.order_id WHERE l.token_hash=? AND l.expires_at>? AND o.status='approved' AND o.provider='mercadopago' AND o.provider_payment_id IS NOT NULL").bind(hash,Date.now()).first();
  if(!row)return response({error:'El enlace venció o el pago ya no está aprobado. Solicitá otro correo desde la página.'},403);
- if(row.plan_id==='personalizado')return new Response(null,{status:303,headers:{location:site+'/#contacto','cache-control':'no-store','referrer-policy':'no-referrer'}});
+ if(row.product_type==='personalizado')return new Response(null,{status:303,headers:{location:site+'/#contacto','cache-control':'no-store','referrer-policy':'no-referrer'}});
  const grant=await createGrant(env,row);
  const [level,days]=row.plan_id.split('-');
  const url=site+'/?gym_download='+encodeURIComponent(grant)+'&gym_level='+encodeURIComponent(level)+'&gym_days='+encodeURIComponent(days)+'#confirmacion';
