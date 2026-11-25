@@ -137,7 +137,7 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
  .products-card{flex:none}
 }
 
-.price-row-personalized{border-top:1px solid var(--stroke);padding-top:9px;margin-top:5px}.price-row-personalized .day-label{font-size:12px}@media(min-width:1100px){.price-row-personalized{padding-top:6px;margin-top:2px}.price-row-personalized .day-label{font-size:11px}}
+.price-row-personalized{border-top:1px solid var(--stroke);padding-top:9px;margin-top:5px}.price-row-personalized{grid-template-columns:110px minmax(0,1fr)}.price-row-personalized .day-label{font-size:12px}@media(min-width:1100px){.price-row-personalized{padding-top:6px;margin-top:2px}.price-row-personalized .day-label{font-size:11px}}
 </style>
 </head>
 <body>
@@ -369,7 +369,7 @@ async function loadRealOrders(){
   for(const order of data.orders){
    const row=body.insertRow();
    const delivery=order.email_status==='sent'?'Correo enviado':order.status!=='approved'?'Pendiente de pago':order.email_status==='sending'?'Enviando correo':order.email_status==='queued'?'Correo pendiente':order.email_status==='failed'?'Reintentando correo':'Correo por preparar';
-   const values=[order.id,order.customer_email,order.level?order.level+' · '+order.days+' días':'Rutina',Number(order.amount_ars).toLocaleString('es-AR'),order.status==='approved'?'Aprobado':order.status==='pending'?'Pendiente':order.status,delivery,order.created_at||'',order.provider||''];
+   const values=[order.id,order.customer_email,order.product_type==='personalizado'?'Plan personalizado':order.level?order.level+' · '+order.days+' días':'Rutina',Number(order.amount_ars).toLocaleString('es-AR'),order.status==='approved'?'Aprobado':order.status==='pending'?'Pendiente':order.status,delivery,order.created_at||'',order.provider||''];
    for(const value of values)row.insertCell().textContent=String(value);
   }
  }catch(error){
