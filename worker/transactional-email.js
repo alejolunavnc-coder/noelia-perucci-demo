@@ -33,7 +33,21 @@ async function sendMail(env,to,subject,html,text,idempotencyKey){
  }
  return result.id;
 }
+async function sendPersonalizedConfirmation(env,row,purpose='purchase'){
+ const heading=purpose==='recover'?'Comprobante de tu plan personalizado':'¡Tu compra está confirmada!';
+ const subject=purpose==='recover'?'Comprobante de compra | Noelia Perucci':'Plan personalizado confirmado | Noelia Perucci';
+ const note='Compraste un plan de entrenamiento personalizado. Esta compra no incluye un PDF de descarga automática. Conservá este número de pedido para coordinar los detalles del servicio directamente con Noelia.';
+ const html='<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'+
+ '<body style="margin:0;padding:32px 16px;background:#f4f2ee;font-family:Arial,sans-serif;color:#191619"><table role="presentation" style="max-width:550px;margin:auto;width:100%;background:#fff;border-collapse:collapse"><tr><td style="background:#161216;padding:24px;color:white;font-size:23px;font-weight:bold">NOELIA PERUCCI</td></tr><tr><td style="padding:32px">'+
+ '<h1 style="font-size:25px">'+heading+'</h1><p style="line-height:1.6">'+note+'</p>'+
+ '<p style="line-height:1.6"><b>Número de compra:</b> '+esc(row.id)+'</p>'+
+ '<p style="font-weight:600;margin-top:28px">Gracias por confiar. Haremos un gran equipo.</p>'+
+ '<p style="font-size:12px;color:#777">Si no realizaste esta compra, podés ignorar este mensaje.</p></td></tr></table></body></html>';
+ const text=heading+'\\n\\n'+note+'\\n\\nNúmero de compra: '+row.id+'\\n\\nGracias por confiar. Haremos un gran equipo.';
+ return sendMail(env,row.customer_email,subject,html,text,'gym-personalized-'+purpose+'-'+crypto.randomUUID());
+}
 async function sendPurchase(env,row,purpose='purchase'){
+ if(row.plan_id==='personalizado')return sendPersonalizedConfirmation(env,row,purpose);
  const level=row.plan_id.split('-')[0],days=row.plan_id.split('-')[1];
  const names={principiante:'Principiante',intermedio:'Intermedio',avanzado:'Avanzado'};
  const label=(names[level]||'Entrenamiento')+' · '+days+' días';
@@ -107,7 +121,7 @@ export async function recoverRequest(request,env,parseJson){
   try{await sendPurchase(env,order,'recover');}
   catch(error){console.error('GYM recovery email failed',error?.message||'unknown');}
  }
- return response({ok:true,message:'Si existe una compra aprobada con ese correo, recibirás un enlace privado para recuperar tu rutina.'});
+ return response({ok:true,message:'Si existe una compra aprobada con ese correo, recibirás el comprobante o un enlace para recuperar tu rutina.'});
 }
 export async function redeemRecovery(request,env,createGrant){
  if(!env.DB)return response({error:'Servicio temporalmente no disponible.'},503);
@@ -116,6 +130,7 @@ export async function redeemRecovery(request,env,createGrant){
  const hash=await digest(raw);
  const row=await env.DB.prepare("SELECT o.id,o.plan_id,o.provider_payment_id FROM gym_delivery_links l JOIN orders o ON o.id=l.order_id WHERE l.token_hash=? AND l.expires_at>? AND o.status='approved' AND o.provider='mercadopago' AND o.provider_payment_id IS NOT NULL").bind(hash,Date.now()).first();
  if(!row)return response({error:'El enlace venció o el pago ya no está aprobado. Solicitá otro correo desde la página.'},403);
+ if(row.plan_id==='personalizado')return new Response(null,{status:303,headers:{location:site+'/#contacto','cache-control':'no-store','referrer-policy':'no-referrer'}});
  const grant=await createGrant(env,row);
  const [level,days]=row.plan_id.split('-');
  const url=site+'/?gym_download='+encodeURIComponent(grant)+'&gym_level='+encodeURIComponent(level)+'&gym_days='+encodeURIComponent(days)+'#confirmacion';
