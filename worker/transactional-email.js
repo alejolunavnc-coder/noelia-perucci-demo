@@ -40,10 +40,11 @@ async function sendPersonalizedConfirmation(env,row,purpose='purchase'){
  const html='<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'+
  '<body style="margin:0;padding:32px 16px;background:#f4f2ee;font-family:Arial,sans-serif;color:#191619"><table role="presentation" style="max-width:550px;margin:auto;width:100%;background:#fff;border-collapse:collapse"><tr><td style="background:#161216;padding:24px;color:white;font-size:23px;font-weight:bold">NOELIA PERUCCI</td></tr><tr><td style="padding:32px">'+
  '<h1 style="font-size:25px">'+heading+'</h1><p style="line-height:1.6">'+note+'</p>'+
- '<p style="line-height:1.6"><b>Número de compra:</b> '+esc(row.id)+'</p>'+
+ '<p style="line-height:1.6"><b>Número de compra:</b> '+esc(row.id)+'</p>'+ 
+ '<p style="line-height:1.6">Para coordinar tu plan, podés escribirle a Noelia por su <a href="https://www.instagram.com/noelia_perucci/" style="color:#cf006d;font-weight:bold">Instagram oficial</a>.</p>'+
  '<p style="font-weight:600;margin-top:28px">Gracias por confiar. Haremos un gran equipo.</p>'+
  '<p style="font-size:12px;color:#777">Si no realizaste esta compra, podés ignorar este mensaje.</p></td></tr></table></body></html>';
- const text=heading+'\n\n'+note+'\n\nNúmero de compra: '+row.id+'\n\nGracias por confiar. Haremos un gran equipo.';
+ const text=heading+'\n\n'+note+'\n\nNúmero de compra: '+row.id+'\n\nInstagram oficial: https://www.instagram.com/noelia_perucci/\n\nGracias por confiar. Haremos un gran equipo.';
  return sendMail(env,row.customer_email,subject,html,text,'gym-personalized-'+purpose+'-'+crypto.randomUUID());
 }
 async function sendPurchase(env,row,purpose='purchase'){
