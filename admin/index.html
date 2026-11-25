@@ -137,6 +137,7 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
  .products-card{flex:none}
 }
 
+.price-row-personalized{border-top:1px solid var(--stroke);padding-top:9px;margin-top:5px}.price-row-personalized .day-label{font-size:12px}@media(min-width:1100px){.price-row-personalized{padding-top:6px;margin-top:2px}.price-row-personalized .day-label{font-size:11px}}
 </style>
 </head>
 <body>
@@ -158,7 +159,7 @@ main{padding:16px clamp(20px,2.2vw,38px) 18px;min-width:0;display:flex;flex-dire
 <label class="price-row"><span class="day-label">2 días</span><span class="money-input"><span>$</span><input aria-label="Precio para 2 días" data-days="2" inputmode="numeric" pattern="[0-9.]+" value="50.000" maxlength="12"></span></label>
 <label class="price-row"><span class="day-label">3 días</span><span class="money-input"><span>$</span><input aria-label="Precio para 3 días" data-days="3" inputmode="numeric" pattern="[0-9.]+" value="60.000" maxlength="12"></span></label>
 <label class="price-row"><span class="day-label">4 días</span><span class="money-input"><span>$</span><input aria-label="Precio para 4 días" data-days="4" inputmode="numeric" pattern="[0-9.]+" value="80.000" maxlength="12"></span></label>
-<label class="price-row"><span class="day-label">5 días</span><span class="money-input"><span>$</span><input aria-label="Precio para 5 días" data-days="5" inputmode="numeric" pattern="[0-9.]+" value="80.000" maxlength="12"></span></label>
+<label class="price-row"><span class="day-label">5 días</span><span class="money-input"><span>$</span><input aria-label="Precio para 5 días" data-days="5" inputmode="numeric" pattern="[0-9.]+" value="80.000" maxlength="12"></span></label><label class="price-row price-row-personalized"><span class="day-label">Personalizado</span><span class="money-input"><span>$</span><input id="price-personalizado" aria-label="Precio del plan personalizado" inputmode="numeric" pattern="[0-9.]+" value="100.000" maxlength="12"></span></label>
 </div></div>
 <div class="pdf-area"><div class="pdf-heading"><h2 class="section-title">Archivos de rutinas <small>(12 combinaciones)</small></h2><button type="button" class="pdf-export-button" id="pdf-export-button" title="Descargar copia de los 12 PDF guardados">Descargar todos los PDF</button></div><div id="pdf-table" class="pdf-table" role="group" aria-label="Archivos PDF por nivel y cantidad de días"></div>
 <div class="save-line"><span class="save-status" id="save-status" aria-live="polite">Conectando con Cloudinary…</span><button class="save" id="save" type="button" disabled>▣ &nbsp;Guardar cambios</button></div>
@@ -240,7 +241,7 @@ for(const input of document.querySelectorAll('[data-days]')){
 }
 loadFiles();
 
-const priceSave=document.getElementById('save'),priceFields=Array.from(document.querySelectorAll('[data-days]'));
+const priceSave=document.getElementById('save'),priceFields=Array.from(document.querySelectorAll('[data-days]')),personalizedField=document.getElementById('price-personalizado');
 let savedPriceValues=null;
 function readPriceValues(){
  const out={};
@@ -248,6 +249,10 @@ function readPriceValues(){
   if(!digits||!Number.isSafeInteger(value)||value<1||value>10000000)throw Error('Precio inválido para '+el.dataset.days+' días.');
   out[el.dataset.days]=value;
  }
+ const digits=personalizedField.value.replace(/\D/g,'');
+ const value=Number(digits);
+ if(!digits||!Number.isSafeInteger(value)||value<1||value>10000000)throw Error('Precio personalizado inválido.');
+ out.personalizedPrice=value;
  return out;
 }
 function updatePriceSave(){
@@ -258,7 +263,8 @@ function updatePriceSave(){
 async function loadSavedPrices(){
  try{const res=await fetch('/api/admin/prices',{credentials:'same-origin',cache:'no-store'}),data=await res.json();
   if(!res.ok)throw Error(data.error||'No se pudieron cargar los precios.');
-  savedPriceValues=data.prices;
+  savedPriceValues={...data.prices,personalizedPrice:data.personalizedPrice};
+  personalizedField.value=Number(data.personalizedPrice).toLocaleString('es-AR');
   for(const field of priceFields)field.value=Number(savedPriceValues[field.dataset.days]).toLocaleString('es-AR');
   priceSave.disabled=true;status.textContent='Precios cargados desde D1.';
  }catch(e){priceSave.disabled=true;status.textContent=e.message;msg(e.message)}
@@ -266,13 +272,15 @@ async function loadSavedPrices(){
 priceSave.addEventListener('click',async()=>{
  let prices;try{prices=readPriceValues()}catch(e){msg(e.message);return;}
  priceSave.disabled=true;status.textContent='Guardando precios…';
- try{const res=await fetch('/api/admin/prices',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({prices})});
+ try{const res=await fetch('/api/admin/prices',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({prices,personalizedPrice:prices.personalizedPrice})});
   const data=await res.json();if(!res.ok)throw Error(data.error||'No se pudieron guardar los precios.');
-  savedPriceValues=data.prices;status.textContent='Precios guardados y publicados.';msg('Precios guardados correctamente.');
+  savedPriceValues={...data.prices,personalizedPrice:data.personalizedPrice};status.textContent='Precios guardados y publicados.';msg('Precios guardados correctamente.');
  }catch(e){status.textContent=e.message;msg(e.message)}
  finally{updatePriceSave()}
 });
 for(const field of priceFields){field.addEventListener('input',updatePriceSave);field.addEventListener('blur',updatePriceSave)}
+personalizedField.addEventListener('input',()=>{status.textContent='Cambios de precios pendientes de guardar.';updatePriceSave()});
+personalizedField.addEventListener('blur',()=>{const digits=personalizedField.value.replace(/\D/g,'');if(digits)personalizedField.value=Number(digits).toLocaleString('es-AR');updatePriceSave()});
 loadSavedPrices();
 
 
