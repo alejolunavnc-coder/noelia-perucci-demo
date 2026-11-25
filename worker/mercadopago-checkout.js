@@ -127,7 +127,7 @@ const hmac=async(secret,payload)=>{
 };
 export async function issueDownloadToken(env,order){
  if(!env.CLOUDINARY_API_SECRET||!order?.provider_payment_id||!orderPatternCheck(order.id))throw Error('invalid_order_grant');
- const expire=Date.now()+30*60*1000,nonce=crypto.randomUUID().replaceAll('-');
+ const expire=Date.now()+30*60*1000,nonce=crypto.randomUUID().replaceAll('-','');
  const payload=[order.id,expire,nonce,order.provider_payment_id].join('.');
  return 'paid.'+order.id+'.'+expire+'.'+nonce+'.'+await hmac(env.CLOUDINARY_API_SECRET,payload);
 }
