@@ -161,10 +161,15 @@ async function getSavedPrices(env) {
   }
   return prices;
 }
+async function getPersonalizedPrice(env){
+ const row=await env.DB.prepare("SELECT content_value FROM site_content WHERE content_key='gym_price_personalizado'").first();
+ const n=Number(row?.content_value);
+ return Number.isSafeInteger(n)&&n>=1&&n<=10000000?n:100000;
+}
 async function publicPrices(env) {
   if(!env.DB)return json({error:"Precios no disponibles temporalmente."},503);
-  const prices=await getSavedPrices(env);
-  return json({ok:true,prices});
+  const [prices,personalizedPrice]=await Promise.all([getSavedPrices(env),getPersonalizedPrice(env)]);
+  return json({ok:true,prices,personalizedPrice});
 }
 async function savePrices(request,env) {
   if(!env.DB)return json({error:"Base de datos no disponible."},503);
@@ -178,15 +183,19 @@ async function savePrices(request,env) {
       return json({error:"Precio inválido para "+day+" días. Usá un número entre $1 y $10.000.000."},400);
     prices[day]=value;
   }
+  const personalizedPrice=data.personalizedPrice;
+  if(typeof personalizedPrice!=='number'||!Number.isSafeInteger(personalizedPrice)||personalizedPrice<1||personalizedPrice>10000000)
+    return json({error:"El precio del plan personalizado debe estar entre $1 y $10.000.000."},400);
   const entries=[2,3,4,5].map(day=>env.DB.prepare(
     "INSERT INTO site_content(content_key,content_value,kind,updated_at) VALUES(?,?,'text',datetime('now')) ON CONFLICT(content_key) DO UPDATE SET content_value=excluded.content_value,updated_at=datetime('now')"
   ).bind("gym_price_days_"+day,String(prices[day])));
+  entries.push(env.DB.prepare("INSERT INTO site_content(content_key,content_value,kind,updated_at) VALUES('gym_price_personalizado',?,'text',datetime('now')) ON CONFLICT(content_key) DO UPDATE SET content_value=excluded.content_value,updated_at=datetime('now')").bind(String(personalizedPrice)));
   // Keep existing plan rows consistent with the public prices, without touching PDF assets.
   for(const day of [2,3,4,5])entries.push(env.DB.prepare(
     "UPDATE training_plans SET price_ars=?,updated_at=datetime('now') WHERE days_per_week=?"
   ).bind(prices[day],day));
   await env.DB.batch(entries);
-  return json({ok:true,prices:await getSavedPrices(env)});
+  return json({ok:true,prices:await getSavedPrices(env),personalizedPrice:await getPersonalizedPrice(env)});
 }
 async function adminOrders(env) {
   if(!env.DB)return json({error:"Base de datos no disponible."},503);
@@ -372,7 +381,7 @@ export default {
           if(ctx?.waitUntil)ctx.waitUntil(processDeliveryQueue(env).catch(e=>console.error('GYM email delivery failed',e?.message)));
           return response;
         }
-        if(path==="/api/checkout/start" && method==="POST")return startPayment(request,env,getSavedPrices,planPdf,postedJson);
+        if(path==="/api/checkout/start" && method==="POST")return startPayment(request,env,getSavedPrices,planPdf,postedJson,getPersonalizedPrice);
         if(path==="/api/checkout/status" && method==="GET"){
           const response=await paymentStatus(request,env);
           if(ctx?.waitUntil)ctx.waitUntil(processDeliveryQueue(env).catch(e=>console.error('GYM email delivery failed',e?.message)));
