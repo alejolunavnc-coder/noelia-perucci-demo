@@ -34,9 +34,9 @@ export async function startPayment(request,env,getPrices,planPdf,postedJson,getP
  }
  const amount=personalized?await getPersonalizedPrice(env):(await getPrices(env))[days];
  if(!Number.isSafeInteger(amount)||amount<1||amount>10000000)return output({error:'Precio inválido.'},409);
- const id=crypto.randomUUID(),planId=personalized?'personalizado':level+'-'+days;
+ const id=crypto.randomUUID(),planId=personalized?null:level+'-'+days;
  await env.DB.batch([
-  env.DB.prepare("INSERT INTO orders(id,plan_id,customer_email,amount_ars,status,provider) VALUES(?,?,?,?,'pending','mercadopago')").bind(id,planId,email,amount),
+  env.DB.prepare("INSERT INTO orders(id,plan_id,customer_email,amount_ars,status,provider,product_type) VALUES(?,?,?,?,'pending','mercadopago',?)").bind(id,planId,email,amount,personalized?'personalizado':'routine'),
   env.DB.prepare("INSERT INTO gym_mp_payment_intents(id,seller_id,order_id,status,amount_cents) VALUES(?,?,?,'created',?)").bind(id,account.sellerId,id,amount*100)
  ]);
  const url=new URL(request.url),origin=url.origin;
@@ -48,7 +48,7 @@ export async function startPayment(request,env,getPrices,planPdf,postedJson,getP
   total_amount:total,external_reference:id,
   description:personalized?'Plan de entrenamiento personalizado Noelia Perucci':'Rutina digital Noelia Perucci',
   payer:{email},
-  items:[{title:personalized?'Plan de entrenamiento personalizado':'Rutina digital '+level+' - '+days+' días',quantity:1,unit_price:total,external_code:planId}],
+  items:[{title:personalized?'Plan de entrenamiento personalizado':'Rutina digital '+level+' - '+days+' días',quantity:1,unit_price:total,external_code:personalized?'personalizado':planId}],
   config:{statement_descriptor:'NOELIA PERUCCI',
    online:{success_url:landing('success'),failure_url:landing('failure'),pending_url:landing('pending'),auto_return:'approved',retries:{allowed:false}}}
  };
@@ -135,12 +135,12 @@ const orderPatternCheck=s=>uuid.test(String(s||''));
 export async function paymentStatus(request,env){
  const q=new URL(request.url).searchParams,orderId=q.get('order')||'';
  if(!uuid.test(orderId))return output({error:'Número de compra inválido.'},400);
- const row=await env.DB.prepare("SELECT o.id,o.status,o.plan_id,o.provider_payment_id,o.amount_ars,o.customer_email,i.preference_id FROM orders o JOIN gym_mp_payment_intents i ON i.order_id=o.id WHERE o.id=? AND o.provider='mercadopago'").bind(orderId).first();
+ const row=await env.DB.prepare("SELECT o.id,o.status,o.plan_id,o.product_type,o.provider_payment_id,o.amount_ars,o.customer_email,i.preference_id FROM orders o JOIN gym_mp_payment_intents i ON i.order_id=o.id WHERE o.id=? AND o.provider='mercadopago'").bind(orderId).first();
  if(row?.preference_id)await reconcileOrder(env,row.preference_id,orderId).catch(()=>false);
  if(row){const latest=await env.DB.prepare("SELECT status,provider_payment_id FROM orders WHERE id=?").bind(orderId).first();if(latest){row.status=latest.status;row.provider_payment_id=latest.provider_payment_id;}}
  if(!row)return output({error:'Compra no encontrada.'},404);
  if(row.status!=='approved'||!row.provider_payment_id)return output({ok:true,status:row.status,approved:false,orderId});
- if(row.plan_id==='personalizado')return output({ok:true,status:'approved',approved:true,orderId,product:'personalizado',amountArs:row.amount_ars});
+ if(row.product_type==='personalizado')return output({ok:true,status:'approved',approved:true,orderId,product:'personalizado',amountArs:row.amount_ars});
  const token=await issueDownloadToken(env,row);
  const [level,days]=row.plan_id.split('-');
  return output({ok:true,status:'approved',approved:true,orderId,level,days:Number(days),downloadToken:token});
