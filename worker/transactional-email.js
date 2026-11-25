@@ -133,8 +133,9 @@ export async function redeemRecovery(request,env,createGrant){
  if(!row)return response({error:'El enlace venció o el pago ya no está aprobado. Solicitá otro correo desde la página.'},403);
  if(row.product_type==='personalizado')return new Response(null,{status:303,headers:{location:site+'/#contacto','cache-control':'no-store','referrer-policy':'no-referrer'}});
  const grant=await createGrant(env,row);
- const [level,days]=row.plan_id.split('-');
- const url=site+'/?gym_download='+encodeURIComponent(grant)+'&gym_level='+encodeURIComponent(level)+'&gym_days='+encodeURIComponent(days)+'#confirmacion';
+ // Mail recovery links must download the purchased PDF directly.
+ // The short-lived signed grant is minted only after validating the 30-day private link.
+ const url=site+'/api/checkout/download?token='+encodeURIComponent(grant);
  return new Response(null,{status:303,headers:{location:url,'cache-control':'no-store','referrer-policy':'no-referrer'}});
 }
 export async function deliveryStatus(env){
