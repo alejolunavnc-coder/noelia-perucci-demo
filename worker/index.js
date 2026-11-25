@@ -202,7 +202,7 @@ async function adminOrders(env) {
   await syncPendingOrders(env).catch(error=>console.error('GYM admin payment sync failed',error?.message||'unknown'));
   await syncPastPurchases(env).catch(error=>console.error('GYM past-purchase email queue failed',error?.message||'unknown'));
   const r=await env.DB.prepare(
-    "SELECT o.id,o.customer_email,o.amount_ars,o.status,o.provider,o.created_at,p.level,p.days_per_week AS days,e.status AS email_status,e.sent_at AS email_sent_at FROM orders o LEFT JOIN training_plans p ON p.id=o.plan_id LEFT JOIN gym_delivery_emails e ON e.order_id=o.id ORDER BY o.created_at DESC LIMIT 100"
+    "SELECT o.id,o.customer_email,o.amount_ars,o.status,o.provider,o.created_at,o.product_type,p.level,p.days_per_week AS days,e.status AS email_status,e.sent_at AS email_sent_at FROM orders o LEFT JOIN training_plans p ON p.id=o.plan_id LEFT JOIN gym_delivery_emails e ON e.order_id=o.id ORDER BY o.created_at DESC LIMIT 100"
   ).all();
   // Total vendido desde la apertura comercial: excluir compras históricas de prueba.
   // Se cuentan únicamente operaciones aprobadas (no intentos pendientes ni reintegros).
